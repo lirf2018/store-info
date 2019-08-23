@@ -1,4 +1,4 @@
-package com.yufan.common.dao;
+package com.yufan.common.dao.base;
 
 
 import com.yufan.utils.PageInfo;

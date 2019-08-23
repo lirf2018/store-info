@@ -1,6 +1,6 @@
-package com.yufan.common.dao.impl;
+package com.yufan.common.dao.base.impl;
 
-import com.yufan.common.dao.IGeneralDao;
+import com.yufan.common.dao.base.IGeneralDao;
 import com.yufan.utils.PageInfo;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;

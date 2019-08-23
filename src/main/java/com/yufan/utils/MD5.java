@@ -8,48 +8,11 @@ package com.yufan.utils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public  class MD5 {
-	
-	public static String enCodeStandard(String password ) {
-		StringBuffer buf = new StringBuffer("");
-		try { 
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(password.getBytes("UTF-8")); 
-			byte b[] = md.digest(); 
-			int i; 
-			
-			for (int offset = 0; offset < b.length; offset++) { 
-				i = b[offset]; 
-				if(i<0) i+= 256; 
-				if(i<16) buf.append("0"); 
-				buf.append(Integer.toHexString(i));
-			} 
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace(); 
-			return null;
-		}catch(Exception e){
-			e.printStackTrace(); 
-			return null;
-		} 
-		return buf.toString();
-	} 
-	
-	public static byte[] sha512(String text) {
-		try { 
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-			messageDigest.update(text.getBytes("UTF-8"));
-			byte[] bytes = messageDigest.digest();
-			return bytes;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace(); 
-		}catch(Exception e){
-			e.printStackTrace(); 
-		} 
-		return null;
-	}
+public class MD5 {
 
-    public static String enCodeStandard2(String password ) {
-        StringBuilder buf = new StringBuilder("");
+
+    public static String enCodeStandard(String password) {
+        StringBuffer buf = new StringBuffer("");
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(password.getBytes("UTF-8"));
@@ -58,46 +21,56 @@ public  class MD5 {
 
             for (int offset = 0; offset < b.length; offset++) {
                 i = b[offset];
-                if(i<0) i+= 256;
-                if(i<16) buf.append("0");
+                if (i < 0) i += 256;
+                if (i < 16) buf.append("0");
                 buf.append(Integer.toHexString(i));
             }
+            //	System.out.println("result: " + buf.toString());//32位的加密
+            //	System.out.println("result: " + buf.toString().substring(8,24));//16位的加密
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
         return buf.toString();
     }
 
-    public static String sha1(String text) {
-        StringBuilder buf = new StringBuilder("");
+    public static String MD5Encode(String origin, String charsetname) {
+        String resultString = null;
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.update(text.getBytes("UTF-8"));
-            byte b[] = md.digest();
-            int i;
-
-            for (int offset = 0; offset < b.length; offset++) {
-                i = b[offset];
-                if(i<0) i+= 256;
-                if(i<16) buf.append("0");
-                buf.append(Integer.toHexString(i));
-            }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }catch(Exception e){
-            e.printStackTrace();
-            return null;
+            resultString = new String(origin);
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            if (charsetname == null || "".equals(charsetname))
+                resultString = byteArrayToHexString(md.digest(resultString
+                        .getBytes()));
+            else
+                resultString = byteArrayToHexString(md.digest(resultString
+                        .getBytes(charsetname)));
+        } catch (Exception exception) {
         }
-        return buf.toString();
+        return resultString;
     }
 
-    public static void main(String[] args) {
-        System.out.println(MD5.enCodeStandard("1"));
+    private static String byteArrayToHexString(byte b[]) {
+        StringBuffer resultSb = new StringBuffer();
+        for (int i = 0; i < b.length; i++)
+            resultSb.append(byteToHexString(b[i]));
+
+        return resultSb.toString();
     }
+
+    private static String byteToHexString(byte b) {
+        int n = b;
+        if (n < 0)
+            n += 256;
+        int d1 = n / 16;
+        int d2 = n % 16;
+        return hexDigits[d1] + hexDigits[d2];
+    }
+
+    private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
+            "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
 
 }

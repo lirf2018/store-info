@@ -60,4 +60,19 @@ public class Constants {
      * 参数paramCode
      */
     public static String PARAM_CODE_LIMIT_WAY = "limit_way";//限购方式
+
+    /**
+     * 网易短信参数
+     */
+    public static String APP_SECRET_WY = "";
+    public static String APP_KEY_WY = "";
+    public static String SENDTEMPLATE_URL_WY = "";
+    public static String SENDCODE_URL_WY = "";
+
+    /**
+     * 阿里云
+     */
+    public static String ACCESSKEYID_ALIPAY = "";
+    public static String ACCESSKEYSECRET_ALIPAY = "";
+
 }
