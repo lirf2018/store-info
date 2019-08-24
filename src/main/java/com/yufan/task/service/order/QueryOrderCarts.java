@@ -1,0 +1,117 @@
+package com.yufan.task.service.order;
+
+import com.alibaba.fastjson.JSONObject;
+import com.yufan.bean.UserCartOrderDetail;
+import com.yufan.bean.UserOrderCart;
+import com.yufan.common.bean.ReceiveJsonBean;
+import com.yufan.common.bean.ResponeUtil;
+import com.yufan.common.bean.ResultCode;
+import com.yufan.common.dao.account.IAccountJpaDao;
+import com.yufan.common.service.IResultOut;
+import com.yufan.dao.order.IOrderDao;
+import com.yufan.pojo.TbInfAccount;
+import com.yufan.utils.Constants;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 创建人: lirf
+ * 创建时间:  2019/8/24 19:03
+ * 功能介绍: 查询购物车
+ */
+@Service("query_order_cart")
+public class QueryOrderCarts implements IResultOut {
+
+
+    private Logger LOG = Logger.getLogger(QueryOrderCarts.class);
+
+    @Autowired
+    private IOrderDao iOrderDao;
+
+
+    @Override
+    public String getResult(ReceiveJsonBean receiveJsonBean) {
+        JSONObject dataJson = new JSONObject();
+        JSONObject data = receiveJsonBean.getData();
+        try {
+            Integer userId = data.getInteger("user_id");
+            Integer carType = data.getInteger("car_type");
+            List<Map<String, Object>> mapList = iOrderDao.queryUserOrderCartListMap(userId, carType);
+
+
+            List<UserOrderCart> outList = new ArrayList<>();
+
+
+            Map<Integer, Integer> markMap = new HashMap<>();
+            //mapList 店铺
+            for (int i = 0; i < mapList.size(); i++) {
+                Map<String, Object> map = mapList.get(i);
+                int shopId = Integer.parseInt(map.get("shop_id").toString());
+                String shopName = map.get("shop_name").toString();
+                String shopLogo = null == map.get("shop_logo") ? "" : Constants.IMG_URL + map.get("shop_logo").toString();
+                if (markMap.get(shopId) != null) {
+                    continue;
+                }
+                UserOrderCart shop = new UserOrderCart();
+                shop.setShopId(shopId);
+                shop.setShopName(shopName);
+                shop.setShopLogo(shopLogo);
+                outList.add(shop);
+                //去重
+                markMap.put(shopId, shopId);
+            }
+
+            //购物车详情
+            for (int i = 0; i < outList.size(); i++) {
+                UserOrderCart shop = outList.get(i);
+
+                List<UserCartOrderDetail> cartDetailList = new ArrayList<>();
+                for (int j = 0; j < mapList.size(); j++) {
+                    Map<String, Object> map = mapList.get(j);
+                    int shopId = Integer.parseInt(map.get("shop_id").toString());
+                    if (shopId != shop.getShopId()) {
+                        continue;
+                    }
+                    int cartId = Integer.parseInt(map.get("cart_id").toString());
+                    Integer goodsId = Integer.parseInt(map.get("goods_id").toString());
+                    String goodsName = map.get("goods_name").toString();
+                    String goodsSpec = null == map.get("goods_spec") ? "" : map.get("goods_spec").toString();
+                    String goodsSpecName = null == map.get("goods_spec_name") ? "" : map.get("goods_spec_name").toString();
+                    Integer goodsCount = Integer.parseInt(map.get("goods_count").toString());
+                    BigDecimal goodsPrice = new BigDecimal(map.get("goods_price").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    Integer status = Integer.parseInt(map.get("status").toString());
+                    String goodsSpecNameStr = null == map.get("goods_spec_name_str") ? "" : map.get("goods_spec_name_str").toString();
+                    Integer cartType = Integer.parseInt(null == map.get("status") ? null : map.get("status").toString());
+                    UserCartOrderDetail userCartOrderDetail = new UserCartOrderDetail();
+                    userCartOrderDetail.setCartId(cartId);
+                    userCartOrderDetail.setUserId(userId);
+                    userCartOrderDetail.setGoodsId(goodsId);
+                    userCartOrderDetail.setGoodsName(goodsName);
+                    userCartOrderDetail.setGoodsSpec(goodsSpec);
+                    userCartOrderDetail.setGoodsSpecName(goodsSpecName);
+                    userCartOrderDetail.setGoodsCount(goodsCount);
+                    userCartOrderDetail.setGoodsPrice(goodsPrice);
+                    userCartOrderDetail.setTrueMoney(trueMoney);
+                    userCartOrderDetail.setStatus(status);
+                    userCartOrderDetail.setGoodsSpecNameStr(goodsSpecNameStr);
+                    userCartOrderDetail.setCartType(cartType);
+                    cartDetailList.add(userCartOrderDetail);
+                }
+                shop.setCartDetailList(cartDetailList);
+            }
+
+            dataJson.put("list_detail", outList);
+        } catch (Exception e) {
+            LOG.error("-----error-----", e);
+        }
+        return ResponeUtil.packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+    }
+}
