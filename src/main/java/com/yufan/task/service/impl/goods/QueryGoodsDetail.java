@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -158,11 +159,11 @@ public class QueryGoodsDetail implements IResultOut {
                                 timePrice = new BigDecimal(map.get("time_price").toString());//抢购价格
                                 timeGoodsStore = Integer.parseInt(map.get("goods_store").toString());//抢购库存
                             }
-                        }else{
+                        } else {
                             LOG.info("-------参数中是否设置了抢购开始结束时间---不在当前时间内-------");
                         }
                     } catch (Exception e) {
-                        LOG.error("----设置参数抢购开始结束时间异常---",e);
+                        LOG.error("----设置参数抢购开始结束时间异常---", e);
                     }
 
                 }
@@ -207,11 +208,34 @@ public class QueryGoodsDetail implements IResultOut {
             }
 
             //查询商品销售和非销售属性
-            List<Map<String, Object>> queryCategoryRelListMap = iCategoryDao.queryCategoryRelListMap(goods.getCategoryId())
+            List<Map<String, Object>> propList = new ArrayList<>();
+            Map<Integer, Integer> mark = new HashMap<>();
+            List<Map<String, Object>> queryCategoryRelListMap = iCategoryDao.queryCategoryRelListMap(goods.getCategoryId());
             for (int i = 0; i < queryCategoryRelListMap.size(); i++) {
-                s
+                Integer propId = Integer.parseInt(queryCategoryRelListMap.get(i).get("prop_id").toString());
+                if (mark.get(propId) != null) {
+                    continue;
+                }
+                mark.put(propId, propId);
+                propList.add(queryCategoryRelListMap.get(i));
             }
 
+            //
+            List<Map<String, Object>> shellPropList = new ArrayList<>();//销售属性
+            List<Map<String, Object>> ubshellPropList = new ArrayList<>();//非销售属性
+
+            for (int i = 0; i < propList.size(); i++) {
+                Integer propId = Integer.parseInt(queryCategoryRelListMap.get(i).get("prop_id").toString());
+                Integer isShell = Integer.parseInt(queryCategoryRelListMap.get(i).get("it_is_shell").toString());
+                String propName = queryCategoryRelListMap.get(i).get("it_prop_name").toString();
+                Map<String,Object> mapProp = new HashMap<>();
+                mapProp.put("prop_id",propId);
+                mapProp.put("prop_name",propName);
+
+
+
+
+            }
 
 
             //商品信息
