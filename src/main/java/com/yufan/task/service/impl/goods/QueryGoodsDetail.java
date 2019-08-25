@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
+import com.yufan.dao.category.ICategoryDao;
 import com.yufan.dao.goods.IGoodsDao;
 import com.yufan.dao.goods.IGoodsJpaDao;
 import com.yufan.dao.img.IImgDao;
@@ -51,6 +52,9 @@ public class QueryGoodsDetail implements IResultOut {
 
     @Autowired
     private IShopJapDao iShopJapDao;
+
+    @Autowired
+    private ICategoryDao iCategoryDao;
 
 
     @Override
@@ -203,8 +207,10 @@ public class QueryGoodsDetail implements IResultOut {
             }
 
             //查询商品销售和非销售属性
-
-
+            List<Map<String, Object>> queryCategoryRelListMap = iCategoryDao.queryCategoryRelListMap(goods.getCategoryId())
+            for (int i = 0; i < queryCategoryRelListMap.size(); i++) {
+                s
+            }
 
 
 
