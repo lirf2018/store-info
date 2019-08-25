@@ -212,7 +212,7 @@ public class QueryGoodsDetail implements IResultOut {
             Map<Integer, Integer> mark = new HashMap<>();
             List<Map<String, Object>> queryCategoryRelListMap = iCategoryDao.queryCategoryRelListMap(goods.getCategoryId());
             for (int i = 0; i < queryCategoryRelListMap.size(); i++) {
-                Integer propId = Integer.parseInt(queryCategoryRelListMap.get(i).get("prop_id").toString());
+                Integer propId = Integer.parseInt(queryCategoryRelListMap.get(i).get("it_prop_id").toString());
                 if (mark.get(propId) != null) {
                     continue;
                 }
@@ -221,22 +221,36 @@ public class QueryGoodsDetail implements IResultOut {
             }
 
             //
-            List<Map<String, Object>> shellPropList = new ArrayList<>();//销售属性
-            List<Map<String, Object>> ubshellPropList = new ArrayList<>();//非销售属性
+            List<Map<String, Object>> salePropList = new ArrayList<>();//1销售属性
+            List<Map<String, Object>> unsalePropList = new ArrayList<>();//0非销售属性
 
             for (int i = 0; i < propList.size(); i++) {
-                Integer propId = Integer.parseInt(queryCategoryRelListMap.get(i).get("prop_id").toString());
-                Integer isShell = Integer.parseInt(queryCategoryRelListMap.get(i).get("it_is_shell").toString());
-                String propName = queryCategoryRelListMap.get(i).get("it_prop_name").toString();
-                Map<String,Object> mapProp = new HashMap<>();
-                mapProp.put("prop_id",propId);
-                mapProp.put("prop_name",propName);
+                Integer propId = Integer.parseInt(propList.get(i).get("it_prop_id").toString());
+                Integer isShell = Integer.parseInt(propList.get(i).get("it_is_shell").toString());
+                String propName = propList.get(i).get("it_prop_name").toString();
+                Map<String, Object> mapProp = new HashMap<>();
+                mapProp.put("prop_id", propId);
+                mapProp.put("prop_name", propName);
 
-
-
-
+                List<Map<String, Object>> valueList = new ArrayList<>();
+                for (int j = 0; j < queryCategoryRelListMap.size(); j++) {
+                    if (propId != Integer.parseInt(queryCategoryRelListMap.get(j).get("it_prop_id").toString())) {
+                        continue;
+                    }
+                    Map<String, Object> mapValue = new HashMap<>();
+                    mapValue.put("value_id", queryCategoryRelListMap.get(j).get("pv_value_id").toString());
+                    mapValue.put("value_name", queryCategoryRelListMap.get(j).get("pv_value_name").toString());
+                    valueList.add(mapValue);
+                }
+                mapProp.put("value_list", valueList);
+                if (isShell == 1) {
+                    salePropList.add(mapProp);
+                } else {
+                    unsalePropList.add(mapProp);
+                }
             }
-
+            dataJson.put("sale_prop_list", salePropList);
+            dataJson.put("unsale_prop_list", unsalePropList);
 
             //商品信息
             dataJson.put("all_status", allStatus);
