@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -578,7 +579,16 @@ public class DatetimeUtil {
         if (seconds == null || seconds.isEmpty() || seconds.equals("null")) {
             return "";
         }
-        if (format == null || format.isEmpty()) format = "yyyy-MM-dd HH:mm:ss";
+        if (format == null || format.isEmpty()) {
+            format = "yyyy-MM-dd HH:mm:ss";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(new Date(Long.valueOf(seconds + "000")));
+    }
+    public static String timeStamp2Date(long seconds, String format) {
+        if (format == null || format.isEmpty()) {
+            format = "yyyy-MM-dd HH:mm:ss";
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(new Date(Long.valueOf(seconds + "000")));
     }
@@ -742,8 +752,11 @@ public class DatetimeUtil {
         return time;
     }
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
+        String str = "2018-11-11 12:10:02";
+        Timestamp timestamp = new Timestamp(DatetimeUtil.convertStrToDate(str).getTime());
+        String beginTime = DatetimeUtil.timeStamp2Date(timestamp.getTime()/1000+"", "yyyy-MM-dd HH:mm:ss");
+        System.out.printf(beginTime);
     }
 }
 

@@ -13,9 +13,26 @@ public interface IOrderDao {
 
     /**
      * 查询用户购物车列表
+     *
      * @param userId
      * @param carType
      * @return
      */
-    public List<Map<String, Object>> queryUserOrderCartListMap(int userId,Integer carType);
+    public List<Map<String, Object>> queryUserOrderCartListMap(int userId, Integer carType);
+
+
+    /**
+     * 查询用户订单支付信息
+     * @param userId
+     * @return
+     */
+    public List<Map<String, Object>> queryOrderPayAllListMap(int userId);
+
+
+    /**
+     * 查询用户购物车数量
+     * @return
+     */
+    public int userCartCount(int userId);
+
 }

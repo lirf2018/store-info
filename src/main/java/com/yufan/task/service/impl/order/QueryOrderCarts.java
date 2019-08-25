@@ -1,4 +1,4 @@
-package com.yufan.task.service.order;
+package com.yufan.task.service.impl.order;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.bean.UserCartOrderDetail;
@@ -6,10 +6,8 @@ import com.yufan.bean.UserOrderCart;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResponeUtil;
 import com.yufan.common.bean.ResultCode;
-import com.yufan.common.dao.account.IAccountJpaDao;
 import com.yufan.common.service.IResultOut;
 import com.yufan.dao.order.IOrderDao;
-import com.yufan.pojo.TbInfAccount;
 import com.yufan.utils.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
  * 创建人: lirf
@@ -43,6 +43,11 @@ public class QueryOrderCarts implements IResultOut {
         try {
             Integer userId = data.getInteger("user_id");
             Integer carType = data.getInteger("car_type");
+
+            if (!checkParam(receiveJsonBean)) {
+                return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
+            }
+
             List<Map<String, Object>> mapList = iOrderDao.queryUserOrderCartListMap(userId, carType);
 
 
@@ -88,6 +93,13 @@ public class QueryOrderCarts implements IResultOut {
                     BigDecimal goodsPrice = new BigDecimal(map.get("goods_price").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     Integer status = Integer.parseInt(map.get("status").toString());
+                    if (status == 1) {
+                        //如果商品的修改时间>购物车商品的创建时间,则购物车视为无效
+                        int lastStatus = Integer.parseInt(map.get("last_status").toString());
+                        status = lastStatus;
+                    }
+
+
                     String goodsSpecNameStr = null == map.get("goods_spec_name_str") ? "" : map.get("goods_spec_name_str").toString();
                     Integer cartType = Integer.parseInt(null == map.get("status") ? null : map.get("status").toString());
                     UserCartOrderDetail userCartOrderDetail = new UserCartOrderDetail();
@@ -112,6 +124,21 @@ public class QueryOrderCarts implements IResultOut {
         } catch (Exception e) {
             LOG.error("-----error-----", e);
         }
-        return ResponeUtil.packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+        return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+    }
+
+    @Override
+    public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
+        JSONObject data = receiveJsonBean.getData();
+        try {
+            Integer userId = data.getInteger("user_id");
+            if (null == userId) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            LOG.error("----check-error---", e);
+        }
+        return false;
     }
 }

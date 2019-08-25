@@ -1,4 +1,4 @@
-package com.yufan.task.service.main;
+package com.yufan.task.service.impl.main;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
@@ -38,5 +38,18 @@ public class QueryMain implements IResultOut {
             LOG.error("---------error", e);
         }
         return ResponeUtil.packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+    }
+
+    @Override
+    public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
+        JSONObject data = receiveJsonBean.getData();
+        try {
+
+
+            return true;
+        } catch (Exception e) {
+            LOG.error("----check-error---", e);
+        }
+        return false;
     }
 }
