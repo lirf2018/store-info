@@ -2,12 +2,11 @@ package com.yufan.task.service.impl.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResponeUtil;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
-import com.yufan.dao.order.IOrderDao;
-import com.yufan.dao.user.IUserDao;
-import com.yufan.dao.user.IUserJpaDao;
+import com.yufan.task.dao.order.IOrderDao;
+import com.yufan.task.dao.user.IUserDao;
+import com.yufan.task.dao.user.IUserJpaDao;
 import com.yufan.pojo.TbUserInfo;
 import com.yufan.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
@@ -46,9 +45,6 @@ public class QueryUserCenter implements IResultOut {
         try {
 
             Integer userId = data.getInteger("user_id");
-            if (!checkParam(receiveJsonBean)) {
-                return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
-            }
             //查询用户信息
             TbUserInfo userInfo = iUserJpaDao.getOne(userId);
             if (null == userInfo) {

@@ -5,12 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
-import com.yufan.dao.category.ICategoryDao;
-import com.yufan.dao.goods.IGoodsDao;
-import com.yufan.dao.goods.IGoodsJpaDao;
-import com.yufan.dao.img.IImgDao;
-import com.yufan.dao.param.IParamDao;
-import com.yufan.dao.shop.IShopJapDao;
+import com.yufan.task.dao.category.ICategoryDao;
+import com.yufan.task.dao.goods.IGoodsDao;
+import com.yufan.task.dao.goods.IGoodsJpaDao;
+import com.yufan.task.dao.img.IImgDao;
+import com.yufan.task.dao.param.IParamDao;
+import com.yufan.task.dao.shop.IShopJapDao;
 import com.yufan.pojo.TbGoods;
 import com.yufan.pojo.TbShop;
 import com.yufan.utils.Constants;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,11 +152,11 @@ public class QueryGoodsDetail implements IResultOut {
                                 String timeStime = map.get("begin_time").toString();
                                 String timeEtime = map.get("end_time").toString();
                                 if (DatetimeUtil.compareDate(nowTime, timeStime, format) > -1 && DatetimeUtil.compareDate(nowTime, timeEtime) < 1) {
-                                    isTimeGoodsShell = 1;
+                                    isTimeGoodsShell = 2;
+                                    timeGoodsId = Integer.parseInt(map.get("id").toString());
+                                    timePrice = new BigDecimal(map.get("time_price").toString());//抢购价格
+                                    timeGoodsStore = Integer.parseInt(map.get("goods_store").toString());//抢购库存
                                 }
-                                timeGoodsId = Integer.parseInt(map.get("id").toString());
-                                timePrice = new BigDecimal(map.get("time_price").toString());//抢购价格
-                                timeGoodsStore = Integer.parseInt(map.get("goods_store").toString());//抢购库存
                             }
                         } else {
                             LOG.info("-------参数中是否设置了抢购开始结束时间---不在当前时间内-------");

@@ -100,7 +100,12 @@ public class InfoController {
                         //检验签名
                         if (VerifySign.checkSign(jsonHeaderBean, appsecret)) {
                             IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
-                            result = resultOut.getResult(jsonHeaderBean);
+                            boolean flag = resultOut.checkParam(jsonHeaderBean);
+                            if(!flag){
+                                result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
+                            }else{
+                                result = resultOut.getResult(jsonHeaderBean);
+                            }
                         } else {
                             result = packagMsg(ResultCode.ERROR_SIGN.getResp_code(), null);
                         }
@@ -145,7 +150,13 @@ public class InfoController {
                 jsonHeaderBean.setRequest(request);
                 jsonHeaderBean.setResponse(response);
                 IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
-                result = resultOut.getResult(jsonHeaderBean);
+                //校验参数
+                boolean flag = resultOut.checkParam(jsonHeaderBean);
+                if(!flag){
+                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
+                }else{
+                    result = resultOut.getResult(jsonHeaderBean);
+                }
             } else {
                 result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
             }

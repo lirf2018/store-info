@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
-import com.yufan.dao.addr.IAddrDao;
+import com.yufan.task.dao.addr.IAddrDao;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +35,6 @@ public class QueryUserAddr implements IResultOut {
         try {
             Integer userId = data.getInteger("user_id");
             Integer addrType = data.getInteger("addr_type");
-            if (!checkParam(receiveJsonBean)) {
-                return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
-            }
             List<Map<String, Object>> list = iAddrDao.queryUserAddrListMap(userId, addrType);
             dataJson.put("user_addr_list", list);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);

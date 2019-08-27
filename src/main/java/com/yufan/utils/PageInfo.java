@@ -10,7 +10,7 @@ public class PageInfo<T> {
     private int recordSum;            //总记录数,取第二页时不用再统计
     private int currePage;            //当前页 1开始
 
-    private int pageSize = 10;        //每页显示数据
+    private int pageSize = 15;        //每页显示数据
     private int pageSum;            //总页数
 
     private int currePageRecord;    //当前页记录数量
