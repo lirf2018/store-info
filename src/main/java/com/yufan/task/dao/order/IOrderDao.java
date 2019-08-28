@@ -67,4 +67,14 @@ public interface IOrderDao {
      */
     public List<Map<String, Object>> queryUserOrderDetailProp(int orderId);
 
+
+    /**
+     * 更新订单状态
+     *
+     * @param orderId
+     * @param userId
+     * @param orderStatus
+     */
+    public void updateOrderStatus(int orderId, int userId, int orderStatus);
+
 }

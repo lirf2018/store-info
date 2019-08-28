@@ -1,8 +1,10 @@
 package com.yufan.task.dao.goods;
 
 import com.yufan.bean.GoodsCondition;
+import com.yufan.pojo.TbOrderCart;
 import com.yufan.utils.PageInfo;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +33,16 @@ public interface IGoodsDao {
     public List<Map<String, Object>> queryTimeGoodsListMap(Integer goodsId);
 
     /**
-     *  查询商品列表
+     * 查询商品列表
+     *
      * @param
      * @return
      */
     public PageInfo loadGoodsList(GoodsCondition condition);
 
     /**
-     *  查询商品列表
+     * 查询商品列表
+     *
      * @param
      * @return
      */
@@ -47,17 +51,41 @@ public interface IGoodsDao {
 
     /**
      * type 查询类别 最新new, 最热 hot, 推荐 weight
+     *
      * @param size
      * @param type
      * @return
      */
-    public  List<Map<String, Object>> mainGoodsListMap(int size,String type);
+    public List<Map<String, Object>> mainGoodsListMap(int size, String type);
 
     /**
      * 抢购商品
+     *
      * @param size
      * @return
      */
-    public  List<Map<String, Object>> mainTimeGoodsListMap(int size);
+    public List<Map<String, Object>> mainTimeGoodsListMap(int size);
+
+
+    /**
+     * 查询用户购物车
+     *
+     * @param userId
+     * @return
+     */
+    public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId);
+
+
+    /**
+     * 保存购物车
+     *
+     * @param orderCart
+     */
+    public void saveOrderCart(TbOrderCart orderCart);
+
+    /**
+     * 更新购物车
+     */
+    public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr, BigDecimal goodsPrice, BigDecimal trueMoney);
 
 }

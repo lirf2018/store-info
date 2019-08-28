@@ -2,6 +2,7 @@ package com.yufan.task.dao.goods.impl;
 
 import com.yufan.bean.GoodsCondition;
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbOrderCart;
 import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +86,7 @@ public class GoodsDaoImpl implements IGoodsDao {
     public PageInfo loadTimeGoodsList(GoodsCondition goodsCondition) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT tg.id,tg.goods_id,tg.time_price,tg.goods_store ");
-        sql.append(" ,g.title,g.goods_name,g.now_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
+        sql.append(" ,g.title,g.goods_name,g.true_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
         sql.append(" from tb_time_goods tg ");
         sql.append(" JOIN tb_goods g on g.goods_id=tg.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
@@ -130,7 +132,7 @@ public class GoodsDaoImpl implements IGoodsDao {
     public List<Map<String, Object>> mainTimeGoodsListMap(int size) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT tg.id,tg.goods_id,tg.time_price,tg.goods_store ");
-        sql.append(" ,g.title,g.goods_name,g.now_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
+        sql.append(" ,g.title,g.goods_name,g.true_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
         sql.append(" from tb_time_goods tg ");
         sql.append(" JOIN tb_goods g on g.goods_id=tg.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
@@ -139,5 +141,25 @@ public class GoodsDaoImpl implements IGoodsDao {
         sql.append(" ORDER BY tg.weight,tg.id desc DESC ");
         sql.append(" LIMIT 0,").append(size).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.goods_spec_name_str from tb_order_cart c JOIN tb_goods g on g.goods_id=c.goods_id and c.createtime>=g.lastaltertime ");
+        sql.append(" where c.`status`=1 AND c.user_id=").append(userId).append(" ");
+        sql.append(" and c.goods_id=").append(goodsId).append(" ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public void saveOrderCart(TbOrderCart orderCart) {
+        iGeneralDao.save(orderCart);
+    }
+
+    @Override
+    public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr, BigDecimal goodsPrice, BigDecimal trueMoney) {
+        String sql = " update tb_order_cart set goods_spec=?,goods_spec_name=?,goods_count=?,goods_price=?,goods_spec_name_str=?,true_money=? where cart_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, goodsSpec, goodsSpecName, goodsCount, goodsPrice, goodsSpecNameStr, trueMoney, cartId);
     }
 }

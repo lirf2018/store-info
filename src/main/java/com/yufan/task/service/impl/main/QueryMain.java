@@ -189,7 +189,7 @@ public class QueryMain implements IResultOut {
                             int goodsId = Integer.parseInt(map.get("goods_id").toString());
                             String title = map.get("title").toString();
                             String goodsName = map.get("goods_name").toString();
-                            BigDecimal trueMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);//商品销售价格
+                            BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);//商品原价格
                             BigDecimal nowMoney = new BigDecimal(map.get("time_price").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);//商品抢购价格
                             String goodsImg = map.get("goods_img").toString();
                             int sellCount = Integer.parseInt(map.get("sell_count").toString());

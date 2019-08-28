@@ -32,4 +32,16 @@ public class AddrDaoImpl implements IAddrDao {
         sql.append(" ORDER BY is_default desc,createtime desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
+
+    @Override
+    public List<Map<String, Object>> queryPlatformListMap(Integer addrType) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT pa.id,pa.detail_addr,pa.freight,pa.sort_char,pa.addr_type,pa.addr_name,pa.addr_lng,pa.addr_lat from tb_platform_addr pa  ");
+        sql.append(" where pa.status=1  ");
+        if (null != addrType) {
+            sql.append(" and pa.addr_type=").append(addrType).append(" ");
+        }
+        sql.append(" ORDER BY pa.sort_char,pa.addr_sort DESC  ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
 }

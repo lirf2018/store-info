@@ -107,4 +107,10 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" SELECT order_id,detail_id,property_key,property_value,remark from tb_order_detail_property where order_id=").append(orderId).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
+
+    @Override
+    public void updateOrderStatus(int orderId, int userId, int orderStatus) {
+        String sql = " update tb_order set order_status=? where order_id=? and user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, orderStatus, orderId, userId);
+    }
 }

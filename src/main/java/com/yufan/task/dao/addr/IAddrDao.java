@@ -19,4 +19,12 @@ public interface IAddrDao {
      */
     public List<Map<String, Object>> queryUserAddrListMap(int userId,Integer addrType);
 
+
+    /**
+     * 查询平台地址
+     * @param addrType
+     * @return
+     */
+    public List<Map<String,Object>> queryPlatformListMap(Integer addrType);
+
 }
