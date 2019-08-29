@@ -24,8 +24,8 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 创建时间:  2019/8/26 17:08
  * 功能介绍:  查询类目
  */
-@Service("query_category_list")
-public class QueryCategoryList implements IResultOut {
+@Service("query_category_prop_list")
+public class QueryCategoryPropList implements IResultOut {
 
     private Logger LOG = Logger.getLogger(Test.class);
 
@@ -73,7 +73,7 @@ public class QueryCategoryList implements IResultOut {
                 }
             }
 
-            //查询全部类目属性和属性值
+            //查询全部类目、属性和属性值
             List<Map<String, Object>> listAll = iCategoryDao.loadCategoryAllRelListMap(null, 1, 1, 1);
             List<Map<String, Object>> listCategory = new ArrayList<>();
             List<Map<String, Object>> listProp = new ArrayList<>();

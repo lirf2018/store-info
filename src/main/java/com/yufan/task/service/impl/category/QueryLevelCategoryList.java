@@ -24,8 +24,8 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 创建时间:  2019/8/26 17:07
  * 功能介绍: 查询一级分类
  */
-@Service("query_level_list")
-public class QueryLevelList implements IResultOut {
+@Service("query_level_category_list")
+public class QueryLevelCategoryList implements IResultOut {
 
     private Logger LOG = Logger.getLogger(Test.class);
 
@@ -147,6 +147,7 @@ public class QueryLevelList implements IResultOut {
                 }
 
             }
+
             dataJson.put("level_list", listLevelOut);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

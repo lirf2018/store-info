@@ -75,7 +75,7 @@ public class QueryGoodsList implements IResultOut {
     public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
         JSONObject data = receiveJsonBean.getData();
         try {
-            GoodsCondition goodsCondition = JSONObject.toJavaObject(receiveJsonBean.getData(), GoodsCondition.class);
+            GoodsCondition goodsCondition = JSONObject.toJavaObject(data, GoodsCondition.class);
             if(null==goodsCondition.getCurrePage()){
                 return false;
             }

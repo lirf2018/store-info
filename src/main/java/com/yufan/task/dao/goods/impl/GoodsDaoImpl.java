@@ -57,6 +57,9 @@ public class GoodsDaoImpl implements IGoodsDao {
         sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
         sql.append(" from tb_goods g ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
+        if (null != goodsCondition.getPropId()) {
+            sql.append(" JOIN tb_goods_attribute ga on ga.goods_id=g.goods_id and ga.prop_id=").append(goodsCondition.getPropId()).append(" ");
+        }
         sql.append(" where NOW()>=g.start_time and NOW()<=g.end_time and g.`status`=1 and g.is_putaway=2 and s.`status`=1 ");
         if (null != goodsCondition.getGoodsName() && StringUtils.isNotEmpty(goodsCondition.getGoodsName().trim())) {
             sql.append(" and g.goods_name like '").append(goodsCondition.getGoodsName().trim()).append("' ");
