@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
+import com.yufan.task.dao.secondgoods.ISecondGoodsDao;
 import com.yufan.task.dao.secondgoods.ISecondGoodsJapDao;
 import com.yufan.pojo.TbSecondGoods;
 import com.yufan.utils.Constants;
@@ -21,13 +22,16 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 创建时间:  2019/8/31 20:28
  * 功能介绍: 查询闲菜详情
  */
-@Service("query_second_info")
+@Service("query_xc_detail")
 public class QuerySecondGoodsDetail implements IResultOut {
 
     private Logger LOG = Logger.getLogger(QuerySecondGoodsDetail.class);
 
     @Autowired
     private ISecondGoodsJapDao iSecondGoodsJapDao;
+
+    @Autowired
+    private ISecondGoodsDao iSecondGoodsDao;
 
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
@@ -39,6 +43,9 @@ public class QuerySecondGoodsDetail implements IResultOut {
             if (null == secondGoods || secondGoods.getStatus() != 1) {
                 return packagMsg(ResultCode.GOODS_NOT_EXIST.getResp_code(), dataJson);
             }
+            //更新访问数
+            iSecondGoodsDao.UpdateSecondGoodsReadCount(goodsId);
+
             dataJson.put("goods_id", secondGoods.getId());
             dataJson.put("goods_name", secondGoods.getGoodsName());
             dataJson.put("goods_img", Constants.IMG_URL + secondGoods.getGoodsImg());

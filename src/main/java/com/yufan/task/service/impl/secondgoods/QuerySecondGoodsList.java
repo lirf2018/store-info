@@ -10,6 +10,7 @@ import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 创建时间:  2019/8/31 20:23
  * 功能介绍: 查询闲菜列表
  */
+@Service("query_xc_list")
 public class QuerySecondGoodsList implements IResultOut {
 
     private Logger LOG = Logger.getLogger(QuerySecondGoodsList.class);
