@@ -31,7 +31,7 @@ public class SecondGoodsDaoImpl implements ISecondGoodsDao {
     @Override
     public PageInfo loadGoodsList(GoodsCondition condition) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT id,goods_name,goods_img,now_price,read_num from tb_second_goods where 1=1 ");
+        sql.append(" SELECT id,goods_name,goods_img,now_price,read_num from tb_second_goods where status=1 ");
         if (StringUtils.isNotEmpty(condition.getGoodsName())) {
             sql.append(" and goods_name like '%").append(condition.getGoodsName().trim()).append("%' ");
         }
