@@ -61,7 +61,7 @@ public class Constants {
     /**
      * 图片访问路径
      */
-    public static String IMG_URL = "http://192.168.3.39:8888/";
+    public static String IMG_WEB_URL = "";
 
 
     /**

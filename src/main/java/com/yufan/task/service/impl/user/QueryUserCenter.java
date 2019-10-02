@@ -137,7 +137,7 @@ public class QueryUserCenter implements IResultOut {
 
             dataJson.put("user_jifen", jifen);
             dataJson.put("user_money", 0.00);//需要增加一张扣除详细表
-            dataJson.put("user_img", StringUtils.isEmpty(userInfo.getUserImg()) ? "" : Constants.IMG_URL + userInfo.getUserImg());
+            dataJson.put("user_img", StringUtils.isEmpty(userInfo.getUserImg()) ? "" : Constants.IMG_WEB_URL + userInfo.getUserImg());
             dataJson.put("member_id", userInfo.getMemberId());//会员卡号
             dataJson.put("nick_name", userInfo.getNickName());
             dataJson.put("goods_count", cartGoodsCount);//购物车数量

@@ -117,14 +117,22 @@ public class QueryGoodsDetail implements IResultOut {
             if (goods.getIsSingle() == 0) {
                 //查询商品sku
                 List<Map<String, Object>> skuListData = iGoodsDao.queryGoodsSkuListMap(goodsId);
+                BigDecimal skuLowMoney = new BigDecimal(0);
                 for (int i = 0; i < skuListData.size(); i++) {
                     Map<String, Object> map = skuListData.get(i);
                     Integer skuId = Integer.parseInt(map.get("sku_id").toString());
                     Integer skuNum = Integer.parseInt(map.get("sku_num").toString());
-                    String skuImg = map.get("sku_img") == null ? "" : Constants.IMG_URL + map.get("sku_img");
+                    goodsNum = goodsNum + skuNum;
+                    String skuImg = map.get("sku_img") == null ? "" : Constants.IMG_WEB_URL + map.get("sku_img");
                     BigDecimal skuTrueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     BigDecimal skuNowMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
-
+                    if (i == 0) {
+                        skuLowMoney = skuNowMoney;
+                    } else {
+                        if (skuLowMoney.compareTo(skuNowMoney) > 0) {
+                            skuLowMoney = skuNowMoney;
+                        }
+                    }
                     map.put("sku_id", skuId);
                     map.put("sku_num", skuNum);
                     map.put("sku_img", skuImg);
@@ -132,6 +140,7 @@ public class QueryGoodsDetail implements IResultOut {
                     map.put("sku_now_money", skuNowMoney);
                     skuList.add(map);
                 }
+                dataJson.put("sku_low_money", skuLowMoney + " 起");
             }
             if (couponId > 0) {
                 //卡券
@@ -177,11 +186,11 @@ public class QueryGoodsDetail implements IResultOut {
                 int imgType = Integer.parseInt(imgListMap.get(i).get("img_type").toString());
                 String imgUrl = imgListMap.get(i).get("img_url").toString();
                 JSONObject img = new JSONObject();
-                img.put("img_url", StringUtils.isEmpty(imgUrl) ? "" : Constants.IMG_URL + imgUrl);
+                img.put("img_url", StringUtils.isEmpty(imgUrl) ? "" : Constants.IMG_WEB_URL + imgUrl);
                 if (imgType == 1) {
                     bannerImgList.add(img);
                 } else if (imgType == 2) {
-                    goodsInfoImgList.add(imgType);
+                    goodsInfoImgList.add(img);
                 }
             }
             //商品综合状态,
@@ -256,7 +265,7 @@ public class QueryGoodsDetail implements IResultOut {
 
             dataJson.put("goods_name", goodsName);
             dataJson.put("title", title);
-            dataJson.put("goods_img", goodsImg == null ? "" : Constants.IMG_URL + goodsImg);
+            dataJson.put("goods_img", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
             dataJson.put("true_money", trueMoney);
             dataJson.put("now_money", nowMoney);
             dataJson.put("intro", intro);

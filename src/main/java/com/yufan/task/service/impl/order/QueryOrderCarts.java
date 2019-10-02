@@ -59,7 +59,7 @@ public class QueryOrderCarts implements IResultOut {
                 Map<String, Object> map = mapList.get(i);
                 int shopId = Integer.parseInt(map.get("shop_id").toString());
                 String shopName = map.get("shop_name").toString();
-                String shopLogo = null == map.get("shop_logo") ? "" : Constants.IMG_URL + map.get("shop_logo").toString();
+                String shopLogo = null == map.get("shop_logo") ? "" : Constants.IMG_WEB_URL + map.get("shop_logo").toString();
                 if (markMap.get(shopId) != null) {
                     continue;
                 }

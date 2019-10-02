@@ -43,7 +43,7 @@ public class CategoryDaoImpl implements ICategoryDao {
 
     public List<Map<String, Object>> loadLevelCategoryData(Integer levelId, Integer status) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT ca.category_id,ca.category_code,ca.category_name,ca.data_index,CONCAT('").append(Constants.IMG_URL).append("',ca.category_img) as category_img,ca.`status` ");
+        sql.append(" SELECT ca.category_id,ca.category_code,ca.category_name,ca.data_index,CONCAT('").append(Constants.IMG_WEB_URL).append("',ca.category_img) as category_img,ca.`status` ");
         sql.append(" from tb_category ca ");
         if (null != levelId && levelId > 0) {
             sql.append(" left JOIN tb_level_category_rel rel on rel.category_id=ca.category_id  ");
@@ -63,7 +63,7 @@ public class CategoryDaoImpl implements ICategoryDao {
     @Override
     public List<Map<String, Object>> loadCategoryListMap(Integer status) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT category_id,category_name,category_code,concat('" + Constants.IMG_URL + "',category_img) as category_img from tb_category where 1=1 ");
+        sql.append(" SELECT category_id,category_name,category_code,concat('" + Constants.IMG_WEB_URL + "',category_img) as category_img from tb_category where 1=1 ");
         if (null != status) {
             sql.append(" and `status` =1 ");
         }
@@ -74,7 +74,7 @@ public class CategoryDaoImpl implements ICategoryDao {
     @Override
     public List<Map<String, Object>> loadLevelListMap(Integer status) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT level_id,level_code,level_name,concat('" + Constants.IMG_URL + "',level_img) as level_img from tb_category_level where 1=1 ");
+        sql.append(" SELECT level_id,level_code,level_name,concat('" + Constants.IMG_WEB_URL + "',level_img) as level_img from tb_category_level where 1=1 ");
         if (null != status) {
             sql.append(" and `status` =1 ");
         }
@@ -93,11 +93,11 @@ public class CategoryDaoImpl implements ICategoryDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT ");
         //类目
-        sql.append(" ca.category_id as ca_category_id,ca.category_name as ca_category_name,ca.is_parent as ca_is_parent,ca.data_index as ca_data_index,ca.oute_id as ca_oute_id,CONCAT('").append(Constants.IMG_URL).append("',ca.category_img) as ca_category_web_img,ca.category_img as ca_category_img,ca.category_code as ca_category_code,ca.is_show as ca_is_show,ca.status as ca_status,ca.remark as ca_remark ");
+        sql.append(" ca.category_id as ca_category_id,ca.category_name as ca_category_name,ca.is_parent as ca_is_parent,ca.data_index as ca_data_index,ca.oute_id as ca_oute_id,CONCAT('").append(Constants.IMG_WEB_URL).append("',ca.category_img) as ca_category_web_img,ca.category_img as ca_category_img,ca.category_code as ca_category_code,ca.is_show as ca_is_show,ca.status as ca_status,ca.remark as ca_remark ");
         //属性
-        sql.append(" ,it.prop_id as it_prop_id,it.prop_name as it_prop_name,it.category_id as it_category_id,it.oute_id as it_oute_id,it.is_sales as it_is_sales,it.show_view as it_show_view,CONCAT('").append(Constants.IMG_URL).append("',it.prop_img) as it_prop_web_img,it.prop_img as it_prop_img,it.prop_code as it_prop_code,it.is_show as it_is_show,it.data_index as it_data_index,it.status as it_status,it.remark as it_remark ");
+        sql.append(" ,it.prop_id as it_prop_id,it.prop_name as it_prop_name,it.category_id as it_category_id,it.oute_id as it_oute_id,it.is_sales as it_is_sales,it.show_view as it_show_view,CONCAT('").append(Constants.IMG_WEB_URL).append("',it.prop_img) as it_prop_web_img,it.prop_img as it_prop_img,it.prop_code as it_prop_code,it.is_show as it_is_show,it.data_index as it_data_index,it.status as it_status,it.remark as it_remark ");
         //属性值
-        sql.append(" ,pv.value_id as pv_value_id,pv.prop_id as pv_prop_id,pv.value_name as pv_value_name,pv.category_id as pv_category_id,pv.oute_id as pv_oute_id,pv.value as pv_value,pv.data_index as pv_data_index,pv.status as pv_status,CONCAT('").append(Constants.IMG_URL).append("',pv.value_img) as pv_value_web_img,pv.value_img as  pv_value_img ");
+        sql.append(" ,pv.value_id as pv_value_id,pv.prop_id as pv_prop_id,pv.value_name as pv_value_name,pv.category_id as pv_category_id,pv.oute_id as pv_oute_id,pv.value as pv_value,pv.data_index as pv_data_index,pv.status as pv_status,CONCAT('").append(Constants.IMG_WEB_URL).append("',pv.value_img) as pv_value_web_img,pv.value_img as  pv_value_img ");
         sql.append(" from tb_category ca ");
         sql.append(" LEFT JOIN tb_itemprops it on it.category_id=ca.category_id ");
         if (null != itStatus) {
@@ -124,9 +124,9 @@ public class CategoryDaoImpl implements ICategoryDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT ");
         //类目
-        sql.append(" ca.category_id as ca_category_id,ca.category_name as ca_category_name,ca.is_parent as ca_is_parent,ca.data_index as ca_data_index,ca.oute_id as ca_oute_id,CONCAT('").append(Constants.IMG_URL).append("',ca.category_img) as ca_category_web_img,ca.category_img as ca_category_img,ca.category_code as ca_category_code,ca.is_show as ca_is_show,ca.status as ca_status,ca.remark as ca_remark ");
+        sql.append(" ca.category_id as ca_category_id,ca.category_name as ca_category_name,ca.is_parent as ca_is_parent,ca.data_index as ca_data_index,ca.oute_id as ca_oute_id,CONCAT('").append(Constants.IMG_WEB_URL).append("',ca.category_img) as ca_category_web_img,ca.category_img as ca_category_img,ca.category_code as ca_category_code,ca.is_show as ca_is_show,ca.status as ca_status,ca.remark as ca_remark ");
         //属性
-        sql.append(" ,it.prop_id as it_prop_id,it.prop_name as it_prop_name,it.category_id as it_category_id,it.oute_id as it_oute_id,it.is_sales as it_is_sales,it.show_view as it_show_view,CONCAT('").append(Constants.IMG_URL).append("',it.prop_img) as it_prop_web_img,it.prop_img as it_prop_img,it.prop_code as it_prop_code,it.is_show as it_is_show,it.data_index as it_data_index,it.status as it_status,it.remark as it_remark ");
+        sql.append(" ,it.prop_id as it_prop_id,it.prop_name as it_prop_name,it.category_id as it_category_id,it.oute_id as it_oute_id,it.is_sales as it_is_sales,it.show_view as it_show_view,CONCAT('").append(Constants.IMG_WEB_URL).append("',it.prop_img) as it_prop_web_img,it.prop_img as it_prop_img,it.prop_code as it_prop_code,it.is_show as it_is_show,it.data_index as it_data_index,it.status as it_status,it.remark as it_remark ");
         sql.append(" from tb_category ca ");
         sql.append(" LEFT JOIN tb_itemprops it on it.category_id=ca.category_id ");
         if (null != itStatus) {
@@ -149,9 +149,9 @@ public class CategoryDaoImpl implements ICategoryDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT ");
         //属性
-        sql.append(" it.prop_id as it_prop_id,it.prop_name as it_prop_name,it.category_id as it_category_id,it.oute_id as it_oute_id,it.is_sales as it_is_sales,it.show_view as it_show_view,CONCAT('").append(Constants.IMG_URL).append("',it.prop_img) as it_prop_web_img,it.prop_img as it_prop_img,it.prop_code as it_prop_code,it.is_show as it_is_show,it.data_index as it_data_index,it.status as it_status,it.remark as it_remark ");
+        sql.append(" it.prop_id as it_prop_id,it.prop_name as it_prop_name,it.category_id as it_category_id,it.oute_id as it_oute_id,it.is_sales as it_is_sales,it.show_view as it_show_view,CONCAT('").append(Constants.IMG_WEB_URL).append("',it.prop_img) as it_prop_web_img,it.prop_img as it_prop_img,it.prop_code as it_prop_code,it.is_show as it_is_show,it.data_index as it_data_index,it.status as it_status,it.remark as it_remark ");
         //属性值
-        sql.append(" ,pv.value_id as pv_value_id,pv.prop_id as pv_prop_id,pv.value_name as pv_value_name,pv.category_id as pv_category_id,pv.oute_id as pv_oute_id,pv.value as pv_value,pv.data_index as pv_data_index,pv.status as pv_status,CONCAT('").append(Constants.IMG_URL).append("',pv.value_img) as pv_value_web_img,pv.value_img as pv_value_img ");
+        sql.append(" ,pv.value_id as pv_value_id,pv.prop_id as pv_prop_id,pv.value_name as pv_value_name,pv.category_id as pv_category_id,pv.oute_id as pv_oute_id,pv.value as pv_value,pv.data_index as pv_data_index,pv.status as pv_status,CONCAT('").append(Constants.IMG_WEB_URL).append("',pv.value_img) as pv_value_web_img,pv.value_img as pv_value_img ");
         sql.append(" from tb_itemprops it  ");
         sql.append(" LEFT JOIN tb_props_value pv on pv.prop_id=it.prop_id  ");
         if (pvStatus != null) {
@@ -178,7 +178,7 @@ public class CategoryDaoImpl implements ICategoryDao {
     @Override
     public List<Map<String, Object>> loadItemPropListMap(Integer categoryId, Integer propId, Integer status) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT prop_id,prop_name,category_id,oute_id,is_sales,show_view,CONCAT('").append(Constants.IMG_URL).append("',prop_img) as prop_img,prop_code,is_show,data_index,`status`,remark,category_type from tb_itemprops ");
+        sql.append(" SELECT prop_id,prop_name,category_id,oute_id,is_sales,show_view,CONCAT('").append(Constants.IMG_WEB_URL).append("',prop_img) as prop_img,prop_code,is_show,data_index,`status`,remark,category_type from tb_itemprops ");
         sql.append(" where 1=1 ");
         if (null != categoryId && categoryId > 0) {
             sql.append(" and category_id=").append(categoryId).append(" ");

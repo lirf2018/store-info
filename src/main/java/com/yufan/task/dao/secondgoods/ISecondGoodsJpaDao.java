@@ -12,5 +12,5 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Repository
-public interface ISecondGoodsJapDao extends JpaRepository<TbSecondGoods, Integer> {
+public interface ISecondGoodsJpaDao extends JpaRepository<TbSecondGoods, Integer> {
 }

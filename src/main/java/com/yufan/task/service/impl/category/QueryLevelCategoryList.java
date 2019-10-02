@@ -120,7 +120,7 @@ public class QueryLevelCategoryList implements IResultOut {
                         String categoryId = listCategory.get(j).get("category_id").toString();
                         String categoryCode = listCategory.get(j).get("category_code").toString();
                         String categoryName = listCategory.get(j).get("category_name").toString();
-                        String categoryImg = listLevel.get(i).get("category_img").toString();
+                        String categoryImg = listCategory.get(j).get("category_img").toString();
                         String word = levelId + "-" + categoryId;
                         //判断一级分类类目是否有关联
                         if (relMap.get(word) == null) {

@@ -46,6 +46,7 @@ public class QueryGoodsList implements IResultOut {
             List<Map<String, Object>> listData = page.getResultListMap();
             for (int i = 0; i < listData.size(); i++) {
                 Map<String, Object> map = new HashMap<>();
+                int isSingle = Integer.parseInt(listData.get(i).get("is_single").toString());
                 map.put("goods_id", Integer.parseInt(listData.get(i).get("goods_id").toString()));
                 map.put("title", listData.get(i).get("title"));
                 map.put("goods_name", listData.get(i).get("goods_name"));
@@ -53,7 +54,22 @@ public class QueryGoodsList implements IResultOut {
                 map.put("now_money", new BigDecimal(listData.get(i).get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP));
                 map.put("goods_img", listData.get(i).get("goods_img"));
                 map.put("sell_count", Integer.parseInt(listData.get(i).get("sell_count").toString()));
-                map.put("is_single", Integer.parseInt(listData.get(i).get("is_single").toString()));//如果为非单品 页面价格应该显示为多少起
+                map.put("is_single", isSingle);//如果为非单品 页面价格应该显示sku区间价格
+                map.put("sku_now_money", 0);
+                if (isSingle == 0) {
+                    String sku_now_money = listData.get(i).get("sku_now_money").toString();
+                    BigDecimal lowPrice = new BigDecimal("0.00");
+                    BigDecimal highPrice = new BigDecimal("0.00");
+                    String[] strPrice = sku_now_money.split(",");
+                    lowPrice = new BigDecimal(strPrice[0]);
+                    if (strPrice.length > 1) {
+                        highPrice = new BigDecimal(strPrice[strPrice.length - 1]);
+                        map.put("sku_now_money", lowPrice + "-" + highPrice);
+                    } else {
+                        map.put("sku_now_money", lowPrice + "起");
+                    }
+
+                }
                 outList.add(map);
             }
 
@@ -73,7 +89,7 @@ public class QueryGoodsList implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             GoodsCondition goodsCondition = JSONObject.toJavaObject(data, GoodsCondition.class);
-            if(null==goodsCondition.getCurrePage()){
+            if (null == goodsCondition.getCurrePage()) {
                 return false;
             }
             return true;

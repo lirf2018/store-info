@@ -54,8 +54,10 @@ public class GoodsDaoImpl implements IGoodsDao {
     @Override
     public PageInfo loadGoodsList(GoodsCondition goodsCondition) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
+        sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
+        sql.append(" ,IFNULL(sku.sku_now_money,0)  as sku_now_money ");
         sql.append(" from tb_goods g ");
+        sql.append(" LEFT JOIN (SELECT goods_id,group_concat(now_money ORDER BY now_money ) as sku_now_money from tb_goods_sku where `status`=1  GROUP BY goods_id) sku on sku.goods_id=g.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
         if (null != goodsCondition.getPropId()) {
             sql.append(" JOIN tb_goods_attribute ga on ga.goods_id=g.goods_id and ga.prop_id=").append(goodsCondition.getPropId()).append(" ");
@@ -89,7 +91,7 @@ public class GoodsDaoImpl implements IGoodsDao {
     public PageInfo loadTimeGoodsList(GoodsCondition goodsCondition) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT tg.id,tg.goods_id,tg.time_price,tg.goods_store ");
-        sql.append(" ,g.title,g.goods_name,g.true_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
+        sql.append(" ,g.title,g.goods_name,g.true_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
         sql.append(" from tb_time_goods tg ");
         sql.append(" JOIN tb_goods g on g.goods_id=tg.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
@@ -116,7 +118,7 @@ public class GoodsDaoImpl implements IGoodsDao {
     @Override
     public List<Map<String, Object>> mainGoodsListMap(int size, String type) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
+        sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
         sql.append(" from tb_goods g ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
         sql.append(" where NOW()>=g.start_time and NOW()<=g.end_time and g.`status`=1 and g.is_putaway=2 and s.`status`=1 ");
@@ -135,7 +137,7 @@ public class GoodsDaoImpl implements IGoodsDao {
     public List<Map<String, Object>> mainTimeGoodsListMap(int size) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT tg.id,tg.goods_id,tg.time_price,tg.goods_store ");
-        sql.append(" ,g.title,g.goods_name,g.true_money,CONCAT('" + Constants.IMG_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
+        sql.append(" ,g.title,g.goods_name,g.true_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count ");
         sql.append(" from tb_time_goods tg ");
         sql.append(" JOIN tb_goods g on g.goods_id=tg.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");

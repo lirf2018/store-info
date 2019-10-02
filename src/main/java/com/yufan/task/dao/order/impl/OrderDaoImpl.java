@@ -64,7 +64,7 @@ public class OrderDaoImpl implements IOrderDao {
     public PageInfo queryUserOrderList(int currePage, Integer pageSize, int userId, Integer status) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status ");
-        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_URL).append("',s.shop_logo) as shop_logo ");
+        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo ");
         sql.append(" from tb_order o JOIN tb_shop s on o.shop_id=s.shop_id where 1=1 ");
         if (null != status) {
             sql.append(" and o.order_status=").append(status).append(" ");
@@ -82,7 +82,7 @@ public class OrderDaoImpl implements IOrderDao {
 
     public List<Map<String, Object>> queryOrderDetailListmap(String orderIds) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT d.order_id,CONCAT('").append(Constants.IMG_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
+        sql.append(" SELECT d.order_id,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
         sql.append(" from tb_order_detail d where d.order_id in (").append(orderIds).append(") ORDER BY d.detail_id desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
@@ -92,8 +92,8 @@ public class OrderDaoImpl implements IOrderDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status,o.order_no,DATE_FORMAT(o.order_time,'%Y-%m-%d %T') as order_time,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T') as pay_time ");
         sql.append(" ,o.pay_way,o.user_name,o.user_phone,o.user_addr,o.real_price,o.post_price,o.discounts_price,o.post_way,o.advance_pay_way,o.advance_price ");
-        sql.append(" ,CONCAT('").append(Constants.IMG_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
-        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_URL).append("',s.shop_logo) as shop_logo ");
+        sql.append(" ,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
+        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo ");
         sql.append(" from tb_order o JOIN tb_shop s on o.shop_id=s.shop_id ");
         sql.append(" JOIN tb_order_detail d on d.order_id=o.order_id ");
         sql.append(" where o.order_id=? and o.user_id=? ");

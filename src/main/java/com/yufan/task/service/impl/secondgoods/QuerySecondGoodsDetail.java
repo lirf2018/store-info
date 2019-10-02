@@ -5,7 +5,7 @@ import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.secondgoods.ISecondGoodsDao;
-import com.yufan.task.dao.secondgoods.ISecondGoodsJapDao;
+import com.yufan.task.dao.secondgoods.ISecondGoodsJpaDao;
 import com.yufan.pojo.TbSecondGoods;
 import com.yufan.utils.Constants;
 import org.apache.log4j.Logger;
@@ -28,7 +28,7 @@ public class QuerySecondGoodsDetail implements IResultOut {
     private Logger LOG = Logger.getLogger(QuerySecondGoodsDetail.class);
 
     @Autowired
-    private ISecondGoodsJapDao iSecondGoodsJapDao;
+    private ISecondGoodsJpaDao iSecondGoodsJpaDao;
 
     @Autowired
     private ISecondGoodsDao iSecondGoodsDao;
@@ -39,7 +39,7 @@ public class QuerySecondGoodsDetail implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             Integer goodsId = data.getInteger("id");
-            TbSecondGoods secondGoods = iSecondGoodsJapDao.getOne(goodsId);
+            TbSecondGoods secondGoods = iSecondGoodsJpaDao.getOne(goodsId);
             if (null == secondGoods || secondGoods.getStatus() != 1) {
                 return packagMsg(ResultCode.GOODS_NOT_EXIST.getResp_code(), dataJson);
             }
@@ -48,7 +48,7 @@ public class QuerySecondGoodsDetail implements IResultOut {
 
             dataJson.put("goods_id", secondGoods.getId());
             dataJson.put("goods_name", secondGoods.getGoodsName());
-            dataJson.put("goods_img", Constants.IMG_URL + secondGoods.getGoodsImg());
+            dataJson.put("goods_img", Constants.IMG_WEB_URL + secondGoods.getGoodsImg());
             dataJson.put("true_price", secondGoods.getTruePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
             dataJson.put("now_price", secondGoods.getNowPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
             dataJson.put("new_info", secondGoods.getNewInfo());
@@ -56,10 +56,10 @@ public class QuerySecondGoodsDetail implements IResultOut {
             dataJson.put("about_price", secondGoods.getAboutPrice());
             dataJson.put("goods_info", secondGoods.getGoodsInfo());
             dataJson.put("goods_shop_code", secondGoods.getGoodsShopCode());
-            String img1 = StringUtils.isEmpty(secondGoods.getImg1()) ? "" : Constants.IMG_URL + secondGoods.getImg1();
-            String img2 = StringUtils.isEmpty(secondGoods.getImg2()) ? "" : Constants.IMG_URL + secondGoods.getImg2();
-            String img3 = StringUtils.isEmpty(secondGoods.getImg3()) ? "" : Constants.IMG_URL + secondGoods.getImg3();
-            String img4 = StringUtils.isEmpty(secondGoods.getImg4()) ? "" : Constants.IMG_URL + secondGoods.getImg4();
+            String img1 = StringUtils.isEmpty(secondGoods.getImg1()) ? "" : Constants.IMG_WEB_URL + secondGoods.getImg1();
+            String img2 = StringUtils.isEmpty(secondGoods.getImg2()) ? "" : Constants.IMG_WEB_URL + secondGoods.getImg2();
+            String img3 = StringUtils.isEmpty(secondGoods.getImg3()) ? "" : Constants.IMG_WEB_URL + secondGoods.getImg3();
+            String img4 = StringUtils.isEmpty(secondGoods.getImg4()) ? "" : Constants.IMG_WEB_URL + secondGoods.getImg4();
             dataJson.put("img1", img1);
             dataJson.put("img2", img2);
             dataJson.put("img3", img3);
