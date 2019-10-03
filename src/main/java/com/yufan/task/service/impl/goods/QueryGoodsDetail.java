@@ -140,7 +140,7 @@ public class QueryGoodsDetail implements IResultOut {
                     map.put("sku_now_money", skuNowMoney);
                     skuList.add(map);
                 }
-                dataJson.put("sku_low_money", skuLowMoney + " 起");
+                dataJson.put("sku_low_money", "￥"+skuLowMoney + " 起");
             }
             if (couponId > 0) {
                 //卡券

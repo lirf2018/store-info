@@ -36,7 +36,7 @@ public class CategoryDaoImpl implements ICategoryDao {
         sql.append(" JOIN tb_itemprops it on it.category_id=ca.category_id and it.status=1 ");
         sql.append(" JOIN tb_props_value pv on pv.prop_id=it.prop_id and pv.`status`=1 ");
         sql.append(" where ca.category_id=").append(categoryId).append(" and ca.`status`=1 ");
-        sql.append(" ORDER BY it.prop_id DESC,pv.data_index DESC,pv.value_id DESC ");
+        sql.append(" ORDER BY it.data_index DESC,it.prop_id desc,pv.data_index DESC,pv.value_id DESC ");
 
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
