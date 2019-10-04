@@ -22,6 +22,14 @@ public interface IOrderDao {
      */
     public List<Map<String, Object>> queryUserOrderCartListMap(int userId, Integer carType);
 
+    /**
+     * 更新购物车数据
+     *
+     * @param cartId
+     * @param count
+     */
+    public void updateShopCart(int userId, int cartId, int count);
+
 
     /**
      * 查询用户订单支付信息

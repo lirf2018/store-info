@@ -27,7 +27,7 @@ public class OrderDaoImpl implements IOrderDao {
     public List<Map<String, Object>> queryUserOrderCartListMap(int userId, Integer carType) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT cart.cart_id,cart.user_id,cart.goods_id,cart.goods_name,cart.goods_img,cart.goods_spec,cart.goods_spec_name,cart.goods_count,cart.goods_price,cart.true_money,cart.shop_id,cart.status,cart.remark,cart.goods_spec_name_str,cart.cart_type ");
-        sql.append(" ,s.shop_name,s.shop_logo,if(g.lastaltertime>cart.createtime,0,1) as last_status ");
+        sql.append(" ,s.shop_name,s.shop_logo,if(g.lastaltertime>cart.createtime,0,1) as last_status,g.is_single ");
         sql.append(" from tb_order_cart cart JOIN tb_shop s on s.shop_id=cart.shop_id ");
         sql.append(" JOIN tb_goods g on g.goods_id=cart.goods_id ");
         sql.append(" where cart.user_id=").append(userId).append(" ");
@@ -37,6 +37,12 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" ORDER BY cart.createtime desc ");
 
         return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public void updateShopCart(int userId, int cartId, int count) {
+        String sql = " update tb_order_cart set goods_count=? where cart_id=? and user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, count, cartId, userId);
     }
 
     @Override

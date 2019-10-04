@@ -48,11 +48,9 @@ public class QueryOrderCarts implements IResultOut {
             }
 
             List<Map<String, Object>> mapList = iOrderDao.queryUserOrderCartListMap(userId, carType);
-
+            List<UserCartOrderDetail> outTimeGoodsList = new ArrayList<>();//失效商品
 
             List<UserOrderCart> outList = new ArrayList<>();
-
-
             Map<Integer, Integer> markMap = new HashMap<>();
             //mapList 店铺
             for (int i = 0; i < mapList.size(); i++) {
@@ -86,18 +84,19 @@ public class QueryOrderCarts implements IResultOut {
                     int cartId = Integer.parseInt(map.get("cart_id").toString());
                     Integer goodsId = Integer.parseInt(map.get("goods_id").toString());
                     String goodsName = map.get("goods_name").toString();
+                    String goodsImg = Constants.IMG_WEB_URL + map.get("goods_img").toString();
                     String goodsSpec = null == map.get("goods_spec") ? "" : map.get("goods_spec").toString();
                     String goodsSpecName = null == map.get("goods_spec_name") ? "" : map.get("goods_spec_name").toString();
                     Integer goodsCount = Integer.parseInt(map.get("goods_count").toString());
                     BigDecimal goodsPrice = new BigDecimal(map.get("goods_price").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     Integer status = Integer.parseInt(map.get("status").toString());
+                    Integer isSingle = Integer.parseInt(map.get("is_single").toString());
                     if (status == 1) {
                         //如果商品的修改时间>购物车商品的创建时间,则购物车视为无效
                         int lastStatus = Integer.parseInt(map.get("last_status").toString());
                         status = lastStatus;
                     }
-
 
                     String goodsSpecNameStr = null == map.get("goods_spec_name_str") ? "" : map.get("goods_spec_name_str").toString();
                     Integer cartType = Integer.parseInt(null == map.get("status") ? null : map.get("status").toString());
@@ -105,6 +104,7 @@ public class QueryOrderCarts implements IResultOut {
                     userCartOrderDetail.setCartId(cartId);
                     userCartOrderDetail.setUserId(userId);
                     userCartOrderDetail.setGoodsId(goodsId);
+                    userCartOrderDetail.setGoodsImg(goodsImg);
                     userCartOrderDetail.setGoodsName(goodsName);
                     userCartOrderDetail.setGoodsSpec(goodsSpec);
                     userCartOrderDetail.setGoodsSpecName(goodsSpecName);
@@ -114,12 +114,19 @@ public class QueryOrderCarts implements IResultOut {
                     userCartOrderDetail.setStatus(status);
                     userCartOrderDetail.setGoodsSpecNameStr(goodsSpecNameStr);
                     userCartOrderDetail.setCartType(cartType);
-                    cartDetailList.add(userCartOrderDetail);
+                    userCartOrderDetail.setIsSingle(isSingle);
+                    if (status == 1) {
+                        cartDetailList.add(userCartOrderDetail);//
+                    } else {
+                        outTimeGoodsList.add(userCartOrderDetail);
+                    }
                 }
                 shop.setCartDetailList(cartDetailList);
             }
 
-            dataJson.put("list_detail", outList);
+            dataJson.put("cart_list", outList);
+            dataJson.put("out_time_cart_list", outTimeGoodsList);
+            return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-----error-----", e);
         }

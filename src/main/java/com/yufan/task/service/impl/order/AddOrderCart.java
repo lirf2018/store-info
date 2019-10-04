@@ -58,6 +58,15 @@ public class AddOrderCart implements IResultOut {
             Integer goodsCount = data.getInteger("goods_count") == 0 ? 1 : data.getInteger("goods_count");
             String goodsSpec = data.getString("goods_spec") == null ? "" : data.getString("goods_spec");
 
+            //
+            Integer cartId_ = data.getInteger("cart_id");//购物车标识
+            if (null != cartId_ && cartId_ > 0) {
+                //根据购物车标识更新
+                iOrderDao.updateShopCart(userId, cartId_, goodsCount);
+                return packagMsg(ResultCode.OK.getResp_code(), dataJson);
+            }
+
+
             TbGoods goods = iGoodsJpaDao.getOne(goodsId);
             BigDecimal goodsPrice = new BigDecimal(0);//销售价格
             BigDecimal trueMoney = new BigDecimal(0);//商品原价
@@ -104,16 +113,15 @@ public class AddOrderCart implements IResultOut {
             boolean flag = false;
             //查询用户购物车
             List<Map<String, Object>> cartList = new ArrayList<>();
-            if(StringUtils.isEmpty(goodsSpec)){
+            if (StringUtils.isEmpty(goodsSpec)) {
                 cartList = iGoodsDao.queryUserOrderCart(userId, goodsId);
-            }else{
-                cartList = iGoodsDao.queryUserOrderCart(userId, goodsId,goodsSpec);
+            } else {
+                cartList = iGoodsDao.queryUserOrderCart(userId, goodsId, goodsSpec);
             }
             for (int i = 0; i < cartList.size(); i++) {
                 //c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.true_money
                 int cartId = Integer.parseInt(cartList.get(i).get("cart_id").toString());
                 int goodsCount_ = Integer.parseInt(cartList.get(i).get("goods_count").toString());
-                String goodsSpec_ = cartList.get(i).get("goods_spec").toString();
                 int count = goodsCount_ + goodsCount;
                 flag = true;
                 //判断是规格商品还是单品
@@ -161,10 +169,15 @@ public class AddOrderCart implements IResultOut {
     public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
         JSONObject data = receiveJsonBean.getData();
         try {
+            Integer cartId = data.getInteger("cart_id");//购物车标识
             Integer goodsId = data.getInteger("goods_id");
             Integer userId = data.getInteger("user_id");
-            Integer goodsCount = data.getInteger("goods_count") == 0 ? 1 : data.getInteger("goods_count");
-            if (null == goodsId || null == userId || null == goodsCount) {
+
+            if (null != cartId && cartId > 0) {
+                return true;
+            }
+
+            if (null == goodsId || null == userId) {
                 return false;
             }
             return true;
@@ -173,4 +186,5 @@ public class AddOrderCart implements IResultOut {
         }
         return false;
     }
+
 }
