@@ -3,7 +3,7 @@ package com.yufan.common.bean;
 public enum ResultCode {
 
     OK(1, "成功"),
-    FAIL(-1, "失败,网络异常"),
+    FAIL(-1, "网络异常"),
     INFO_ERROR(1000, "接口不存在"),
     SYS_ERROR(1001, "系统错误，请稍后重试"),
     PARAM_ERROR(1002, "参数格式不正确"),

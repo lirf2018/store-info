@@ -9,6 +9,7 @@ import com.yufan.task.dao.category.ICategoryDao;
 import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.task.dao.goods.IGoodsJpaDao;
 import com.yufan.task.dao.img.IImgDao;
+import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.dao.param.IParamDao;
 import com.yufan.task.dao.shop.IShopJapDao;
 import com.yufan.pojo.TbGoods;
@@ -56,6 +57,9 @@ public class QueryGoodsDetail implements IResultOut {
     @Autowired
     private ICategoryDao iCategoryDao;
 
+    @Autowired
+    private IOrderDao iOrderDao;
+
 
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
@@ -64,6 +68,7 @@ public class QueryGoodsDetail implements IResultOut {
         try {
 
             Integer goodsId = data.getInteger("goods_id");
+            Integer userId = data.getInteger("user_id");
             if (!checkParam(receiveJsonBean)) {
                 return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
             }
@@ -112,6 +117,9 @@ public class QueryGoodsDetail implements IResultOut {
 
             String nowTime = DatetimeUtil.getNow(format);
 
+            //商品关联的属性值标识
+            Map<Integer, Integer> valueIdMap = new HashMap<>();
+
             //是否单品
             List<Map<String, Object>> skuList = new ArrayList<>();
             if (goods.getIsSingle() == 0) {
@@ -126,6 +134,13 @@ public class QueryGoodsDetail implements IResultOut {
                     String skuImg = map.get("sku_img") == null ? "" : Constants.IMG_WEB_URL + map.get("sku_img");
                     BigDecimal skuTrueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     BigDecimal skuNowMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    String valueIds = map.get("prop_code").toString();
+                    String[] valueIdsArray = valueIds.split(";");
+                    for (int j = 0; j < valueIdsArray.length; j++) {
+                        int valueId = Integer.parseInt(valueIdsArray[j]);
+                        valueIdMap.put(valueId, valueId);
+                    }
+
                     if (i == 0) {
                         skuLowMoney = skuNowMoney;
                     } else {
@@ -140,7 +155,7 @@ public class QueryGoodsDetail implements IResultOut {
                     map.put("sku_now_money", skuNowMoney);
                     skuList.add(map);
                 }
-                dataJson.put("sku_low_money", "￥"+skuLowMoney + " 起");
+                dataJson.put("sku_low_money", "￥" + skuLowMoney + " 起");
             }
             if (couponId > 0) {
                 //卡券
@@ -242,7 +257,11 @@ public class QueryGoodsDetail implements IResultOut {
 
                 List<Map<String, Object>> valueList = new ArrayList<>();
                 for (int j = 0; j < queryCategoryRelListMap.size(); j++) {
+                    int valueId = Integer.parseInt(queryCategoryRelListMap.get(j).get("pv_value_id").toString());
                     if (propId != Integer.parseInt(queryCategoryRelListMap.get(j).get("it_prop_id").toString())) {
+                        continue;
+                    }
+                    if (valueIdMap.get(valueId) == null) {
                         continue;
                     }
                     Map<String, Object> mapValue = new HashMap<>();
@@ -257,6 +276,14 @@ public class QueryGoodsDetail implements IResultOut {
                     unsalePropList.add(mapProp);
                 }
             }
+
+            //返回购物车数量 购物车
+            int cartGoodsCount = 0;
+            if (null != userId && userId > 0) {
+                cartGoodsCount = iOrderDao.userCartCount(userId);
+            }
+            dataJson.put("cart_goods_count", cartGoodsCount);//购物车数量
+
             dataJson.put("sale_prop_list", salePropList);
             dataJson.put("unsale_prop_list", unsalePropList);
 
@@ -292,7 +319,7 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("peisong_pei_desc", peisongPeiDesc);
             dataJson.put("advance_price", advancePrice);
             dataJson.put("sell_count", sellCount);
-
+            dataJson.put("goods_id", goodsId);
             //抢购商品
             dataJson.put("is_time_goods", isTimeGoods);
             dataJson.put("time_goods_id", timeGoodsId);

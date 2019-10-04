@@ -1,6 +1,7 @@
 package com.yufan.task.dao.goods;
 
 import com.yufan.bean.GoodsCondition;
+import com.yufan.pojo.TbGoodsSku;
 import com.yufan.pojo.TbOrderCart;
 import com.yufan.utils.PageInfo;
 
@@ -75,6 +76,8 @@ public interface IGoodsDao {
      */
     public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId);
 
+    public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId, String propCode);
+
 
     /**
      * 保存购物车
@@ -87,5 +90,14 @@ public interface IGoodsDao {
      * 更新购物车
      */
     public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr, BigDecimal goodsPrice, BigDecimal trueMoney);
+
+    /**
+     * 查询商品sku
+     *
+     * @param goodsId
+     * @param propCode
+     * @return
+     */
+    public TbGoodsSku loadGoodsSku(int goodsId, String propCode);
 
 }

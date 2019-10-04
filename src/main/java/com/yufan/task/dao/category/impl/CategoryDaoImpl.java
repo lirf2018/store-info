@@ -260,4 +260,14 @@ public class CategoryDaoImpl implements ICategoryDao {
         return iGeneralDao.getBySQLListMap(sql, categoryId).get(0);
     }
 
+    @Override
+    public List<Map<String, Object>> loadPropValueItem(String valueIds) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT pv.value_id,it.prop_name,pv.value_name ");
+        sql.append(" from tb_props_value pv JOIN tb_itemprops it on it.prop_id = pv.prop_id ");
+        sql.append(" where pv.`status`=1 and it.`status`=1 ");
+        sql.append(" and pv.value_id in (").append(valueIds).append(") ");
+        sql.append(" ORDER BY it.data_index DESC,it.prop_id desc,pv.data_index DESC,pv.value_id DESC ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
 }

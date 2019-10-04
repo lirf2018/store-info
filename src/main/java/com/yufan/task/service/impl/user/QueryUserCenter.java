@@ -140,7 +140,7 @@ public class QueryUserCenter implements IResultOut {
             dataJson.put("user_img", StringUtils.isEmpty(userInfo.getUserImg()) ? "" : Constants.IMG_WEB_URL + userInfo.getUserImg());
             dataJson.put("member_id", userInfo.getMemberId());//会员卡号
             dataJson.put("nick_name", userInfo.getNickName());
-            dataJson.put("goods_count", cartGoodsCount);//购物车数量
+            dataJson.put("cart_goods_count", cartGoodsCount);//购物车数量
 
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

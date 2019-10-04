@@ -112,6 +112,7 @@ public interface ICategoryDao {
      * @return
      */
     public List<Map<String, Object>> loadLeveCategoryRel(Integer levelId, Integer categoryId);
+
     public List<Map<String, Object>> loadLeveCategoryRel(String levelIds, String categoryIds);
 
 
@@ -133,7 +134,11 @@ public interface ICategoryDao {
     TbItemprops loadTbItempropsById(int propId);
 
 
-    Map<String,Object> loadCategoryMap(int categoryId);
+    Map<String, Object> loadCategoryMap(int categoryId);
 
 
+    /**
+     * 查询属性值属性
+     */
+    public List<Map<String, Object>> loadPropValueItem(String valueIds);
 }

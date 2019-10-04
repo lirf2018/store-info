@@ -2,6 +2,7 @@ package com.yufan.task.dao.goods.impl;
 
 import com.yufan.bean.GoodsCondition;
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbGoodsSku;
 import com.yufan.pojo.TbOrderCart;
 import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.utils.Constants;
@@ -158,6 +159,15 @@ public class GoodsDaoImpl implements IGoodsDao {
     }
 
     @Override
+    public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId, String propCode) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.goods_spec_name_str from tb_order_cart c JOIN tb_goods g on g.goods_id=c.goods_id and c.createtime>=g.lastaltertime ");
+        sql.append(" where c.`status`=1 AND c.user_id=").append(userId).append(" and goods_spec='").append(propCode).append("' ");
+        sql.append(" and c.goods_id=").append(goodsId).append(" ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
     public void saveOrderCart(TbOrderCart orderCart) {
         iGeneralDao.save(orderCart);
     }
@@ -166,5 +176,12 @@ public class GoodsDaoImpl implements IGoodsDao {
     public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr, BigDecimal goodsPrice, BigDecimal trueMoney) {
         String sql = " update tb_order_cart set goods_spec=?,goods_spec_name=?,goods_count=?,goods_price=?,goods_spec_name_str=?,true_money=? where cart_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, goodsSpec, goodsSpecName, goodsCount, goodsPrice, goodsSpecNameStr, trueMoney, cartId);
+    }
+
+    @Override
+    public TbGoodsSku loadGoodsSku(int goodsId, String propCode) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" from  TbGoodsSku where goodsId=?1 and propCode=?2 and status=?3 ");
+        return iGeneralDao.queryUniqueByHql(sql.toString(), goodsId, propCode, Constants.DATA_STATUS_YX);
     }
 }
