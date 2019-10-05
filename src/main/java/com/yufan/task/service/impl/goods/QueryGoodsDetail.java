@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,8 +74,8 @@ public class QueryGoodsDetail implements IResultOut {
                 return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
             }
             //查询商品详情
-            TbGoods goods = iGoodsJpaDao.getOne(goodsId);
-            if (goods == null || goods.getGoodsId() == 0) {
+            TbGoods goods = iGoodsJpaDao.findOne(goodsId);
+            if (goods == null) {
                 return packagMsg(ResultCode.FAIL_GOODS_INVALIDATE.getResp_code(), dataJson);
             }
             //
@@ -223,7 +224,7 @@ public class QueryGoodsDetail implements IResultOut {
                 //上架状态 0下架 1等待确认 2销售中
                 allStatus = 0;
             }
-            TbShop shop = iShopJapDao.getOne(goods.getShopId());
+            TbShop shop = iShopJapDao.findOne(goods.getShopId());
             String shopEndTime = DatetimeUtil.timeStamp2Date(shop.getEnterEndTime().getTime() / 1000, format);
             if (null == shop || shop.getStatus() != 1 || DatetimeUtil.compareDate(nowTime, shopEndTime) > 1) {
                 LOG.info("----店铺无效---");

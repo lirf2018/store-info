@@ -40,6 +40,12 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
+    public void deleteShopcart(int userId, String cartIds) {
+        String sql = " update tb_order_cart set `status`=? where user_id=? and cart_id in (" + cartIds + ") ";
+        iGeneralDao.executeUpdateForSQL(sql, 4, userId);
+    }
+
+    @Override
     public void updateShopCart(int userId, int cartId, int count) {
         String sql = " update tb_order_cart set goods_count=? where cart_id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, count, cartId, userId);
@@ -48,20 +54,20 @@ public class OrderDaoImpl implements IOrderDao {
     @Override
     public List<Map<String, Object>> queryOrderPayAllListMap(int userId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT order_price,order_status from tb_order where user_id=").append(userId).append(" ");
+        sql.append(" SELECT order_price,order_status,user_read_mark from tb_order where user_id=").append(userId).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
     @Override
     public int userCartCount(int userId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT SUM(cart.goods_count) as goods_count from tb_order_cart cart  JOIN tb_goods g on g.goods_id=cart.goods_id");
+        sql.append(" SELECT SUM(cart.goods_count) as goods_count from tb_order_cart cart  JOIN tb_goods g on g.goods_id=cart.goods_id ");
         sql.append(" where cart.user_id=? and cart.`status`=1 and cart.createtime>g.lastaltertime ");
 
         List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql.toString(), userId);
         int count = 0;
         if (null != list && list.size() > 0) {
-            count = Integer.parseInt(list.get(0).get("goods_count").toString());
+            count = Integer.parseInt(null == list.get(0).get("goods_count") ? "0" : list.get(0).get("goods_count").toString());
         }
         return count;
     }
@@ -76,7 +82,7 @@ public class OrderDaoImpl implements IOrderDao {
             sql.append(" and o.order_status=").append(status).append(" ");
         }
         sql.append(" and o.user_id=").append(userId).append(" ");
-        sql.append(" ORDER BY o.order_id desc ");
+        sql.append(" ORDER BY o.user_read_mark desc,o.order_id desc ");
 
         PageInfo pageInfo = new PageInfo();
         pageInfo.setCurrePage(currePage);
@@ -116,7 +122,13 @@ public class OrderDaoImpl implements IOrderDao {
 
     @Override
     public void updateOrderStatus(int orderId, int userId, int orderStatus) {
-        String sql = " update tb_order set order_status=? where order_id=? and user_id=? ";
+        String sql = " update tb_order set order_status=?,user_read_mark=1 where order_id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, orderStatus, orderId, userId);
+    }
+
+    @Override
+    public void updateUserOrderReadMark(int userId, String orderIds) {
+        String sql = " update tb_order set user_read_mark=0 where user_id=? and order_id in (" + orderIds + ") ";
+        iGeneralDao.executeUpdateForSQL(sql, userId);
     }
 }

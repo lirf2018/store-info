@@ -107,6 +107,12 @@ public class QueryOrderList implements IResultOut {
                     mapOrder.put("detail_list", detailList);
                     outList.add(mapOrder);
                 }
+
+                //更新阅读标识
+                if (status != null) {
+                    LOG.info("---------->更新阅读标识:" + orderIds);
+                    iOrderDao.updateUserOrderReadMark(userId, orderIds);
+                }
             }
             dataJson.put("has_next", page.isHasNext());
             dataJson.put("curre_page", page.getCurrePage());

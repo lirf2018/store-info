@@ -29,7 +29,7 @@ public class UserDaoImpl implements IUserDao {
         List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql.toString());
         int count = 0;
         if (null != list && list.size() > 0) {
-            count = Integer.parseInt(list.get(0).get("jifen").toString());
+            count = Integer.parseInt(null==list.get(0).get("jifen")?"0":list.get(0).get("jifen").toString());
         }
         return count;
     }

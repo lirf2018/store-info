@@ -67,7 +67,7 @@ public class AddOrderCart implements IResultOut {
             }
 
 
-            TbGoods goods = iGoodsJpaDao.getOne(goodsId);
+            TbGoods goods = iGoodsJpaDao.findOne(goodsId);
             BigDecimal goodsPrice = new BigDecimal(0);//销售价格
             BigDecimal trueMoney = new BigDecimal(0);//商品原价
             String goodsSpecName = "";
@@ -172,12 +172,15 @@ public class AddOrderCart implements IResultOut {
             Integer cartId = data.getInteger("cart_id");//购物车标识
             Integer goodsId = data.getInteger("goods_id");
             Integer userId = data.getInteger("user_id");
+            if (null == userId) {
+                return false;
+            }
 
             if (null != cartId && cartId > 0) {
                 return true;
             }
 
-            if (null == goodsId || null == userId) {
+            if (null == goodsId) {
                 return false;
             }
             return true;

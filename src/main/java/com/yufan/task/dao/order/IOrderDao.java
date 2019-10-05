@@ -30,6 +30,14 @@ public interface IOrderDao {
      */
     public void updateShopCart(int userId, int cartId, int count);
 
+    /**
+     * 删除购物车
+     *
+     * @param userId
+     * @param cartIds
+     */
+    public void deleteShopcart(int userId, String cartIds);
+
 
     /**
      * 查询用户订单支付信息
@@ -84,5 +92,12 @@ public interface IOrderDao {
      * @param orderStatus
      */
     public void updateOrderStatus(int orderId, int userId, int orderStatus);
+
+    /**
+     * 更新阅读标记
+     * @param userId
+     * @param orderIds
+     */
+    public void updateUserOrderReadMark(int userId,String orderIds);
 
 }

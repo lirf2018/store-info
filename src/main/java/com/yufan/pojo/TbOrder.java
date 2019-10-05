@@ -11,7 +11,7 @@ import java.util.Objects;
  * 功能介绍:
  */
 @Entity
-@Table(name = "tb_order", schema = "testlirf", catalog = "")
+@Table(name = "tb_order", schema = "store-db", catalog = "")
 public class TbOrder {
     private int orderId;
     private Integer userId;
@@ -57,6 +57,7 @@ public class TbOrder {
     private Timestamp finishTime;
     private Timestamp lastaltertime;
     private String lastalterman;
+    private Integer userReadMark;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -554,5 +555,15 @@ public class TbOrder {
     public int hashCode() {
 
         return Objects.hash(orderId, userId, orderNo, orderFrom, orderCount, orderPrice, realPrice, advancePrice, needpayPrice, userName, userPhone, userAddr, userAddrId, advancePayWay, advancePayCode, advancePayTime, payWay, payCode, payTime, tradeChannel, postPrice, postWay, companyCode, postNo, userRemark, serviceRemark, orderStatus, orderTime, postTime, businessType, discountsId, discountsPrice, discountsRemark, tradeNo, refundPrice, refundRemark, remark, postPhone, postMan, statusOpration, shopId, finishTime, lastaltertime, lastalterman);
+    }
+
+    @Basic
+    @Column(name = "user_read_mark", nullable = true)
+    public Integer getUserReadMark() {
+        return userReadMark;
+    }
+
+    public void setUserReadMark(Integer userReadMark) {
+        this.userReadMark = userReadMark;
     }
 }

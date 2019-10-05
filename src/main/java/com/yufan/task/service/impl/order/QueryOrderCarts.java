@@ -43,10 +43,6 @@ public class QueryOrderCarts implements IResultOut {
             Integer userId = data.getInteger("user_id");
             Integer carType = data.getInteger("car_type");
 
-            if (!checkParam(receiveJsonBean)) {
-                return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
-            }
-
             List<Map<String, Object>> mapList = iOrderDao.queryUserOrderCartListMap(userId, carType);
             List<UserCartOrderDetail> outTimeGoodsList = new ArrayList<>();//失效商品
 
@@ -69,6 +65,8 @@ public class QueryOrderCarts implements IResultOut {
                 //去重
                 markMap.put(shopId, shopId);
             }
+
+            int orderCount = 0;
 
             //购物车详情
             for (int i = 0; i < outList.size(); i++) {
@@ -98,6 +96,10 @@ public class QueryOrderCarts implements IResultOut {
                         status = lastStatus;
                     }
 
+                    if (!(status == 1 || status == 0)) {
+                        continue;
+                    }
+
                     String goodsSpecNameStr = null == map.get("goods_spec_name_str") ? "" : map.get("goods_spec_name_str").toString();
                     Integer cartType = Integer.parseInt(null == map.get("status") ? null : map.get("status").toString());
                     UserCartOrderDetail userCartOrderDetail = new UserCartOrderDetail();
@@ -117,6 +119,7 @@ public class QueryOrderCarts implements IResultOut {
                     userCartOrderDetail.setIsSingle(isSingle);
                     if (status == 1) {
                         cartDetailList.add(userCartOrderDetail);//
+                        orderCount = orderCount + 1;
                     } else {
                         outTimeGoodsList.add(userCartOrderDetail);
                     }
@@ -124,6 +127,7 @@ public class QueryOrderCarts implements IResultOut {
                 shop.setCartDetailList(cartDetailList);
             }
 
+            dataJson.put("cart_goods_count", orderCount);//购物车数量
             dataJson.put("cart_list", outList);
             dataJson.put("out_time_cart_list", outTimeGoodsList);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
@@ -147,4 +151,5 @@ public class QueryOrderCarts implements IResultOut {
         }
         return false;
     }
+
 }

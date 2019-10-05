@@ -46,7 +46,7 @@ public class QueryUserCenter implements IResultOut {
 
             Integer userId = data.getInteger("user_id");
             //查询用户信息
-            TbUserInfo userInfo = iUserJpaDao.getOne(userId);
+            TbUserInfo userInfo = iUserJpaDao.findOne(userId);
             if (null == userInfo) {
                 return packagMsg(ResultCode.FAIL_USER_INVALIDATE.getResp_code(), dataJson);
             }
@@ -76,7 +76,14 @@ public class QueryUserCenter implements IResultOut {
 
             for (int i = 0; i < userOrderListMap.size(); i++) {
                 int status = Integer.parseInt(userOrderListMap.get(i).get("order_status").toString());
+                int userReadMark = Integer.parseInt(userOrderListMap.get(i).get("user_read_mark").toString());
                 BigDecimal orderPrice = new BigDecimal(userOrderListMap.get(i).get("order_price").toString());
+                if (status == 6) {
+                    orderPriceAll.add(orderPrice);
+                }
+                if (userReadMark != 1) {
+                    continue;
+                }
                 switch (status) {
                     case 0:
                         c0++;
@@ -95,7 +102,6 @@ public class QueryUserCenter implements IResultOut {
                         break;
                     case 6:
                         c6++;
-                        orderPriceAll.add(orderPrice);
                         break;
                     case 7:
                         c7++;
@@ -120,19 +126,33 @@ public class QueryUserCenter implements IResultOut {
                         break;
                 }
             }
-            dataJson.put("order_dfk", c0);
-            dataJson.put("order_yfk", c1);
-            dataJson.put("order_ysb", c3);
-            dataJson.put("order_dfh", c4);
-            dataJson.put("order_dsh", c5);
-            dataJson.put("order_ywc", c6);
-            dataJson.put("order_yqx", c7);
-            dataJson.put("order_ysc", c8);
-            dataJson.put("order_tkz", c9);
-            dataJson.put("order_ytk", c10);
-            dataJson.put("order_clz", c11);
-            dataJson.put("order_hhz", c12);
-            dataJson.put("order_yhh", c13);
+       /*     dataJson.put("order_dfk", c0 > 99 ? "99+" : c0);//0	待付款
+            dataJson.put("order_yfk", c1 > 99 ? "99+" : c1);//1	已付款
+            dataJson.put("order_ysb", c3 > 99 ? "99+" : c3);//3	已失败
+            dataJson.put("order_dfh", c4 > 99 ? "99+" : c4);//4	待发货
+            dataJson.put("order_dsh", c5 > 99 ? "99+" : c5);//5	待收货
+            dataJson.put("order_ywc", c6 > 99 ? "99+" : c6);//6	已完成
+            dataJson.put("order_yqx", c7 > 99 ? "99+" : c7);//7	已取消
+            dataJson.put("order_ysc", c8 > 99 ? "99+" : c8);//8	已删除
+            dataJson.put("order_tkz", c9 > 99 ? "99+" : c9);//9	退款中
+            dataJson.put("order_ytk", c10 > 99 ? "99+" : c10);//10	已退款
+            dataJson.put("order_clz", c11 > 99 ? "99+" : c11);//11	处理中
+            dataJson.put("order_hhz", c12 > 99 ? "99+" : c12);//12	还货中
+            dataJson.put("order_yhh", c13 > 99 ? "99+" : c13);//13	已还货*/
+            dataJson.put("order_dfk", c0);//0	待付款
+            dataJson.put("order_yfk", c1);//1	已付款
+            dataJson.put("order_ysb", c3);//3	已失败
+            dataJson.put("order_dfh", c4);//4	待发货
+            dataJson.put("order_dsh", c5);//5	待收货
+            dataJson.put("order_ywc", c6);//6	已完成
+            dataJson.put("order_yqx", c7);//7	已取消
+            dataJson.put("order_ysc", c8);//8	已删除
+            dataJson.put("order_tkz", c9);//9	退款中
+            dataJson.put("order_ytk", c10);//10	已退款
+            dataJson.put("order_clz", c11);//11	处理中
+            dataJson.put("order_hhz", c12);//12	还货中
+            dataJson.put("order_yhh", c13);//13	已还货
+
             dataJson.put("order_price_all", orderPriceAll.setScale(2, BigDecimal.ROUND_HALF_UP));
 
             dataJson.put("user_jifen", jifen);

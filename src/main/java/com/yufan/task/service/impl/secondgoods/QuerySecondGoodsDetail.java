@@ -39,7 +39,7 @@ public class QuerySecondGoodsDetail implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             Integer goodsId = data.getInteger("id");
-            TbSecondGoods secondGoods = iSecondGoodsJpaDao.getOne(goodsId);
+            TbSecondGoods secondGoods = iSecondGoodsJpaDao.findOne(goodsId);
             if (null == secondGoods || secondGoods.getStatus() != 1) {
                 return packagMsg(ResultCode.GOODS_NOT_EXIST.getResp_code(), dataJson);
             }
