@@ -131,6 +131,49 @@ public class InfoController {
         }
     }
 
+    @RequestMapping(value = "city")
+    public void city(HttpServletRequest request, HttpServletResponse response) {
+        String result = "";
+        PrintWriter pw = null;
+        String message = null;
+        try {
+            pw = response.getWriter();
+            message = request.getParameter("message");
+
+            if (null == message || "".equals(message)) {
+                message = readStreamParameter(request.getInputStream());
+            }
+            log.info("接收参数:" + message);
+            JSONObject obj = JSONObject.parseObject(message);
+            if (obj != null) {
+                ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
+                jsonHeaderBean.setRequest(request);
+                jsonHeaderBean.setResponse(response);
+                IResultOut resultOut = ServiceFactory.getService("ydui_citys");
+                //校验参数
+                boolean flag = resultOut.checkParam(jsonHeaderBean);
+                if(!flag){
+                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
+                }else{
+                    result = resultOut.getResult(jsonHeaderBean);
+                }
+            } else {
+                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+            }
+            log.info("调用结果：" + result);
+            pw.write(result);
+            pw.flush();
+            pw.close();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+            pw.write(result);
+            pw.flush();
+            pw.close();
+        }
+    }
+
     @RequestMapping(value = "test")
     public void test(HttpServletRequest request, HttpServletResponse response) {
         String result = "";

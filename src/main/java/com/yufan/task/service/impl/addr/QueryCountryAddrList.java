@@ -16,13 +16,13 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
  * 创建人: lirf
- * 创建时间:  2019/8/25 11:22
- * 功能介绍: 查询用户地址
+ * 创建时间:  2019/10/6 17:14
+ * 功能介绍: 查询全国地址
  */
-@Service("query_user_addr")
-public class QueryUserAddr implements IResultOut {
+@Service("query_country_addr_list")
+public class QueryCountryAddrList implements IResultOut {
 
-    private Logger LOG = Logger.getLogger(QueryUserAddr.class);
+    private Logger LOG = Logger.getLogger(QueryCountryAddrList.class);
 
     @Autowired
     private IAddrDao iAddrDao;
@@ -33,15 +33,9 @@ public class QueryUserAddr implements IResultOut {
         JSONObject dataJson = new JSONObject();
         JSONObject data = receiveJsonBean.getData();
         try {
-            Integer userId = data.getInteger("user_id");
-            Integer addrType = data.getInteger("addr_type");
-            String parentCode = data.containsKey("parent_code") ? data.getString("parent_code") : "";
-            List<Map<String, Object>> list = iAddrDao.queryUserAddrListMap(userId, addrType);
-            dataJson.put("user_addr_list", list);
-
-
-            List<Map<String, Object>> listAddr = iAddrDao.queryCountryAddrList(parentCode);
-            dataJson.put("country_addr_list", listAddr);
+            String parentCode = data.getString("parent_code");
+            List<Map<String, Object>> list = iAddrDao.queryCountryAddrList(parentCode);
+            dataJson.put("country_addr_list", list);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
@@ -53,8 +47,8 @@ public class QueryUserAddr implements IResultOut {
     public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
         JSONObject data = receiveJsonBean.getData();
         try {
-            Integer userId = data.getInteger("user_id");
-            if (null == userId) {
+            String parentCode = data.getString("parent_code");
+            if (null == parentCode) {
                 return false;
             }
             return true;
@@ -63,4 +57,5 @@ public class QueryUserAddr implements IResultOut {
         }
         return false;
     }
+
 }

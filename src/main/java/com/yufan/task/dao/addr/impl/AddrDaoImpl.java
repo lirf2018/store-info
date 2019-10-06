@@ -1,6 +1,7 @@
 package com.yufan.task.dao.addr.impl;
 
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbUserAddr;
 import com.yufan.task.dao.addr.IAddrDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -43,5 +44,36 @@ public class AddrDaoImpl implements IAddrDao {
         }
         sql.append(" ORDER BY pa.sort_char,pa.addr_sort DESC  ");
         return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public void saveUserAddr(TbUserAddr userAddr) {
+        iGeneralDao.save(userAddr);
+    }
+
+    @Override
+    public void updateUserAddr(TbUserAddr userAddr) {
+        iGeneralDao.saveOrUpdate(userAddr);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryCountryAddrList(String parentCode) {
+        String sql = " select region_id,region_name,freight,region_code from tb_region where parent_id=? and status=1 ORDER BY region_order desc,region_id desc ";
+        return iGeneralDao.getBySQLListMap(sql, parentCode);
+    }
+    @Override
+    public List<Map<String, Object>> queryCountryAddrListByLevel(int regionLevel) {
+        String sql = " select region_id,region_name from tb_region where region_level=? and status=1 ORDER BY region_order desc,region_id desc ";
+        return iGeneralDao.getBySQLListMap(sql, regionLevel);
+    }
+
+    @Override
+    public void updateAddrDefaul(int id, int userId) {
+        //取消默认
+        String sql = " update tb_user_addr set is_default=0 where user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, userId);
+        //更新默认
+        String sqlDefaul = " update tb_user_addr set is_default=1 where id=? ";
+        iGeneralDao.executeUpdateForSQL(sqlDefaul, id);
     }
 }
