@@ -58,4 +58,11 @@ public interface IAddrDao {
      */
     public void updateAddrDefaul(int id, int userId);
 
+    /**
+     * 删除用户地址
+     * @param id
+     * @param userId
+     */
+    public void deleteUserAddr(int id,int userId);
+
 }

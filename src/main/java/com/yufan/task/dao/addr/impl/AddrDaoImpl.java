@@ -61,6 +61,7 @@ public class AddrDaoImpl implements IAddrDao {
         String sql = " select region_id,region_name,freight,region_code from tb_region where parent_id=? and status=1 ORDER BY region_order desc,region_id desc ";
         return iGeneralDao.getBySQLListMap(sql, parentCode);
     }
+
     @Override
     public List<Map<String, Object>> queryCountryAddrListByLevel(int regionLevel) {
         String sql = " select region_id,region_name from tb_region where region_level=? and status=1 ORDER BY region_order desc,region_id desc ";
@@ -73,7 +74,13 @@ public class AddrDaoImpl implements IAddrDao {
         String sql = " update tb_user_addr set is_default=0 where user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, userId);
         //更新默认
-        String sqlDefaul = " update tb_user_addr set is_default=1 where id=? ";
-        iGeneralDao.executeUpdateForSQL(sqlDefaul, id);
+        String sqlDefaul = " update tb_user_addr set is_default=1 where id=? and user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sqlDefaul, id, userId);
+    }
+
+    @Override
+    public void deleteUserAddr(int id, int userId) {
+        String sql = " update tb_user_addr set status=0 where id=? and user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, id, userId);
     }
 }

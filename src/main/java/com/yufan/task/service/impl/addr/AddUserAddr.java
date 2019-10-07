@@ -38,17 +38,18 @@ public class AddUserAddr implements IResultOut {
 
             Integer id = data.getInteger("id");
             Integer userId = data.getInteger("user_id");
-            String areaName = data.getString("area_Ids");
-            Integer addrType = data.getInteger("addr_type");
-            String addrName = data.getString("addr_name");
-            String areaIds = data.getString("area_Ids");
+            String areaIds = data.getString("area_Ids");//所在地区组合标识(或者平台地址标识)
+            String areaNames = data.getString("area_names");//所在地区组合名称
+            String addrDetail = data.getString("addr_detail");//详细地址
+            Integer addrType = data.getInteger("addr_type");//地址类型1全国地址2平台配送或者自己取地址
             String userPhone = data.getString("user_phone");
             String userName = data.getString("user_name");
-            String addrDetail = data.getString("addr_detail");
+
+            String addrName = areaNames + addrDetail;
 
             TbUserAddr userAddr = new TbUserAddr();
             userAddr.setAreaIds(areaIds);
-            userAddr.setAreaName(areaName);
+            userAddr.setAreaName(areaNames);
             userAddr.setUserId(userId);
             userAddr.setUserName(userName);
             userAddr.setUserPhone(userPhone);
