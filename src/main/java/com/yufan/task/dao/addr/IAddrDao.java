@@ -48,6 +48,7 @@ public interface IAddrDao {
      * @return
      */
     public List<Map<String, Object>> queryCountryAddrList(String parentCode);
+
     public List<Map<String, Object>> queryCountryAddrListByLevel(int regionLevel);//层级0:国家1:省/自治区/直辖市/特别行政区2:市/省(自治区)直辖县/省直辖区/自治州3:市辖区/县/自治县4:乡/镇/街道5:村
 
     /**
@@ -60,9 +61,18 @@ public interface IAddrDao {
 
     /**
      * 删除用户地址
+     *
      * @param id
      * @param userId
      */
-    public void deleteUserAddr(int id,int userId);
+    public void deleteUserAddr(int id, int userId);
+
+    /**
+     * 查询运费
+     *
+     * @param regionCode
+     * @return
+     */
+    public List<Map<String, Object>> queryAddrByRegionCode(String regionCode);
 
 }

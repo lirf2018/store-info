@@ -33,7 +33,7 @@ public class GoodsDaoImpl implements IGoodsDao {
     @Override
     public List<Map<String, Object>> queryGoodsSkuListMap(int goodsId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT sku_id,goods_id,sku_name,true_money,now_money,sku_code,prop_code,sku_num,sku_img,purchase_price from tb_goods_sku where `status`=1 ");
+        sql.append(" SELECT sku_id,goods_id,sku_name,true_money as sku_true_money,now_money as sku_now_money,sku_code,prop_code,sku_num,sku_img,purchase_price as sku_purchase_price from tb_goods_sku where `status`=1 ");
         sql.append(" and goods_id=").append(goodsId).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }

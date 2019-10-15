@@ -90,6 +90,7 @@ public class QueryOrderCarts implements IResultOut {
                     BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     Integer status = Integer.parseInt(map.get("status").toString());
                     Integer isSingle = Integer.parseInt(map.get("is_single").toString());
+                    Integer skuId = Integer.parseInt(map.get("sku_id").toString());
                     if (status == 1) {
                         //如果商品的修改时间>购物车商品的创建时间,则购物车视为无效
                         int lastStatus = Integer.parseInt(map.get("last_status").toString());
@@ -117,6 +118,7 @@ public class QueryOrderCarts implements IResultOut {
                     userCartOrderDetail.setGoodsSpecNameStr(goodsSpecNameStr);
                     userCartOrderDetail.setCartType(cartType);
                     userCartOrderDetail.setIsSingle(isSingle);
+                    userCartOrderDetail.setSkuId(skuId);
                     if (status == 1) {
                         cartDetailList.add(userCartOrderDetail);//
                         orderCount = orderCount + 1;

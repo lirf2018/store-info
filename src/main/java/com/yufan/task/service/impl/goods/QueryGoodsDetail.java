@@ -133,8 +133,7 @@ public class QueryGoodsDetail implements IResultOut {
                     Integer skuNum = Integer.parseInt(map.get("sku_num").toString());
                     goodsNum = goodsNum + skuNum;
                     String skuImg = map.get("sku_img") == null ? "" : Constants.IMG_WEB_URL + map.get("sku_img");
-                    BigDecimal skuTrueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
-                    BigDecimal skuNowMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal skuNowMoney = new BigDecimal(map.get("sku_now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
                     String valueIds = map.get("prop_code").toString();
                     String[] valueIdsArray = valueIds.split(";");
                     for (int j = 0; j < valueIdsArray.length; j++) {
@@ -149,11 +148,11 @@ public class QueryGoodsDetail implements IResultOut {
                             skuLowMoney = skuNowMoney;
                         }
                     }
+                    map.put("sku_true_money", map.get("sku_true_money")+"");
+                    map.put("sku_now_money", map.get("sku_now_money")+"");
                     map.put("sku_id", skuId);
                     map.put("sku_num", skuNum);
                     map.put("sku_img", skuImg);
-                    map.put("sku_true_money", skuTrueMoney);
-                    map.put("sku_now_money", skuNowMoney);
                     skuList.add(map);
                 }
                 dataJson.put("sku_low_money", "￥" + skuLowMoney + " 起");
@@ -290,12 +289,12 @@ public class QueryGoodsDetail implements IResultOut {
 
             //商品信息
             dataJson.put("all_status", allStatus);
-
+            dataJson.put("shop_name",shop.getShopName());
             dataJson.put("goods_name", goodsName);
             dataJson.put("title", title);
             dataJson.put("goods_img", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
-            dataJson.put("true_money", trueMoney);
-            dataJson.put("now_money", nowMoney);
+            dataJson.put("true_money", trueMoney+"");
+            dataJson.put("now_money", nowMoney+"");
             dataJson.put("intro", intro);
             dataJson.put("is_yuding", isYuding);
             dataJson.put("get_way", getWay);
@@ -325,7 +324,7 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("is_time_goods", isTimeGoods);
             dataJson.put("time_goods_id", timeGoodsId);
             dataJson.put("time_goods_store", timeGoodsStore);
-            dataJson.put("time_price", timePrice);
+            dataJson.put("time_price", timePrice+"");
             dataJson.put("is_time_goods_shell", isTimeGoodsShell);
 
             dataJson.put("banner_img_list", bannerImgList);

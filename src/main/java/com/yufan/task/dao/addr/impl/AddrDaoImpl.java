@@ -83,4 +83,11 @@ public class AddrDaoImpl implements IAddrDao {
         String sql = " update tb_user_addr set status=0 where id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, id, userId);
     }
+
+    @Override
+    public List<Map<String, Object>> queryAddrByRegionCode(String regionCode) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT region_code,freight from tb_region where region_code in ('").append(regionCode).append("') ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
 }

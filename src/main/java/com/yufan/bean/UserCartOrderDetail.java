@@ -59,4 +59,7 @@ public class UserCartOrderDetail {
     private Integer isSingle;
 
 
+    @JSONField(name = "sku_id")
+    private Integer skuId;
+
 }
