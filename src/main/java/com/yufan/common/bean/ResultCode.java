@@ -61,9 +61,11 @@ public enum ResultCode {
     GOODS_GETWAY_DIFF(10054, "商品取货方式不一致"),
     USER_PHONE_NOTUSE(10055, "手机未被绑定"),
     NOT_BOUND_WEIXIN(10056, "账号未绑定微信,不允许解绑"),
-    NOT_BOUND_PHONE(10056, "账号未绑定手机号,不允许解绑"),
-    PART_GOODS_STORE_NOENOUGH(10057, "部分商品库存不足"),
-    QUERY_NOT_FIND(10058, "查询不存在");
+    NOT_BOUND_PHONE(10057, "账号未绑定手机号,不允许解绑"),
+    PART_GOODS_STORE_NOENOUGH(10058, "部分商品库存不足"),
+    QUERY_NOT_FIND(10059, "查询不存在"),
+    OUT_TIME_FIND(10060, "不在活动时间范围内"),
+    CHECK_FIND(10061, "校验失败");
 
 
     private int resp_code;

@@ -3,6 +3,7 @@ package com.yufan.task.dao.goods;
 import com.yufan.bean.GoodsCondition;
 import com.yufan.pojo.TbGoodsSku;
 import com.yufan.pojo.TbOrderCart;
+import com.yufan.pojo.TbTimeGoods;
 import com.yufan.utils.PageInfo;
 
 import java.math.BigDecimal;
@@ -99,5 +100,16 @@ public interface IGoodsDao {
      * @return
      */
     public TbGoodsSku loadGoodsSku(int goodsId, String propCode);
+
+    public TbGoodsSku loadGoodsSkuBySkuId(int skuId);
+
+    /**
+     * 查询抢购商品
+     */
+    public TbTimeGoods loadTimeGoods(int timeGoodsId);
+
+    public List<Map<String, Object>> queryTbGoodsListMapByGoodsIds(String goodsIds);
+
+    public List<Map<String, Object>> queryTbGoodsSkuListMapBySkuIds(String skuIds);
 
 }

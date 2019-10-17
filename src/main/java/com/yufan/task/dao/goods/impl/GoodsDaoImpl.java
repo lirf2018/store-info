@@ -4,6 +4,7 @@ import com.yufan.bean.GoodsCondition;
 import com.yufan.common.dao.base.IGeneralDao;
 import com.yufan.pojo.TbGoodsSku;
 import com.yufan.pojo.TbOrderCart;
+import com.yufan.pojo.TbTimeGoods;
 import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
@@ -183,5 +184,34 @@ public class GoodsDaoImpl implements IGoodsDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" from  TbGoodsSku where goodsId=?1 and propCode=?2 and status=?3 ");
         return iGeneralDao.queryUniqueByHql(sql.toString(), goodsId, propCode, Constants.DATA_STATUS_YX);
+    }
+
+    @Override
+    public TbGoodsSku loadGoodsSkuBySkuId(int skuId) {
+        String sql = " from TbGoodsSku where skuId=? ";
+        return iGeneralDao.queryUniqueByHql(sql, skuId);
+    }
+
+    @Override
+    public TbTimeGoods loadTimeGoods(int timeGoodsId) {
+        String sql = " from TbTimeGoods where id=? ";
+        return iGeneralDao.queryUniqueByHql(sql, timeGoodsId);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryTbGoodsListMapByGoodsIds(String goodsIds) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select goods_id,goods_name,title,goods_img,true_money,now_money,shop_id,is_yuding,get_way,is_invoice,is_putaway,data_index,category_id,property,is_single,goods_num,is_return,coupon_id,goods_type,is_pay_online,out_code, ");
+        sql.append(" deposit_money,peisong_zc_desc,peisong_pei_desc,purchase_price,is_time_goods,limit_num,limit_way, ");
+        sql.append(" DATE_FORMAT(limit_begin_time,'%Y-%m-%d %T') as limit_begin_time,level_id,advance_price,bar_code,bar_code_shop,sell_count ");
+        sql.append(" from tb_goods where `status`=1 and NOW()>start_time and NOW()<end_time and goods_id in (").append(goodsIds).append(") ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> queryTbGoodsSkuListMapBySkuIds(String skuIds) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT sku_id,goods_id,sku_name,true_money,now_money,sku_code,prop_code,sku_num,sku_img,purchase_price,shop_id,sell_count,status from tb_goods_sku where `status`=1 and sku_id in (").append(skuIds).append(") ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

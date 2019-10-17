@@ -1,9 +1,14 @@
 package com.yufan.task.dao.order.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbOrder;
+import com.yufan.pojo.TbOrderDetail;
+import com.yufan.pojo.TbOrderDetailProperty;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,8 @@ import java.util.Map;
 @Repository
 @Transactional
 public class OrderDaoImpl implements IOrderDao {
+
+    private Logger LOG = Logger.getLogger(OrderDaoImpl.class);
 
     @Autowired
     private IGeneralDao iGeneralDao;
@@ -131,5 +138,42 @@ public class OrderDaoImpl implements IOrderDao {
     public void updateUserOrderReadMark(int userId, String orderIds) {
         String sql = " update tb_order set user_read_mark=0 where user_id=? and order_id in (" + orderIds + ") ";
         iGeneralDao.executeUpdateForSQL(sql, userId);
+    }
+
+    @Override
+    @Transactional
+    public int createOrder(TbOrder order, List<TbOrderDetail> detailList, Map<String, JSONArray> detailPropMap) {
+        try {
+            //保存订单
+            iGeneralDao.save(order);
+            int orderId = order.getOrderId();
+            //保存详情
+            for (int i = 0; i < detailList.size(); i++) {
+                TbOrderDetail detail = detailList.get(i);
+                detail.setOrderId(orderId);
+                iGeneralDao.save(detail);
+                int detailId = detail.getDetailId();
+                String key = detail.getGoodsId() + "-" + detail.getGoodsSpec();
+                JSONArray detailPropList = detailPropMap.get(key);
+                if (null != detailPropList) {
+                    for (int j = 0; j < detailPropList.size(); j++) {
+                        String propertyKey = detailPropList.getJSONObject(j).getString("property_key");
+                        String propertyValue = detailPropList.getJSONObject(j).getString("property_value");
+                        String remark = detailPropList.getJSONObject(j).getString("remark");
+                        TbOrderDetailProperty property = new TbOrderDetailProperty();
+                        property.setOrderId(orderId);
+                        property.setDetailId(detailId);
+                        property.setPropertyKey(propertyKey);
+                        property.setPropertyValue(propertyValue);
+                        property.setRemark(remark);
+                        iGeneralDao.save(property);
+                    }
+                }
+            }
+            return orderId;
+        } catch (Exception e) {
+            LOG.error("--------订单保存失败------", e);
+        }
+        return 0;
     }
 }

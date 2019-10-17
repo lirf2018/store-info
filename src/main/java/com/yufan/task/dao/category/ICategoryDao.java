@@ -141,4 +141,6 @@ public interface ICategoryDao {
      * 查询属性值属性
      */
     public List<Map<String, Object>> loadPropValueItem(String valueIds);
+
+
 }

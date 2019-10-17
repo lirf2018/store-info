@@ -1,5 +1,9 @@
 package com.yufan.task.dao.order;
 
+import com.alibaba.fastjson.JSONArray;
+import com.yufan.pojo.TbOrder;
+import com.yufan.pojo.TbOrderDetail;
+import com.yufan.pojo.TbOrderDetailProperty;
 import com.yufan.utils.PageInfo;
 
 import java.util.List;
@@ -95,9 +99,20 @@ public interface IOrderDao {
 
     /**
      * 更新阅读标记
+     *
      * @param userId
      * @param orderIds
      */
-    public void updateUserOrderReadMark(int userId,String orderIds);
+    public void updateUserOrderReadMark(int userId, String orderIds);
+
+    /**
+     * 创建订单
+     *
+     * @param order
+     * @param detailList
+     * @param detailPropMap
+     * @return
+     */
+    public int createOrder(TbOrder order, List<TbOrderDetail> detailList, Map<String, JSONArray> detailPropMap);
 
 }

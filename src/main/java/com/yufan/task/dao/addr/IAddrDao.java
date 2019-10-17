@@ -75,4 +75,12 @@ public interface IAddrDao {
      */
     public List<Map<String, Object>> queryAddrByRegionCode(String regionCode);
 
+
+    /**
+     * 查询用户收货地址
+     * @param userAddrId
+     * @return
+     */
+    public TbUserAddr loadUserAddrById(int userAddrId);
+
 }

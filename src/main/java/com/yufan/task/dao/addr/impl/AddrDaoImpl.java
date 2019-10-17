@@ -90,4 +90,10 @@ public class AddrDaoImpl implements IAddrDao {
         sql.append(" SELECT region_code,freight from tb_region where region_code in ('").append(regionCode).append("') ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
+
+    @Override
+    public TbUserAddr loadUserAddrById(int userAddrId) {
+        String sql = " from TbUserAddr where id=? ";
+        return iGeneralDao.queryUniqueByHql(sql, userAddrId);
+    }
 }
