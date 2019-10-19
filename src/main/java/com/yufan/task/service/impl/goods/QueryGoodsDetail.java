@@ -289,6 +289,7 @@ public class QueryGoodsDetail implements IResultOut {
 
             //商品信息
             dataJson.put("all_status", allStatus);
+            dataJson.put("shop_id",shop.getShopId());
             dataJson.put("shop_name",shop.getShopName());
             dataJson.put("goods_name", goodsName);
             dataJson.put("title", title);

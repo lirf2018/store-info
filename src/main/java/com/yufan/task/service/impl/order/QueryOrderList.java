@@ -86,7 +86,7 @@ public class QueryOrderList implements IResultOut {
                     mapOrder.put("shop_logo", shopLogo);
                     List<Map<String, Object>> detailList = new ArrayList<>();
                     for (int j = 0; j < orderDetailList.size(); j++) {
-                        if (orderId.equals(orderDetailList.get(j).get("order_id").toString())) {
+                        if (!orderId.equals(orderDetailList.get(j).get("order_id").toString())) {
                             continue;
                         }
                         String goodsImg = orderDetailList.get(j).get("goods_img").toString();

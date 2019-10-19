@@ -66,7 +66,7 @@ public class GoodsDaoImpl implements IGoodsDao {
         }
         sql.append(" where NOW()>=g.start_time and NOW()<=g.end_time and g.`status`=1 and g.is_putaway=2 and s.`status`=1 ");
         if (null != goodsCondition.getGoodsName() && StringUtils.isNotEmpty(goodsCondition.getGoodsName().trim())) {
-            sql.append(" and g.goods_name like '").append(goodsCondition.getGoodsName().trim()).append("' ");
+            sql.append(" and g.goods_name like '%").append(goodsCondition.getGoodsName().trim()).append("%' ");
         }
         if (StringUtils.isNotEmpty(goodsCondition.getCategoryIds())) {
             sql.append(" and g.category_id in (").append(goodsCondition.getCategoryIds()).append(") ");
@@ -213,5 +213,23 @@ public class GoodsDaoImpl implements IGoodsDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT sku_id,goods_id,sku_name,true_money,now_money,sku_code,prop_code,sku_num,sku_img,purchase_price,shop_id,sell_count,status from tb_goods_sku where `status`=1 and sku_id in (").append(skuIds).append(") ");
         return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public void subtractTimeGoodsStore(int timeGoodsId, int num) {
+        String sql = " update tb_time_goods set goods_store=goods_store-" + num + "   where id=" + timeGoodsId + " ";
+        iGeneralDao.executeUpdateForSQL(sql);
+    }
+
+    @Override
+    public void subtractGoodsStore(int goodsId, int num) {
+        String sql = " update tb_goods set goods_num=goods_num-" + num + " where goods_id=" + goodsId + " ";
+        iGeneralDao.executeUpdateForSQL(sql);
+    }
+
+    @Override
+    public void subtractGoodsSkuStore(int goodsId, int skuId, int num) {
+        String sql = " update tb_goods_sku set sku_num=sku_num-" + num + " where goods_id=" + goodsId + " and sku_id=" + skuId + " ";
+        iGeneralDao.executeUpdateForSQL(sql);
     }
 }

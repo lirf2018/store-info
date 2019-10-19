@@ -93,7 +93,7 @@ public class AddrDaoImpl implements IAddrDao {
 
     @Override
     public TbUserAddr loadUserAddrById(int userAddrId) {
-        String sql = " from TbUserAddr where id=? ";
+        String sql = " from TbUserAddr where id=?1 ";
         return iGeneralDao.queryUniqueByHql(sql, userAddrId);
     }
 }

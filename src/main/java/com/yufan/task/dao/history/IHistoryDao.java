@@ -33,4 +33,11 @@ public interface IHistoryDao {
      * @param userId
      */
     public void deleteUserHistorySearch(int userId);
+
+    /**
+     * 保存历史记录
+     * @param object
+     * @return
+     */
+    public int saveSearchData(Object object);
 }

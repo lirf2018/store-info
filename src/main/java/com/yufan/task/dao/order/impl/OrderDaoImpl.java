@@ -38,7 +38,7 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" from tb_order_cart cart JOIN tb_shop s on s.shop_id=cart.shop_id ");
         sql.append(" JOIN tb_goods g on g.goods_id=cart.goods_id ");
         sql.append(" left join tb_goods_sku sku on sku.goods_id=cart.goods_id and sku.prop_code=cart.goods_spec and sku.`status`=1 ");
-        sql.append(" where cart.user_id=").append(userId).append(" ");
+        sql.append(" where cart.user_id=").append(userId).append(" and cart.`status`=1 ");
         if (null != carType) {
             sql.append(" and cart.cart_type=").append(carType).append(" ");
         }
@@ -86,7 +86,7 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status ");
         sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo ");
         sql.append(" from tb_order o JOIN tb_shop s on o.shop_id=s.shop_id where 1=1 ");
-        if (null != status) {
+        if (null != status && status != -1) {
             sql.append(" and o.order_status=").append(status).append(" ");
         }
         sql.append(" and o.user_id=").append(userId).append(" ");
@@ -113,7 +113,7 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status,o.order_no,DATE_FORMAT(o.order_time,'%Y-%m-%d %T') as order_time,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T') as pay_time ");
         sql.append(" ,o.pay_way,o.user_name,o.user_phone,o.user_addr,o.real_price,o.post_price,o.discounts_price,o.post_way,o.advance_pay_way,o.advance_price ");
         sql.append(" ,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
-        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo ");
+        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo,DATE_FORMAT(o.finish_time,'%Y-%m-%d %T') as finish_time  ");
         sql.append(" from tb_order o JOIN tb_shop s on o.shop_id=s.shop_id ");
         sql.append(" JOIN tb_order_detail d on d.order_id=o.order_id ");
         sql.append(" where o.order_id=? and o.user_id=? ");
@@ -147,12 +147,19 @@ public class OrderDaoImpl implements IOrderDao {
             //保存订单
             iGeneralDao.save(order);
             int orderId = order.getOrderId();
+            LOG.info("-----orderId--------" + orderId);
             //保存详情
             for (int i = 0; i < detailList.size(); i++) {
                 TbOrderDetail detail = detailList.get(i);
-                detail.setOrderId(orderId);
-                iGeneralDao.save(detail);
-                int detailId = detail.getDetailId();
+                String detailSql = " insert into tb_order_detail(order_id,goods_id,goods_name,goods_spec,goods_spec_name,goods_count,sale_money,goods_true_money,goods_purchase_price,time_price,deposit_price," +
+                        "shop_id,shop_name,out_code,get_addr_id,get_addr_name,get_time,back_addr_id,back_addr_name,back_time,detail_status," +
+                        "is_coupon,createtime,lastaltertime,lastalterman,remark,goods_img,cart_id,time_goods_id,goods_spec_name_str) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                int detailId = iGeneralDao.executeUpdateForSQL(detailSql, orderId, detail.getGoodsId(), detail.getGoodsName(), detail.getGoodsSpec(), detail.getGoodsSpecName(), detail.getGoodsCount(), detail.getSaleMoney()
+                        , detail.getGoodsTrueMoney(), detail.getGoodsPurchasePrice(), detail.getTimePrice(), detail.getDepositPrice(), detail.getShopId(), detail.getShopName(), detail.getOutCode(), detail.getGetAddrId(), detail.getGetAddrName()
+                        , detail.getGetTime(), detail.getBackAddrId(), detail.getBackAddrName(), detail.getBackTime(), detail.getDetailStatus(), detail.getIsCoupon(), detail.getCreatetime(), detail.getLastaltertime(), detail.getLastalterman()
+                        , detail.getRemark(), detail.getGoodsImg(), detail.getCartId(), detail.getTimeGoodsId(), detail.getGoodsSpecNameStr());
+
+                LOG.info("-----detailId--------" + detailId);
                 String key = detail.getGoodsId() + "-" + detail.getGoodsSpec();
                 JSONArray detailPropList = detailPropMap.get(key);
                 if (null != detailPropList) {
@@ -173,7 +180,13 @@ public class OrderDaoImpl implements IOrderDao {
             return orderId;
         } catch (Exception e) {
             LOG.error("--------订单保存失败------", e);
+            throw new RuntimeException();
         }
-        return 0;
+    }
+
+    @Override
+    public void deleteShopCartByCartIds(int userId, String cartIds, int status) {
+        String sql = " update tb_order_cart set `status`=" + status + " where cart_id in (" + cartIds + ") and user_id = " + userId + " ";
+        iGeneralDao.executeUpdateForSQL(sql);
     }
 }

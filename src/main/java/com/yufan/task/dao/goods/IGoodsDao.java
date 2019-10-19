@@ -112,4 +112,19 @@ public interface IGoodsDao {
 
     public List<Map<String, Object>> queryTbGoodsSkuListMapBySkuIds(String skuIds);
 
+    /**
+     * 减少抢购商品库存
+     */
+    public void subtractTimeGoodsStore(int timeGoodsId, int num);
+
+    /**
+     * 减少商品库存
+     */
+    public void subtractGoodsStore(int goodsId, int num);
+
+    /**
+     * 减少商品sku库存
+     */
+    public void subtractGoodsSkuStore(int goodsId, int skuId, int num);
+
 }

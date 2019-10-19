@@ -33,4 +33,7 @@ public class GoodsCondition {
 
     @JSONField(name = "prop_id")
     private Integer propId;//属性
+
+    @JSONField(name = "user_id")
+    private Integer userId;
 }

@@ -97,13 +97,32 @@ public class CreateOrder implements IResultOut {
 
     /**
      * 创建订单
+     * {
+     * "user_id": 1,
+     * "time_goods_id": 0,
+     * "user_addr_id": 10,
+     * "shop_id": 1,
+     * "order_price": 23.02,
+     * "real_price": 63.00,
+     * "goods_price_all": 65,
+     * "discounts_id": 0,
+     * "goods_list": {
+     * "goods_id": 100,
+     * "goods_count": 10,
+     * "sku_id": 0,
+     * "cart_id": 10,
+     * "detail_prop": [{
+     * "property_key": "iccid",
+     * "property_value": "84852",
+     * "remark": "001"
+     * }]* 	}
+     * }
      *
      * @return
      */
     public synchronized String createOrder(JSONObject data) {
         JSONObject dataJson = new JSONObject();
         try {
-            //{"user_id":1, "time_goods_id":0,"goods_list":{"goods_id":100,"goods_count":10,"sku_id":0,"cart_id":10,"detail_prop":[{"property_key":"iccid","property_value":"84852","remark":"001"}]}}
             Integer userId = data.getInteger("user_id");
             Integer timeGoodsId = data.getInteger("time_goods_id");
             JSONArray goodsList = data.getJSONArray("goods_list");
@@ -211,15 +230,13 @@ public class CreateOrder implements IResultOut {
                 //查询属性属性值
                 List<Map<String, Object>> itemPropList = iCategoryDao.loadPropValueItem(propCodes);
                 for (int i = 0; i < itemPropList.size(); i++) {
-                    String valueId = list.get(i).get("value_id").toString();
-                    String propName = list.get(i).get("prop_name").toString();
-                    String valueName = list.get(i).get("value_name").toString();
+                    String valueId = itemPropList.get(i).get("value_id").toString();
+                    String propName = itemPropList.get(i).get("prop_name").toString();
+                    String valueName = itemPropList.get(i).get("value_name").toString();
                     propValueMap.put(valueId, propName + "`" + valueName);
                 }
             }
-            LOG.info("--------运费------" + freight);
             LOG.info("------优惠价格--------" + discountsPrice);
-
             LOG.info("---开始校验(库存和限购)---");
             //判断库存
             BigDecimal timePrice = new BigDecimal("0.00");
@@ -302,6 +319,7 @@ public class CreateOrder implements IResultOut {
 
                 int isSingle = Integer.parseInt(goods.get("is_single").toString());
                 BigDecimal goodsPrice = new BigDecimal(goods.get("now_money").toString());//商品销售价格
+                int goodsNum = Integer.parseInt(goods.get("goods_num").toString());
 
                 if (isSingle == 0 && (skuId == null || skuId == 0)) {
                     LOG.info("------商品信息有误-----goodsId: " + goodsId);
@@ -314,11 +332,11 @@ public class CreateOrder implements IResultOut {
                         LOG.info("------商品sku信息有误-----goodsId: " + goodsId + "   skuId:" + skuId);
                         return packagMsg(ResultCode.GOODSINFO_NOT_EXIST.getResp_code(), dataJson);
                     }
-                    int skuNum = Integer.parseInt(goodsSku.get("sku_num").toString());
+                    goodsNum = Integer.parseInt(goodsSku.get("sku_num").toString());
                     propCode = goodsSku.get("prop_code").toString();
-                    goodsPrice = new BigDecimal(goods.get("now_money").toString());//sku销售价格
-                    if (goodsCount > skuNum) {
-                        LOG.info("-------商品sku库存不足---------goodsId: " + goodsId + "   skuId:" + skuId + "  skuNum:" + skuNum);
+                    goodsPrice = new BigDecimal(goodsSku.get("now_money").toString());//sku销售价格
+                    if (goodsCount > goodsNum) {
+                        LOG.info("-------商品sku库存不足---------goodsId: " + goodsId + "   skuId:" + skuId + "  skuNum:" + goodsNum);
                         return packagMsg(ResultCode.GOODS_STORE_NOENOUGH.getResp_code(), dataJson);
                     }
                     //如果是sku则以sku为准
@@ -336,7 +354,6 @@ public class CreateOrder implements IResultOut {
                 }
                 //商品
                 detailPropMap.put(goodsId + "-" + propCode + skuId, detailPropArray);
-                int goodsNum = Integer.parseInt(goods.get("goods_num").toString());
                 if (goodsCount > goodsNum) {
                     LOG.info("-------商品库存不足---------goodsId: " + goodsId + "  goodsNum:" + goodsNum);
                     return packagMsg(ResultCode.GOODS_STORE_NOENOUGH.getResp_code(), dataJson);
@@ -444,7 +461,7 @@ public class CreateOrder implements IResultOut {
             String postNo = "";
             String userRemark = StringUtils.isEmpty(data.getString("user_remark")) ? "" : data.getString("user_remark");
             String serviceRemark = "";
-            Integer orderStatus = orderPriceCheck.compareTo(new BigDecimal("0.00")) == 0 ? 2 : 0;//0待付款1已付款2确认中3已失败4待发货5待收货6已完成7已取消8已删除9退款中10已退款
+            Integer orderStatus = orderPriceCheck.compareTo(new BigDecimal("0.00")) == 0 ? 1 : 0;//0待付款1已付款3已失败4待发货5待收货6已完成7已取消8已删除9退款中10已退款
             Timestamp orderTime = new Timestamp(new Date().getTime());
             //Timestamp postTime = null;
             Integer businessType = data.containsKey("business_type") ? data.getInteger("business_type") : 1;//1正常下单2抢购3预定4租赁
@@ -506,6 +523,29 @@ public class CreateOrder implements IResultOut {
             order.setUserReadMark(userReadMark);
             int index = iOrderDao.createOrder(order, detailList, detailPropMap);
             if (index > 0) {
+                //删除购物车
+                if (StringUtils.isNotEmpty(cartIds)) {
+                    iOrderDao.deleteShopCartByCartIds(userId, cartIds, 3);
+                }
+                //修改库存
+                if (null != timeGoodsId && timeGoodsId > 0) {
+                    Integer goodsCount = goodsList.getJSONObject(0).getInteger("goods_count");
+                    LOG.info("----删除抢购商品库存----timeGoodsId:" + timeGoodsId + "  goodsCount:" + goodsCount);
+                    iGoodsDao.subtractTimeGoodsStore(timeGoodsId, goodsCount);
+                } else {
+                    for (int i = 0; i < goodsList.size(); i++) {
+                        Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");
+                        Integer goodsCount = goodsList.getJSONObject(i).getInteger("goods_count");
+                        Integer skuId = goodsList.getJSONObject(i).getInteger("sku_id");
+                        if (null != skuId && skuId > 0) {
+                            LOG.info("----删除商品sku库存----goodsId:" + goodsId + "  skuId:" + skuId + "  goodsCount:" + goodsCount);
+                            iGoodsDao.subtractGoodsSkuStore(goodsId, skuId, goodsCount);
+                        } else {
+                            LOG.info("----删除商品库存----goodsId:" + goodsId + "  goodsCount:" + goodsCount);
+                            iGoodsDao.subtractGoodsStore(goodsId, goodsCount);
+                        }
+                    }
+                }
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
             }
             LOG.info("------订单创建失败-----------");

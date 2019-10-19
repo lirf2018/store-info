@@ -1,10 +1,13 @@
-package com.yufan.task.service.impl.history;
+package com.yufan.task.service.impl.category;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
+import com.yufan.pojo.TbCategory;
+import com.yufan.task.dao.category.ICategoryDao;
 import com.yufan.task.dao.history.IHistoryDao;
+import com.yufan.task.service.impl.history.QueryHistoryList;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,31 +20,27 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
  * 创建人: lirf
- * 创建时间:  2019/8/28 16:09
- * 功能介绍:
+ * 创建时间:  2019/10/19 12:19
+ * 功能介绍: 查询分类
  */
-@Service("query_history_list")
-public class QueryHistoryList implements IResultOut {
+@Service("query_category_detail")
+public class QueryCategory implements IResultOut {
 
-    private Logger LOG = Logger.getLogger(QueryHistoryList.class);
+    private Logger LOG = Logger.getLogger(QueryCategory.class);
 
     @Autowired
-    private IHistoryDao iHistoryDao;
+    private ICategoryDao iCategoryDao;
 
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
         JSONObject data = receiveJsonBean.getData();
         try {
-            Integer userId = data.getInteger("user_id");
+            Integer categoryId = data.getInteger("category_id");
 
-            List<Map<String, Object>> historyList = iHistoryDao.queryHistorySearchList(9);
-            List<Map<String, Object>> userHistoryList = new ArrayList<>();
-            if (userId != null && userId > 0) {
-                userHistoryList = iHistoryDao.queryUserHistorySearchList(userId,9);
-            }
-            dataJson.put("history_list", historyList);
-            dataJson.put("user_history_list", userHistoryList);
+            TbCategory category = iCategoryDao.loadTbCategoryById(categoryId);
+            dataJson.put("category_id", categoryId);
+            dataJson.put("category_name", category.getCategoryName());
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
@@ -54,6 +53,10 @@ public class QueryHistoryList implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
 
+            Integer categoryId = data.getInteger("category_id");
+            if (categoryId == null) {
+                return false;
+            }
 
             return true;
         } catch (Exception e) {

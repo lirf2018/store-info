@@ -5,7 +5,11 @@ import com.yufan.bean.GoodsCondition;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
+import com.yufan.pojo.TbCategory;
+import com.yufan.pojo.TbSearchHistory;
+import com.yufan.task.dao.category.ICategoryDao;
 import com.yufan.task.dao.goods.IGoodsDao;
+import com.yufan.task.dao.history.IHistoryDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
@@ -34,6 +36,8 @@ public class QueryGoodsList implements IResultOut {
     @Autowired
     private IGoodsDao iGoodsDao;
 
+    @Autowired
+    private IHistoryDao iHistoryDao;
 
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
@@ -44,14 +48,15 @@ public class QueryGoodsList implements IResultOut {
             PageInfo page = iGoodsDao.loadGoodsList(goodsCondition);
             List<Map<String, Object>> outList = new ArrayList<>();
             List<Map<String, Object>> listData = page.getResultListMap();
+            String categoryName = "";
             for (int i = 0; i < listData.size(); i++) {
                 Map<String, Object> map = new HashMap<>();
                 int isSingle = Integer.parseInt(listData.get(i).get("is_single").toString());
                 map.put("goods_id", Integer.parseInt(listData.get(i).get("goods_id").toString()));
                 map.put("title", listData.get(i).get("title"));
                 map.put("goods_name", listData.get(i).get("goods_name"));
-                map.put("true_money", listData.get(i).get("true_money")+"");
-                map.put("now_money", listData.get(i).get("now_money")+"");
+                map.put("true_money", listData.get(i).get("true_money") + "");
+                map.put("now_money", listData.get(i).get("now_money") + "");
                 map.put("goods_img", listData.get(i).get("goods_img"));
                 map.put("sell_count", Integer.parseInt(listData.get(i).get("sell_count").toString()));
                 map.put("is_single", isSingle);//如果为非单品 页面价格应该显示sku区间价格
@@ -72,6 +77,20 @@ public class QueryGoodsList implements IResultOut {
                 }
                 outList.add(map);
             }
+            //增加查询历史记录
+            if (StringUtils.isNotEmpty(goodsCondition.getGoodsName())) {
+                TbSearchHistory searchHistory = new TbSearchHistory();
+                searchHistory.setType(1);
+                searchHistory.setUserId(goodsCondition.getUserId());
+                searchHistory.setTypeWord(goodsCondition.getGoodsName());
+                searchHistory.setStatus(1);
+                searchHistory.setCreatetime(new Timestamp(new Date().getTime()));
+                searchHistory.setShopId(0);
+
+                iHistoryDao.saveSearchData(searchHistory);
+            }
+
+            dataJson.put("category_name", categoryName);
 
             dataJson.put("has_next", page.isHasNext());
             dataJson.put("curre_page", page.getCurrePage());

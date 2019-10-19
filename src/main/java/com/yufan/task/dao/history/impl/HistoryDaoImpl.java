@@ -42,4 +42,9 @@ public class HistoryDaoImpl implements IHistoryDao {
         String sql = " update tb_search_history set STATUS=0 where user_id=? and status=1 ";
         iGeneralDao.executeUpdateForSQL(sql, userId);
     }
+
+    @Override
+    public int saveSearchData(Object object) {
+        return iGeneralDao.save(object);
+    }
 }

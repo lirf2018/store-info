@@ -115,4 +115,12 @@ public interface IOrderDao {
      */
     public int createOrder(TbOrder order, List<TbOrderDetail> detailList, Map<String, JSONArray> detailPropMap);
 
+
+    /**
+     * 删除购物
+     *
+     * @param cartIds
+     */
+    public void deleteShopCartByCartIds(int userId, String cartIds, int status);
+
 }
