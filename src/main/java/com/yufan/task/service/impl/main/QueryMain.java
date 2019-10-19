@@ -96,10 +96,13 @@ public class QueryMain implements IResultOut {
             for (int i = 0; i < listWeight.size(); i++) {
                 Map<String, Object> map = listWeight.get(i);
                 int goodsId = Integer.parseInt(map.get("goods_id").toString());
+                int isSingle = Integer.parseInt(map.get("is_single").toString());
                 String title = map.get("title").toString();
                 String goodsName = map.get("goods_name").toString();
-                BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal nowMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                String skuNowMoney = map.get("sku_now_money").toString();
+
+                String trueMoney = map.get("true_money").toString();
+                String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 //
@@ -111,6 +114,8 @@ public class QueryMain implements IResultOut {
                 goods.put("now_money", nowMoney);
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
+                goods.put("is_single", isSingle);
+                goods.put("sku_now_money", skuNowMoney);
 
                 weightGoodsArray.add(goods);
             }
@@ -123,10 +128,12 @@ public class QueryMain implements IResultOut {
             for (int i = 0; i < listNew.size(); i++) {
                 Map<String, Object> map = listNew.get(i);
                 int goodsId = Integer.parseInt(map.get("goods_id").toString());
+                int isSingle = Integer.parseInt(map.get("is_single").toString());
+                String skuNowMoney = map.get("sku_now_money").toString();
                 String title = map.get("title").toString();
                 String goodsName = map.get("goods_name").toString();
-                BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal nowMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                String trueMoney = map.get("true_money").toString();
+                String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 //
@@ -138,6 +145,8 @@ public class QueryMain implements IResultOut {
                 goods.put("now_money", nowMoney);
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
+                goods.put("is_single", isSingle);
+                goods.put("sku_now_money", skuNowMoney);
 
                 newGoodsArray.add(goods);
             }
@@ -150,10 +159,12 @@ public class QueryMain implements IResultOut {
             for (int i = 0; i < listHot.size(); i++) {
                 Map<String, Object> map = listHot.get(i);
                 int goodsId = Integer.parseInt(map.get("goods_id").toString());
+                int isSingle = Integer.parseInt(map.get("is_single").toString());
+                String skuNowMoney = map.get("sku_now_money").toString();
                 String title = map.get("title").toString();
                 String goodsName = map.get("goods_name").toString();
-                BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal nowMoney = new BigDecimal(map.get("now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                String trueMoney = map.get("true_money").toString();
+                String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 //
@@ -165,6 +176,8 @@ public class QueryMain implements IResultOut {
                 goods.put("now_money", nowMoney);
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
+                goods.put("is_single", isSingle);
+                goods.put("sku_now_money", skuNowMoney);
 
                 hotGoodsArray.add(goods);
             }

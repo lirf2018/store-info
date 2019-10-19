@@ -22,8 +22,8 @@ public class GoodsCondition {
     @JSONField(name = "goods_name")
     private String goodsName;
 
-    @JSONField(name = "type")
-    private String type; //type 查询类别 最新new, 最热 hot, 推荐 weight
+    @JSONField(name = "search_type")
+    private String searchType; //type 查询类别 最新new, 最热 hot, 推荐 weight
 
     @JSONField(name = "level_ids")
     private String levelIds;

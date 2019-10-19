@@ -74,9 +74,9 @@ public class GoodsDaoImpl implements IGoodsDao {
         if (StringUtils.isNotEmpty(goodsCondition.getLevelIds())) {
             sql.append(" and (g.level_id in (").append(goodsCondition.getLevelIds()).append(") or g.goods_id in (select goods_id from tb_goods where category_id in (SELECT ca.category_id from tb_category ca JOIN tb_level_category_rel rel on rel.category_id=ca.category_id where level_id in (").append(goodsCondition.getLevelIds()).append(")))) ");
         }
-        if ("new".equals(goodsCondition.getType())) {
+        if ("new".equals(goodsCondition.getSearchType())) {
             sql.append(" ORDER BY g.createtime desc,g.goods_id desc ");
-        } else if ("hot".equals(goodsCondition.getType())) {
+        } else if ("hot".equals(goodsCondition.getSearchType())) {
             sql.append(" ORDER BY g.sell_count desc,g.goods_id desc ");
         } else {
             sql.append(" ORDER BY g.data_index desc,g.goods_id desc ");
@@ -121,8 +121,10 @@ public class GoodsDaoImpl implements IGoodsDao {
     public List<Map<String, Object>> mainGoodsListMap(int size, String type) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
+        sql.append(" ,IFNULL(sku.now_money,0) sku_now_money ");
         sql.append(" from tb_goods g ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
+        sql.append(" LEFT JOIN (SELECT goods_id,now_money from tb_goods_sku sku where `status`=1  GROUP BY goods_id ORDER BY now_money ASC) sku on sku.goods_id=g.goods_id ");
         sql.append(" where NOW()>=g.start_time and NOW()<=g.end_time and g.`status`=1 and g.is_putaway=2 and s.`status`=1 ");
         if ("new".equals(type)) {
             sql.append(" ORDER BY g.createtime desc,g.goods_id desc ");
