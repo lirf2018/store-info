@@ -2,6 +2,7 @@ package com.yufan.task.dao.activity.impl;
 
 import com.yufan.common.dao.base.IGeneralDao;
 import com.yufan.task.dao.activity.IActivityDao;
+import com.yufan.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class ActivityDaoImpl implements IActivityDao {
     @Override
     public List<Map<String, Object>> loadActivityListMap(int size) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT activity_id,activity_title,activity_name,activity_link,CONCAT('',activity_img) as activity_img,activity_intro ");
+        sql.append(" SELECT activity_id,activity_title,activity_name,activity_link,CONCAT('"+ Constants.IMG_WEB_URL +"',activity_img) as activity_img,activity_intro ");
         sql.append(" from tb_activity ");
         sql.append(" where `status`=1 and NOW()>=start_time and NOW()<=end_time ");
         sql.append(" ORDER BY data_index desc,activity_id desc LIMIT 0,").append(size).append(" ");

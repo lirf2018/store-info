@@ -7,11 +7,11 @@ import java.util.Objects;
 
 /**
  * 创建人: lirf
- * 创建时间:  2019/8/25 10:34
+ * 创建时间:  2019/12/7 17:01
  * 功能介绍:
  */
 @Entity
-@Table(name = "tb_user_info", schema = "store-db", catalog = "")
+@Table(name = "tb_user_info" , schema = "store-db" , catalog = "")
 public class TbUserInfo {
     private int userId;
     private String loginName;
@@ -23,18 +23,20 @@ public class TbUserInfo {
     private String userMobile;
     private Integer mobileValite;
     private Integer logCount;
-    private Integer userState;
+    private int userState;
     private Timestamp createtime;
     private Timestamp lastlogintime;
     private Timestamp lastaltertime;
     private String userImg;
     private Integer shopId;
-    private BigDecimal money;
     private String memberId;
+    private BigDecimal money;
+    private Timestamp startTime;
+    private Timestamp endTime;
 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Id
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id" , nullable = false)
     public int getUserId() {
         return userId;
     }
@@ -44,7 +46,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "login_name", nullable = true, length = 255)
+    @Column(name = "login_name" , nullable = true, length = 255)
     public String getLoginName() {
         return loginName;
     }
@@ -54,7 +56,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "login_pass", nullable = true, length = 255)
+    @Column(name = "login_pass" , nullable = true, length = 255)
     public String getLoginPass() {
         return loginPass;
     }
@@ -64,7 +66,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "login_pass_show", nullable = true, length = 255)
+    @Column(name = "login_pass_show" , nullable = true, length = 255)
     public String getLoginPassShow() {
         return loginPassShow;
     }
@@ -74,7 +76,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "nick_name", nullable = true, length = 255)
+    @Column(name = "nick_name" , nullable = true, length = 255)
     public String getNickName() {
         return nickName;
     }
@@ -84,7 +86,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "user_email", nullable = true, length = 255)
+    @Column(name = "user_email" , nullable = true, length = 255)
     public String getUserEmail() {
         return userEmail;
     }
@@ -94,7 +96,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "email_valite", nullable = true)
+    @Column(name = "email_valite" , nullable = true)
     public Integer getEmailValite() {
         return emailValite;
     }
@@ -104,7 +106,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "user_mobile", nullable = true, length = 20)
+    @Column(name = "user_mobile" , nullable = true, length = 20)
     public String getUserMobile() {
         return userMobile;
     }
@@ -114,7 +116,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "mobile_valite", nullable = true)
+    @Column(name = "mobile_valite" , nullable = true)
     public Integer getMobileValite() {
         return mobileValite;
     }
@@ -124,7 +126,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "log_count", nullable = true)
+    @Column(name = "log_count" , nullable = true)
     public Integer getLogCount() {
         return logCount;
     }
@@ -134,17 +136,17 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "user_state", nullable = true)
-    public Integer getUserState() {
+    @Column(name = "user_state" , nullable = false)
+    public int getUserState() {
         return userState;
     }
 
-    public void setUserState(Integer userState) {
+    public void setUserState(int userState) {
         this.userState = userState;
     }
 
     @Basic
-    @Column(name = "createtime", nullable = true)
+    @Column(name = "createtime" , nullable = true)
     public Timestamp getCreatetime() {
         return createtime;
     }
@@ -154,7 +156,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "lastlogintime", nullable = true)
+    @Column(name = "lastlogintime" , nullable = true)
     public Timestamp getLastlogintime() {
         return lastlogintime;
     }
@@ -164,7 +166,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "lastaltertime", nullable = true)
+    @Column(name = "lastaltertime" , nullable = true)
     public Timestamp getLastaltertime() {
         return lastaltertime;
     }
@@ -174,7 +176,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "user_img", nullable = true, length = 255)
+    @Column(name = "user_img" , nullable = true, length = 100)
     public String getUserImg() {
         return userImg;
     }
@@ -184,7 +186,7 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "shop_id", nullable = true)
+    @Column(name = "shop_id" , nullable = true)
     public Integer getShopId() {
         return shopId;
     }
@@ -194,7 +196,17 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "money", nullable = true, precision = 2)
+    @Column(name = "member_id" , nullable = true, length = 50)
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    @Basic
+    @Column(name = "money" , nullable = true, precision = 2)
     public BigDecimal getMoney() {
         return money;
     }
@@ -204,13 +216,23 @@ public class TbUserInfo {
     }
 
     @Basic
-    @Column(name = "member_id", nullable = true, length = 200)
-    public String getMemberId() {
-        return memberId;
+    @Column(name = "start_time" , nullable = true)
+    public Timestamp getStartTime() {
+        return startTime;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public void setStartTime(Timestamp startTime) {
+        this.startTime = startTime;
+    }
+
+    @Basic
+    @Column(name = "end_time" , nullable = true)
+    public Timestamp getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Timestamp endTime) {
+        this.endTime = endTime;
     }
 
     @Override
@@ -219,6 +241,7 @@ public class TbUserInfo {
         if (o == null || getClass() != o.getClass()) return false;
         TbUserInfo userInfo = (TbUserInfo) o;
         return userId == userInfo.userId &&
+                userState == userInfo.userState &&
                 Objects.equals(loginName, userInfo.loginName) &&
                 Objects.equals(loginPass, userInfo.loginPass) &&
                 Objects.equals(loginPassShow, userInfo.loginPassShow) &&
@@ -228,18 +251,19 @@ public class TbUserInfo {
                 Objects.equals(userMobile, userInfo.userMobile) &&
                 Objects.equals(mobileValite, userInfo.mobileValite) &&
                 Objects.equals(logCount, userInfo.logCount) &&
-                Objects.equals(userState, userInfo.userState) &&
                 Objects.equals(createtime, userInfo.createtime) &&
                 Objects.equals(lastlogintime, userInfo.lastlogintime) &&
                 Objects.equals(lastaltertime, userInfo.lastaltertime) &&
                 Objects.equals(userImg, userInfo.userImg) &&
                 Objects.equals(shopId, userInfo.shopId) &&
+                Objects.equals(memberId, userInfo.memberId) &&
                 Objects.equals(money, userInfo.money) &&
-                Objects.equals(memberId, userInfo.memberId);
+                Objects.equals(startTime, userInfo.startTime) &&
+                Objects.equals(endTime, userInfo.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, loginName, loginPass, loginPassShow, nickName, userEmail, emailValite, userMobile, mobileValite, logCount, userState, createtime, lastlogintime, lastaltertime, userImg, shopId, money, memberId);
+        return Objects.hash(userId, loginName, loginPass, loginPassShow, nickName, userEmail, emailValite, userMobile, mobileValite, logCount, userState, createtime, lastlogintime, lastaltertime, userImg, shopId, memberId, money, startTime, endTime);
     }
 }
