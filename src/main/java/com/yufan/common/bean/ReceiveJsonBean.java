@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ReceiveJsonBean {
 
+
     /**
      * 请求对象
      */

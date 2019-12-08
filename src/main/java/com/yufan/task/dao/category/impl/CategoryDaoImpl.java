@@ -196,7 +196,7 @@ public class CategoryDaoImpl implements ICategoryDao {
     @Override
     public List<Map<String, Object>> loadItemPropValueListMap(Integer categoryId, Integer propId, Integer valueId, Integer status) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT value_id, prop_id, value_name, category_id, oute_id, value, data_index,`status`,CONCAT('http', value_img) ");
+        sql.append(" SELECT value_id, prop_id, value_name, category_id, oute_id, value, data_index,`status`,CONCAT('").append(Constants.IMG_WEB_URL).append("', value_img) ");
         sql.append(" as value_img from tb_props_value ");
         sql.append(" where 1 = 1 ");
         if (null != valueId && valueId > 0) {

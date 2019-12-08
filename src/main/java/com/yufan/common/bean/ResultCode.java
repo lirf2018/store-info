@@ -3,7 +3,7 @@ package com.yufan.common.bean;
 public enum ResultCode {
 
     OK(1, "成功"),
-    FAIL(-1, "网络异常"),
+    FAIL(-1, "网络异常,请稍后重试"),
     INFO_ERROR(1000, "接口不存在"),
     SYS_ERROR(1001, "系统错误，请稍后重试"),
     PARAM_ERROR(1002, "参数格式不正确"),
@@ -65,7 +65,8 @@ public enum ResultCode {
     PART_GOODS_STORE_NOENOUGH(10058, "部分商品库存不足"),
     QUERY_NOT_FIND(10059, "查询不存在"),
     OUT_TIME_FIND(10060, "不在活动时间范围内"),
-    CHECK_FIND(10061, "校验失败");
+    CHECK_FIND(10061, "校验失败"),
+    PHONE_HAS_BANG(10062, "手机已经被绑定"),;
 
 
     private int resp_code;

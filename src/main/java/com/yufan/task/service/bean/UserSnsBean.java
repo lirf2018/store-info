@@ -36,4 +36,7 @@ public class UserSnsBean {
     @JSONField(name = "sns_img")
     private String snsImg;//第三方头像
 
+    @JSONField(name = "is_user_img")
+    private Integer isUseImg;
+
 }
