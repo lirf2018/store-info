@@ -31,6 +31,10 @@ public interface IAccountDao {
      */
     public List<Map<String, Object>> queryUserInfo(String uid, int snsType);
 
+    public List<Map<String, Object>> queryUserInfoByPhone(String phone, int snsType);
+
+    public List<Map<String, Object>> queryUserInfoByLogin(String phone);
+
 
     /**
      * @return
@@ -43,16 +47,25 @@ public interface IAccountDao {
      * @param id
      */
     public void deltVerificationStatus(int id);
+    public void deltVerificationStatus(String validParam, String validCode);
 
 
     /**
-     * 查询有效手机验证码
+     * 查询有效手机验证码(发送成功的)（校验）
      *
      * @param validParam
      * @param validCode
      * @return
      */
     public TbVerification loadVerification(int validType, String validParam, String validCode);
+
+    /**
+     * 查询有效手机验证码(发送成功的)
+     *
+     * @param validParam
+     * @return
+     */
+    public TbVerification loadVerification(int validType, String validParam);
 
     /**
      * 查询手机是否已绑定
@@ -73,6 +86,7 @@ public interface IAccountDao {
 
     /**
      * 更新验证码信息
+     *
      * @param id
      * @param status
      * @param passTime
@@ -80,4 +94,32 @@ public interface IAccountDao {
      * @param sendMsg
      */
     public void updateVerificationInfo(int id, int status, String passTime, int sendStatus, String sendMsg);
+
+    /**
+     * 重置密码
+     * @param phone
+     * @param passwd
+     */
+    public void updateUserLoginPasswd(String phone,String passwd);
+
+
+    /**
+     * 注册账号
+     * @param phone
+     */
+    public void deleteAccount(String phone);
+
+    /**
+     * 删除账号绑定信息
+     */
+    public void deleAccountBangSns(int userId);
+
+
+    /**
+     * 解绑第三方账号
+     * @param userId
+     * @param snsType
+     */
+    public void deleteSnsBang(int userId,int snsType);
+
 }

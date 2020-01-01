@@ -13,6 +13,13 @@ import lombok.Setter;
 @Setter
 public class UserSnsBean {
 
+    //账号注册信息
+    @JSONField(name = "phone")
+    private String phone;
+
+    @JSONField(name = "phone_code")
+    private String phoneCode;
+
 
     @JSONField(name = "user_id")
     private Integer userId;

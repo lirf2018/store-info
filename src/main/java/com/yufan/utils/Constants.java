@@ -61,7 +61,7 @@ public class Constants {
     /**
      * 图片访问路径
      */
-    public static String IMG_WEB_URL = "";
+    public static String IMG_WEB_URL = "";//在数据库参数配置
 
 
     /**
@@ -100,4 +100,44 @@ public class Constants {
     public static String ACCESSKEYID_ALIPAY = "";
     public static String ACCESSKEYSECRET_ALIPAY = "";
 
+
+    /**
+     * 验证码类型:1手机绑定2修改密码3重置密码4手机解绑5手机注册6验证码登录7注销账号
+     */
+    public static Integer VALID_TYPE_1 = 1;
+    public static Integer VALID_TYPE_2 = 2;
+    public static Integer VALID_TYPE_3 = 3;
+    public static Integer VALID_TYPE_4 = 4;
+    public static Integer VALID_TYPE_5 = 5;
+    public static Integer VALID_TYPE_6 = 6;
+    public static Integer VALID_TYPE_7 = 7;
+
+
+    /**
+     * 用户状态   0待验证 1正常 2锁定 3已注销
+     */
+    public static Integer USER_STATUS_0=0;
+    public static Integer USER_STATUS_1=1;
+    public static Integer USER_STATUS_2=2;
+    public static Integer USER_STATUS_3=3;
+
+
+    /**
+     * 用户sns  状态0无效1有效2已解绑
+     */
+    public static Integer USER_SNS_STATUS_0=0;
+    public static Integer USER_SNS_STATUS_1=1;
+    public static Integer USER_SNS_STATUS_2=2;
+
+    /**
+     * 用户snsType   1、腾讯微博；2、新浪微博；3、人人网；4、微信；5、服务窗；6、一起沃；7、Q
+     */
+    public static Integer USER_SNS_TYPE_0=0;
+    public static Integer USER_SNS_TYPE_1=1;
+    public static Integer USER_SNS_TYPE_2=2;
+    public static Integer USER_SNS_TYPE_3=3;
+    public static Integer USER_SNS_TYPE_4=4;
+    public static Integer USER_SNS_TYPE_5=5;
+    public static Integer USER_SNS_TYPE_6=6;
+    public static Integer USER_SNS_TYPE_7=7;
 }

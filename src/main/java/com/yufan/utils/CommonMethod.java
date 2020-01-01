@@ -1,5 +1,9 @@
 package com.yufan.utils;
 
+import com.yufan.pojo.TbVerification;
+import com.yufan.task.dao.account.IAccountDao;
+import org.apache.log4j.Logger;
+
 import java.util.Random;
 
 /**
@@ -8,6 +12,8 @@ import java.util.Random;
  * 功能介绍:
  */
 public class CommonMethod {
+
+    private static Logger LOG = Logger.getLogger(CommonMethod.class);
 
     /**
      * Unicode 转码
@@ -118,5 +124,33 @@ public class CommonMethod {
         Random random = new Random();
         int r = random.nextInt(899) + 100;//随机三位数
         return new StringBuffer().append(addWord).append(time).append(r).toString();
+    }
+
+    /**
+     * 检验手机验证码
+     *
+     * @return
+     */
+    public static boolean checkPhoneCode(int validType, String phone, String phoneCode, IAccountDao iAccountDao) {
+        try {
+            //校验手机验证码
+            TbVerification verification = iAccountDao.loadVerification(validType, phone, phoneCode);
+            if (null == verification) {
+                LOG.info("---手机验证码无效---");
+                return false;
+            }
+            //判断手机验证码是否过期
+            long nowTime = DatetimeUtil.convertStrToDate(DatetimeUtil.getNow(), "yyyy-MM-dd HH:mm:ss").getTime();
+            long passTime = verification.getPassTime().getTime();
+            if (nowTime > passTime) {
+                LOG.info("---手机验证码过期---");
+                iAccountDao.deltVerificationStatus(verification.getId());
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

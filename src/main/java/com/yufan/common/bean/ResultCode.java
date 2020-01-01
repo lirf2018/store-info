@@ -25,7 +25,7 @@ public enum ResultCode {
     GOODS_NOT_EXIST(10018, "商品不存在"),
     FULL_ORDER_CARD(10019, "购物车已满"),
     FAIL_ADD_CARD_LIMIT_GOODS(10020, "操作失败,请查看商品限购规则"),
-    FAIL_USER_INVALIDATE(10021, "用户无效"),
+    FAIL_USER_INVALIDATE(10021, "用户不存在"),
     FAIL_USER_LOCK(10022, "用户已锁定"),
     FAIL_USER_NEED_VERIFY(10023, "用户待验证"),
     LOGIN_NAME_CANNOT_NUM(10024, "登录名称不能是纯数字"),
@@ -43,7 +43,7 @@ public enum ResultCode {
     GOODS_STORE_NOENOUGH(10036, "库存不足"),
     SMS_SEND_FAIL(10037, "短信发送失败"),
     OLD_PASSWD_EROOR(10038, "旧密码有误"),
-    PHONE_HAS_USED(10039, "手机已经被使用"),
+    PHONE_HAS_USED(10039, "手机已经被使用,请更换其它手机号"),
     PASSWD_ERROR(10040, "密码或账号不正确"),
     BIND_ERROR(10041, "未绑定"),
     NET_ERROR(10042, "网络异常,请稍后重试"),
@@ -66,7 +66,8 @@ public enum ResultCode {
     QUERY_NOT_FIND(10059, "查询不存在"),
     OUT_TIME_FIND(10060, "不在活动时间范围内"),
     CHECK_FIND(10061, "校验失败"),
-    PHONE_HAS_BANG(10062, "手机已经被绑定"),;
+    PHONE_HAS_BANG(10062, "手机已经被绑定"),
+    PHONE_ERROR(10063, "当前手机不允许发送验证码");
 
 
     private int resp_code;

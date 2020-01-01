@@ -165,6 +165,13 @@ public class AliyunSmsUtil {
         return querySendDetailsResponse;
     }
 
+    public JSONObject test(){
+        JSONObject result = new JSONObject();
+        result.put("code", 1);
+        result.put("desc", "");
+        return result;
+    }
+
     public static void main(String[] args) throws ClientException, InterruptedException {
 
 //        //发短信
@@ -202,5 +209,7 @@ public class AliyunSmsUtil {
 
     }
 
-
 }
+
+
+

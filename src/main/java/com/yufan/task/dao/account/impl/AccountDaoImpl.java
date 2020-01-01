@@ -6,6 +6,7 @@ import com.yufan.pojo.TbUserInfo;
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
 import com.yufan.task.service.bean.UserSnsBean;
+import com.yufan.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +29,8 @@ public class AccountDaoImpl implements IAccountDao {
     @Override
     public boolean checkWXBang(String openId) {
         try {
-            String sql = " SELECT sns_type,uid from tb_user_sns where uid=? and sns_type=4 and status=1 ";
-            List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql, openId);
+            String sql = " SELECT sns_type,uid from tb_user_sns where uid=? and sns_type=? and status=? ";
+            List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql, openId, Constants.USER_SNS_TYPE_4, Constants.USER_SNS_TYPE_1);
             if (null != list && list.size() == 0) {
                 return false;
             }
@@ -43,13 +44,31 @@ public class AccountDaoImpl implements IAccountDao {
     @Override
     public List<Map<String, Object>> queryUserInfo(String uid, int snsType) {
         StringBuffer sql = new StringBuffer();
-        sql.append("  ");
-        sql.append(" SELECT u.user_id,u.nick_name,u.user_mobile,u.member_id,u.money,DATE_FORMAT(u.start_time,'%Y-%m-%d %T') as start_time,DATE_FORMAT(u.end_time,'%Y-%m-%d %T') as end_time,u.user_img  ");
+        sql.append(" SELECT u.user_id,u.nick_name,u.user_mobile,u.member_id,u.money,DATE_FORMAT(u.start_time,'%Y-%m-%d %T') as start_time,DATE_FORMAT(u.end_time,'%Y-%m-%d %T') as end_time,u.user_img,u.user_state  ");
         sql.append(" ,us.sns_img,us.is_use_img  ");
-        sql.append(" from tb_user_info u JOIN tb_user_sns us on u.user_id-us.user_id  ");
-        sql.append(" where u.user_state != 3 and us.`status` != 3  ");
-        sql.append(" and us.uid=? and us.sns_type=? ");
+        sql.append(" from tb_user_info u JOIN tb_user_sns us on u.user_id-us.user_id ");
+        sql.append(" where u.user_state != 3 ");
+        sql.append(" and us.`status` != 3 and us.uid=? and us.sns_type=? ");
         return iGeneralDao.getBySQLListMap(sql.toString(), uid, snsType);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryUserInfoByPhone(String phone, int snsType) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT u.user_id,u.nick_name,u.user_mobile,u.member_id,u.money,DATE_FORMAT(u.start_time,'%Y-%m-%d %T') as start_time,DATE_FORMAT(u.end_time,'%Y-%m-%d %T') as end_time,u.user_img,u.user_state  ");
+        sql.append(" ,us.sns_img,us.is_use_img  ");
+        sql.append(" from tb_user_info u left join tb_user_sns us on u.user_id-us.user_id and us.`status` != 3 and us.sns_type=?  ");
+        sql.append(" where u.user_state != 3 and u.user_mobile=? ");
+        return iGeneralDao.getBySQLListMap(sql.toString(), snsType, phone);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryUserInfoByLogin(String phone) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT u.user_id,u.nick_name,u.user_mobile,u.member_id,u.money,DATE_FORMAT(u.start_time,'%Y-%m-%d %T') as start_time,DATE_FORMAT(u.end_time,'%Y-%m-%d %T') as end_time,u.user_img,u.user_state,u.login_pass  ");
+        sql.append(" from tb_user_info u ");
+        sql.append(" where u.user_state != 3 and u.user_mobile=?  ");
+        return iGeneralDao.getBySQLListMap(sql.toString(), phone);
     }
 
     @Override
@@ -64,9 +83,21 @@ public class AccountDaoImpl implements IAccountDao {
     }
 
     @Override
+    public void deltVerificationStatus(String validParam, String validCode) {
+        String sql = " update tb_verification set status=2 where valid_param=? and valid_code=? ";
+        iGeneralDao.executeUpdateForSQL(sql, validParam, validCode);
+    }
+
+    @Override
     public TbVerification loadVerification(int validType, String validParam, String validCode) {
         String hql = " from TbVerification where validType=?1 and validParam=?2 and validCode=?3 and status=1 and sendStatus=2 ";
         return iGeneralDao.queryUniqueByHql(hql, validType, validParam, validCode);
+    }
+
+    @Override
+    public TbVerification loadVerification(int validType, String validParam) {
+        String hql = " from TbVerification where validType=?1 and validParam=?2 and status=1 and sendStatus=2 ";
+        return iGeneralDao.queryUniqueByHql(hql, validType, validParam);
     }
 
     @Override
@@ -85,5 +116,29 @@ public class AccountDaoImpl implements IAccountDao {
     public void updateVerificationInfo(int id, int status, String passTime, int sendStatus, String sendMsg) {
         String sql = " update tb_verification set status=?,pass_time=?,lastaltertime=NOW(),send_status=?,send_msg=? where id=? ";
         iGeneralDao.executeUpdateForSQL(sql, status, passTime, sendStatus, sendMsg, id);
+    }
+
+    @Override
+    public void updateUserLoginPasswd(String phone, String passwd) {
+        String sql = " update tb_user_info set login_pass=?,lastaltertime=now() where user_mobile=? and user_state !=3 ";
+        iGeneralDao.executeUpdateForSQL(sql, passwd, phone);
+    }
+
+    @Override
+    public void deleteAccount(String phone) {
+        String sql = " update tb_user_info set user_state=?,lastaltertime=now() where user_mobile=? ";
+        iGeneralDao.executeUpdateForSQL(sql, Constants.USER_STATUS_3, phone);
+    }
+
+    @Override
+    public void deleAccountBangSns(int userId) {
+        String sql = " update tb_user_sns set status=?,update_time=now() where user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, Constants.USER_SNS_STATUS_2, userId);
+    }
+
+    @Override
+    public void deleteSnsBang(int userId, int snsType) {
+        String sql = " update tb_user_sns set status=?,update_time=now() where user_id=? and  sns_type = ? ";
+        iGeneralDao.executeUpdateForSQL(sql, Constants.USER_SNS_STATUS_2, userId, snsType);
     }
 }
