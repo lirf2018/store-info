@@ -70,7 +70,7 @@ public class SendPhoneCode implements IResultOut {
             Random random = new Random();
             int r = random.nextInt(8999) + 1000;//随机4位数
             String validCode = String.valueOf(r);//生成验证码
-            LOG.info("------------生成验证码:" + validCode);
+            LOG.info("--------"+validParam+"----生成验证码:" + validCode);
             //生成记录
             TbVerification verification = new TbVerification();
             verification.setValidType(validType);
