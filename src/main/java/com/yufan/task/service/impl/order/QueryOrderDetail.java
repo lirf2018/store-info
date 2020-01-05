@@ -5,9 +5,11 @@ import com.google.gson.JsonObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
+import com.yufan.pojo.TbOrderRefund;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.dao.param.IParamDao;
 import com.yufan.utils.Constants;
+import com.yufan.utils.DatetimeUtil;
 import com.yufan.utils.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -129,14 +131,27 @@ public class QueryOrderDetail implements IResultOut {
                 detailMap.put("goods_count", goodsCount);
                 detailMap.put("goods_spec_name_str", goodsSpecNameStr);
                 detailList.add(detailMap);
-
                 //计算商品总价
                 goodsPriceAll = goodsPriceAll.add(new BigDecimal(saleMoney.toString()).multiply(new BigDecimal(goodsCount.toString())));
-
             }
 
-            dataJson.put("goods_price_all", goodsPriceAll.toString());
+            //查询退款信息
+            String refundApplyTime = "";//退款申请时间
+            String refundFinishTime = "";//退款完成时间
+            if (dataJson.getInteger("order_status") == Constants.ORDER_STATUS_9) {
+                String format = "yyyy-MM-dd HH:mm:ss";
+                TbOrderRefund refund = iOrderDao.loadOrderRefund(dataJson.getString("order_no"));
+                if (null != refund) {
+                    refundApplyTime = DatetimeUtil.timeStamp2Date(refund.getApplyTime().getTime(), format);
+                    if (null != refund.getFinishTime()) {
+                        refundFinishTime = DatetimeUtil.timeStamp2Date(refund.getFinishTime().getTime(), format);
+                    }
+                }
+            }
 
+            dataJson.put("refund_apply_time", refundApplyTime);
+            dataJson.put("refund_finish_time", refundFinishTime);
+            dataJson.put("goods_price_all", goodsPriceAll.toString());
             dataJson.put("detail_list", detailList);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

@@ -35,19 +35,20 @@ public class Constants {
      * //12	还货中
      * //13	已还货
      */
-    public static Integer ORDER_STATUS_DFK = 0;
-    public static Integer ORDER_STATUS_YFK = 1;
-    public static Integer ORDER_STATUS_YSB = 3;
-    public static Integer ORDER_STATUS_DFH = 4;
-    public static Integer ORDER_STATUS_DSH = 5;
-    public static Integer ORDER_STATUS_YWC = 6;
-    public static Integer ORDER_STATUS_YQX = 7;
-    public static Integer ORDER_STATUS_YSC = 8;
-    public static Integer ORDER_STATUS_TKZ = 9;
-    public static Integer ORDER_STATUS_YTK = 10;
-    public static Integer ORDER_STATUS_CLZ = 11;
-    public static Integer ORDER_STATUS_HHZ = 12;
-    public static Integer ORDER_STATUS_YHH = 13;
+    public static Integer ORDER_STATUS_0 = 0;
+    public static Integer ORDER_STATUS_1 = 1;
+    public static Integer ORDER_STATUS_2 = 2;
+    public static Integer ORDER_STATUS_3 = 3;
+    public static Integer ORDER_STATUS_4 = 4;
+    public static Integer ORDER_STATUS_5 = 5;
+    public static Integer ORDER_STATUS_6 = 6;
+    public static Integer ORDER_STATUS_7 = 7;
+    public static Integer ORDER_STATUS_8 = 8;
+    public static Integer ORDER_STATUS_9 = 9;
+    public static Integer ORDER_STATUS_10 = 10;
+    public static Integer ORDER_STATUS_11 = 11;
+    public static Integer ORDER_STATUS_12 = 12;
+    public static Integer ORDER_STATUS_13 = 13;
 
     /**
      * 数据状态
@@ -116,28 +117,36 @@ public class Constants {
     /**
      * 用户状态   0待验证 1正常 2锁定 3已注销
      */
-    public static Integer USER_STATUS_0=0;
-    public static Integer USER_STATUS_1=1;
-    public static Integer USER_STATUS_2=2;
-    public static Integer USER_STATUS_3=3;
+    public static Integer USER_STATUS_0 = 0;
+    public static Integer USER_STATUS_1 = 1;
+    public static Integer USER_STATUS_2 = 2;
+    public static Integer USER_STATUS_3 = 3;
 
 
     /**
      * 用户sns  状态0无效1有效2已解绑
      */
-    public static Integer USER_SNS_STATUS_0=0;
-    public static Integer USER_SNS_STATUS_1=1;
-    public static Integer USER_SNS_STATUS_2=2;
+    public static Integer USER_SNS_STATUS_0 = 0;
+    public static Integer USER_SNS_STATUS_1 = 1;
+    public static Integer USER_SNS_STATUS_2 = 2;
 
     /**
      * 用户snsType   1、腾讯微博；2、新浪微博；3、人人网；4、微信；5、服务窗；6、一起沃；7、Q
      */
-    public static Integer USER_SNS_TYPE_0=0;
-    public static Integer USER_SNS_TYPE_1=1;
-    public static Integer USER_SNS_TYPE_2=2;
-    public static Integer USER_SNS_TYPE_3=3;
-    public static Integer USER_SNS_TYPE_4=4;
-    public static Integer USER_SNS_TYPE_5=5;
-    public static Integer USER_SNS_TYPE_6=6;
-    public static Integer USER_SNS_TYPE_7=7;
+    public static Integer USER_SNS_TYPE_0 = 0;
+    public static Integer USER_SNS_TYPE_1 = 1;
+    public static Integer USER_SNS_TYPE_2 = 2;
+    public static Integer USER_SNS_TYPE_3 = 3;
+    public static Integer USER_SNS_TYPE_4 = 4;
+    public static Integer USER_SNS_TYPE_5 = 5;
+    public static Integer USER_SNS_TYPE_6 = 6;
+    public static Integer USER_SNS_TYPE_7 = 7;
+
+
+    //交易方式 0现金付款1微信2支付宝3账户余额
+    public static Integer PAY_WAY_0 = 0;
+    public static Integer PAY_WAY_1 = 1;
+    public static Integer PAY_WAY_2 = 2;
+    public static Integer PAY_WAY_3 = 3;
+
 }

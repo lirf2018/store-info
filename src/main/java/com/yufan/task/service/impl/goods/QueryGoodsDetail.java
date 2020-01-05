@@ -91,8 +91,8 @@ public class QueryGoodsDetail implements IResultOut {
             Integer isInvoice = goods.getIsInvoice();
             Integer isPutaway = goods.getIsPutaway();
             Integer property = goods.getProperty();
-            String beginTime = DatetimeUtil.timeStamp2Date(goods.getStartTime().getTime() / 1000, format);
-            String endTime = DatetimeUtil.timeStamp2Date(goods.getEndTime().getTime() / 1000, format);
+            String beginTime = DatetimeUtil.timeStamp2Date(goods.getStartTime().getTime(), format);
+            String endTime = DatetimeUtil.timeStamp2Date(goods.getEndTime().getTime(), format);
             String goodsCode = goods.getGoodsCode();
             String goodsUnit = goods.getGoodsUnit();
             Integer isSingle = goods.getIsSingle();
@@ -148,8 +148,8 @@ public class QueryGoodsDetail implements IResultOut {
                             skuLowMoney = skuNowMoney;
                         }
                     }
-                    map.put("sku_true_money", map.get("sku_true_money")+"");
-                    map.put("sku_now_money", map.get("sku_now_money")+"");
+                    map.put("sku_true_money", map.get("sku_true_money") + "");
+                    map.put("sku_now_money", map.get("sku_now_money") + "");
                     map.put("sku_id", skuId);
                     map.put("sku_num", skuNum);
                     map.put("sku_img", skuImg);
@@ -224,7 +224,7 @@ public class QueryGoodsDetail implements IResultOut {
                 allStatus = 0;
             }
             TbShop shop = iShopJapDao.findOne(goods.getShopId());
-            String shopEndTime = DatetimeUtil.timeStamp2Date(shop.getEnterEndTime().getTime() / 1000, format);
+            String shopEndTime = DatetimeUtil.timeStamp2Date(shop.getEnterEndTime().getTime(), format);
             if (null == shop || shop.getStatus() != 1 || DatetimeUtil.compareDate(nowTime, shopEndTime) > 1) {
                 LOG.info("----店铺无效---");
                 allStatus = 0;
@@ -289,13 +289,13 @@ public class QueryGoodsDetail implements IResultOut {
 
             //商品信息
             dataJson.put("all_status", allStatus);
-            dataJson.put("shop_id",shop.getShopId());
-            dataJson.put("shop_name",shop.getShopName());
+            dataJson.put("shop_id", shop.getShopId());
+            dataJson.put("shop_name", shop.getShopName());
             dataJson.put("goods_name", goodsName);
             dataJson.put("title", title);
             dataJson.put("goods_img", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
-            dataJson.put("true_money", trueMoney+"");
-            dataJson.put("now_money", nowMoney+"");
+            dataJson.put("true_money", trueMoney + "");
+            dataJson.put("now_money", nowMoney + "");
             dataJson.put("intro", intro);
             dataJson.put("is_yuding", isYuding);
             dataJson.put("get_way", getWay);
@@ -325,7 +325,7 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("is_time_goods", isTimeGoods);
             dataJson.put("time_goods_id", timeGoodsId);
             dataJson.put("time_goods_store", timeGoodsStore);
-            dataJson.put("time_price", timePrice+"");
+            dataJson.put("time_price", timePrice + "");
             dataJson.put("is_time_goods_shell", isTimeGoodsShell);
 
             dataJson.put("banner_img_list", bannerImgList);

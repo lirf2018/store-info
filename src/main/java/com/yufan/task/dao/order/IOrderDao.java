@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.yufan.pojo.TbOrder;
 import com.yufan.pojo.TbOrderDetail;
 import com.yufan.pojo.TbOrderDetailProperty;
+import com.yufan.pojo.TbOrderRefund;
 import com.yufan.utils.PageInfo;
 
 import java.util.List;
@@ -122,5 +123,27 @@ public interface IOrderDao {
      * @param cartIds
      */
     public void deleteShopCartByCartIds(int userId, String cartIds, int status);
+
+    /**
+     * 查询订单
+     *
+     * @param orderId
+     * @return
+     */
+    public TbOrder loadOrder(int orderId);
+
+    public TbOrder loadOrder(int orderId, int userId);
+
+
+    public int saveObj(Object obj);
+
+
+    /**
+     * 查询退款信息
+     *
+     * @param orderNo
+     * @return
+     */
+    public TbOrderRefund loadOrderRefund(String orderNo);
 
 }

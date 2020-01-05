@@ -12,6 +12,7 @@ import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.dao.shop.IShopJapDao;
 import com.yufan.utils.CommonMethod;
+import com.yufan.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -461,7 +462,7 @@ public class CreateOrder implements IResultOut {
             String postNo = "";
             String userRemark = StringUtils.isEmpty(data.getString("user_remark")) ? "" : data.getString("user_remark");
             String serviceRemark = "";
-            Integer orderStatus = orderPriceCheck.compareTo(new BigDecimal("0.00")) == 0 ? 1 : 0;//0待付款1已付款3已失败4待发货5待收货6已完成7已取消8已删除9退款中10已退款
+            Integer orderStatus = orderPriceCheck.compareTo(new BigDecimal("0")) == 0 ? Constants.ORDER_STATUS_1 : Constants.ORDER_STATUS_0;//0待付款1已付款3已失败4待发货5待收货6已完成7已取消8已删除9退款中10已退款
             Timestamp orderTime = new Timestamp(new Date().getTime());
             //Timestamp postTime = null;
             Integer businessType = data.containsKey("business_type") ? data.getInteger("business_type") : 1;//1正常下单2抢购3预定4租赁

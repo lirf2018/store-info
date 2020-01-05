@@ -5,6 +5,7 @@ import com.yufan.common.dao.base.IGeneralDao;
 import com.yufan.pojo.TbOrder;
 import com.yufan.pojo.TbOrderDetail;
 import com.yufan.pojo.TbOrderDetailProperty;
+import com.yufan.pojo.TbOrderRefund;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
@@ -130,13 +131,13 @@ public class OrderDaoImpl implements IOrderDao {
 
     @Override
     public void updateOrderStatus(int orderId, int userId, int orderStatus) {
-        String sql = " update tb_order set order_status=?,user_read_mark=1 where order_id=? and user_id=? ";
+        String sql = " update tb_order set order_status=?,user_read_mark=1,lastaltertime=now() where order_id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, orderStatus, orderId, userId);
     }
 
     @Override
     public void updateUserOrderReadMark(int userId, String orderIds) {
-        String sql = " update tb_order set user_read_mark=0 where user_id=? and order_id in (" + orderIds + ") ";
+        String sql = " update tb_order set user_read_mark=0,lastaltertime=now() where user_id=? and order_id in (" + orderIds + ") ";
         iGeneralDao.executeUpdateForSQL(sql, userId);
     }
 
@@ -188,5 +189,28 @@ public class OrderDaoImpl implements IOrderDao {
     public void deleteShopCartByCartIds(int userId, String cartIds, int status) {
         String sql = " update tb_order_cart set `status`=" + status + " where cart_id in (" + cartIds + ") and user_id = " + userId + " ";
         iGeneralDao.executeUpdateForSQL(sql);
+    }
+
+    @Override
+    public TbOrder loadOrder(int orderId) {
+        String hql = " from TbOrder where orderId=?1 ";
+        return iGeneralDao.queryUniqueByHql(hql, orderId);
+    }
+
+    @Override
+    public TbOrder loadOrder(int orderId, int userId) {
+        String hql = " from TbOrder where orderId=?1 and userId=?2 ";
+        return iGeneralDao.queryUniqueByHql(hql, orderId, userId);
+    }
+
+    @Override
+    public int saveObj(Object obj) {
+        return iGeneralDao.save(obj);
+    }
+
+    @Override
+    public TbOrderRefund loadOrderRefund(String orderNo) {
+        String hql = " from TbOrderRefund where orderNo = ?1 ";
+        return iGeneralDao.queryUniqueByHql(hql, orderNo);
     }
 }

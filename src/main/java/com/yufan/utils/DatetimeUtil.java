@@ -585,12 +585,14 @@ public class DatetimeUtil {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(new Date(Long.valueOf(seconds + "000")));
     }
+
     public static String timeStamp2Date(long seconds, String format) {
         if (format == null || format.isEmpty()) {
             format = "yyyy-MM-dd HH:mm:ss";
         }
         SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.format(new Date(Long.valueOf(seconds + "000")));
+//        return sdf.format(new Date(Long.valueOf(seconds + "000")));
+        return sdf.format(new Date(Long.valueOf(seconds)));
     }
 
     /**
@@ -755,7 +757,7 @@ public class DatetimeUtil {
     public static void main(String[] args) throws Exception {
         String str = "2018-11-11 12:10:02";
         Timestamp timestamp = new Timestamp(DatetimeUtil.convertStrToDate(str).getTime());
-        String beginTime = DatetimeUtil.timeStamp2Date(timestamp.getTime()/1000+"", "yyyy-MM-dd HH:mm:ss");
+        String beginTime = DatetimeUtil.timeStamp2Date(timestamp.getTime() / 1000 + "", "yyyy-MM-dd HH:mm:ss");
         System.out.printf(beginTime);
     }
 }
