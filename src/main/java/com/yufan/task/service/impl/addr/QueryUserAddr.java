@@ -103,7 +103,7 @@ public class QueryUserAddr implements IResultOut {
                     userAddrDefaulFreight = freight;
                 }
 
-                map.put("freight", freight.setScale(2, BigDecimal.ROUND_HALF_UP));
+                map.put("freight", freight);
                 outList.add(map);
             }
 

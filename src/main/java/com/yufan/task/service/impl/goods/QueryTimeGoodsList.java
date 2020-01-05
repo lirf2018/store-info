@@ -78,8 +78,8 @@ public class QueryTimeGoodsList implements IResultOut {
                 map.put("goods_id", Integer.parseInt(listData.get(i).get("goods_id").toString()));
                 map.put("title", listData.get(i).get("title"));
                 map.put("goods_name", listData.get(i).get("goods_name"));
-                map.put("true_money", new BigDecimal(listData.get(i).get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP));//商品原价格
-                map.put("now_money", new BigDecimal(listData.get(i).get("time_price").toString()).setScale(2, BigDecimal.ROUND_HALF_UP));//抢购价格
+                map.put("true_money", new BigDecimal(listData.get(i).get("true_money").toString()));//商品原价格
+                map.put("now_money", new BigDecimal(listData.get(i).get("time_price").toString()));//抢购价格
                 map.put("goods_img", listData.get(i).get("goods_img"));
                 map.put("sell_count", Integer.parseInt(listData.get(i).get("sell_count").toString()));
                 map.put("is_single", Integer.parseInt(listData.get(i).get("is_single").toString()));//如果为非单品 页面价格应该显示为多少起

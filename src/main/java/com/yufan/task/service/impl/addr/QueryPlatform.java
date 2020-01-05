@@ -69,7 +69,7 @@ public class QueryPlatform implements IResultOut {
                     String addrName = list.get(j).get("addr_name").toString();
                     String addrLng = list.get(j).get("addr_lng").toString();
                     String addrLat = list.get(j).get("addr_lat").toString();
-                    BigDecimal freight = new BigDecimal(list.get(j).get("freight").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal freight = new BigDecimal(list.get(j).get("freight").toString());
                     detailMap.put("id", id);
                     detailMap.put("detail_addr", detailAddr);
                     detailMap.put("sort_char", sortChar);

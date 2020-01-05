@@ -149,4 +149,12 @@ public class Constants {
     public static Integer PAY_WAY_2 = 2;
     public static Integer PAY_WAY_3 = 3;
 
+
+    /**
+     * 取货方式 收货方式 1.邮寄4.自取5配送 postWay
+     */
+    public static Integer POST_WAY_1 = 1;
+    public static Integer POST_WAY_2 = 2;
+    public static Integer POST_WAY_3 = 3;
+
 }

@@ -153,7 +153,7 @@ public class QueryUserCenter implements IResultOut {
             dataJson.put("order_hhz", c12);//12	还货中
             dataJson.put("order_yhh", c13);//13	已还货
 
-            dataJson.put("order_price_all", orderPriceAll.setScale(2, BigDecimal.ROUND_HALF_UP));
+            dataJson.put("order_price_all", orderPriceAll);
 
             dataJson.put("user_jifen", jifen);
             dataJson.put("user_money", 0.00);//需要增加一张扣除详细表

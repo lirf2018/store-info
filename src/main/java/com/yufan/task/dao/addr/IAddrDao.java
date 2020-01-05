@@ -1,5 +1,6 @@
 package com.yufan.task.dao.addr;
 
+import com.yufan.pojo.TbPlatformAddr;
 import com.yufan.pojo.TbRegion;
 import com.yufan.pojo.TbUserAddr;
 
@@ -78,9 +79,19 @@ public interface IAddrDao {
 
     /**
      * 查询用户收货地址
+     *
      * @param userAddrId
      * @return
      */
     public TbUserAddr loadUserAddrById(int userAddrId);
+
+
+    /**
+     * 查询平台地址
+     *
+     * @param id
+     * @return
+     */
+    public TbPlatformAddr loadPlatformAddr(int id);
 
 }

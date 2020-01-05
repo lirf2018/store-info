@@ -133,7 +133,7 @@ public class QueryGoodsDetail implements IResultOut {
                     Integer skuNum = Integer.parseInt(map.get("sku_num").toString());
                     goodsNum = goodsNum + skuNum;
                     String skuImg = map.get("sku_img") == null ? "" : Constants.IMG_WEB_URL + map.get("sku_img");
-                    BigDecimal skuNowMoney = new BigDecimal(map.get("sku_now_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal skuNowMoney = new BigDecimal(map.get("sku_now_money").toString());
                     String valueIds = map.get("prop_code").toString();
                     String[] valueIdsArray = valueIds.split(";");
                     for (int j = 0; j < valueIdsArray.length; j++) {

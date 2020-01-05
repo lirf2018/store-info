@@ -1,8 +1,10 @@
 package com.yufan.task.dao.addr.impl;
 
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbPlatformAddr;
 import com.yufan.pojo.TbUserAddr;
 import com.yufan.task.dao.addr.IAddrDao;
+import com.yufan.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +95,13 @@ public class AddrDaoImpl implements IAddrDao {
 
     @Override
     public TbUserAddr loadUserAddrById(int userAddrId) {
-        String sql = " from TbUserAddr where id=?1 ";
-        return iGeneralDao.queryUniqueByHql(sql, userAddrId);
+        String hql = " from TbUserAddr where id=?1 ";
+        return iGeneralDao.queryUniqueByHql(hql, userAddrId);
+    }
+
+    @Override
+    public TbPlatformAddr loadPlatformAddr(int id) {
+        String hql = " from TbPlatformAddr where id=?1 and status=?2 ";
+        return iGeneralDao.queryUniqueByHql(hql, id, Constants.DATA_STATUS_YX);
     }
 }

@@ -86,8 +86,8 @@ public class QueryOrderCarts implements IResultOut {
                     String goodsSpec = null == map.get("goods_spec") ? "" : map.get("goods_spec").toString();
                     String goodsSpecName = null == map.get("goods_spec_name") ? "" : map.get("goods_spec_name").toString();
                     Integer goodsCount = Integer.parseInt(map.get("goods_count").toString());
-                    BigDecimal goodsPrice = new BigDecimal(map.get("goods_price").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
-                    BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal goodsPrice = new BigDecimal(map.get("goods_price").toString());
+                    BigDecimal trueMoney = new BigDecimal(map.get("true_money").toString());
                     Integer status = Integer.parseInt(map.get("status").toString());
                     Integer isSingle = Integer.parseInt(map.get("is_single").toString());
                     Integer skuId = Integer.parseInt(map.get("sku_id").toString());

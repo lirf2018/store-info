@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -28,12 +27,11 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 /**
  * 创建人: lirf
  * 创建时间:  2019/10/16 19:51
- * 功能介绍: 创建订单
+ * 功能介绍: 创建订单(全国版备份)
  */
-@Service("create_order")
-public class CreateOrder implements IResultOut {
+public class CreateOrderBack implements IResultOut {
 
-    private Logger LOG = Logger.getLogger(CreateOrder.class);
+    private Logger LOG = Logger.getLogger(CreateOrderBack.class);
 
     @Autowired
     private IOrderDao iOrderDao;
@@ -67,7 +65,7 @@ public class CreateOrder implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             Integer userId = data.getInteger("user_id");
-            Integer userAddrId = data.getInteger("user_addr_id");//用户收货地址
+            Integer userAddrId = data.getInteger("user_addr_id");
             Integer shopId = data.getInteger("shop_id");
             BigDecimal orderPrice = data.getBigDecimal("order_price");//订单支付价格
             BigDecimal realPrice = data.getBigDecimal("real_price");//订单实际价格
@@ -122,91 +120,22 @@ public class CreateOrder implements IResultOut {
      *
      * @return
      */
-    @Transactional
     public synchronized String createOrder(JSONObject data) {
         JSONObject dataJson = new JSONObject();
         try {
             Integer userId = data.getInteger("user_id");
             Integer timeGoodsId = data.getInteger("time_goods_id");
             JSONArray goodsList = data.getJSONArray("goods_list");
-            Integer userAddrId = data.getInteger("user_addr_id");//用户收货地址ID
+            Integer userAddrId = data.getInteger("user_addr_id");//用户收货地址
             Integer shopId = data.getInteger("shop_id");
             BigDecimal orderPrice = data.getBigDecimal("order_price");//订单支付价格
             BigDecimal realPrice = data.getBigDecimal("real_price");//订单实际价格
             BigDecimal goodsPriceAll = data.getBigDecimal("goods_price_all");//商品总价
             Integer discountsId = data.getInteger("discounts_id");//优惠券标识
             BigDecimal discountsPrice = new BigDecimal("0.00");//优惠金额
-            String userName = data.getString("user_name");
-            String userPhone = data.getString("user_phone");
-
-            /**
-             * 收货方式 1.邮寄4.自取5配送 postWay
-             */
-            Integer postWay = data.getInteger("post_way") == null ? Constants.POST_WAY_1 : data.getInteger("post_way");//收货方式 1.邮寄4.自取5配送
-
-            //地址处理（全国地址）
-            BigDecimal freight = new BigDecimal("0.00");// 邮费
-            String userAddrDetail = "";//收货完整地址
-
-            if (Constants.POST_WAY_1 != postWay) {
-                //自取或者配送地址
-                TbPlatformAddr platformAddr = iAddrDao.loadPlatformAddr(userAddrId);
-                if (null == platformAddr) {
-                    LOG.info("----地址查询不存在----platformAddr:" + userAddrId);
-                    return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
-                }
-                //当取货方式为配送时使用
-                String peisongAddrDetail = data.getString("peisong_addr_detail");
-                userAddrDetail = platformAddr.getDetailAddr() + peisongAddrDetail;//收货完整地址
-                freight = platformAddr.getFreight();
-            } else {
-                //邮寄地址
-                TbUserAddr userAddr = iAddrDao.loadUserAddrById(userAddrId);
-                if (null == userAddr) {
-                    LOG.info("----地址查询不存在----userAddrId:" + userAddrId);
-                    return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
-                }
-                userName = userAddr.getUserName();
-                userPhone = userAddr.getUserPhone();
-                userAddrDetail = userAddr.getAddrName();
-
-                //查询运费
-                String regionCodes = userAddr.getAreaIds();
-                String addrIdsArray[] = regionCodes.split("-");
-                regionCodes = regionCodes.replace("-", "','");
-                List<Map<String, Object>> listAddrs = iAddrDao.queryAddrByRegionCode(regionCodes);
-                //运费
-                Map<String, String> addrIdsFreightMap = new HashMap<>();
-                for (int i = 0; i < listAddrs.size(); i++) {
-                    String regionCode = listAddrs.get(i).get("region_code").toString();
-                    BigDecimal freight_ = new BigDecimal(listAddrs.get(i).get("freight").toString());
-                    if (freight_.compareTo(new BigDecimal("0")) > 0) {
-                        addrIdsFreightMap.put(regionCode, freight_.toString());
-                    }
-                }
-                //县
-                String freight3 = addrIdsArray[2];
-                //市
-                String freight2 = addrIdsArray[1];
-                //省
-                String freight1 = addrIdsArray[0];
-                if (addrIdsFreightMap.get(freight3) != null) {
-                    freight = new BigDecimal(addrIdsFreightMap.get(freight3));
-                } else if (addrIdsFreightMap.get(freight2) != null) {
-                    freight = new BigDecimal(addrIdsFreightMap.get(freight2));
-                } else if (addrIdsFreightMap.get(freight1) != null) {
-                    freight = new BigDecimal(addrIdsFreightMap.get(freight1));
-                }
-
-            }
-            LOG.info("-------查询运费为------" + freight);
-            if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(userPhone) || StringUtils.isEmpty(userAddrDetail)) {
-                LOG.info("----地址查询用户信息失败----");
-                return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
-            }
-
 
             int orderCount = 0;
+
             //校验值
             BigDecimal orderPriceCheck = new BigDecimal("0.00");//订单支付价格
             BigDecimal realPriceCheck = new BigDecimal("0.00");//订单实际价格
@@ -216,6 +145,41 @@ public class CreateOrder implements IResultOut {
                 LOG.info("-----------店铺查询无效-----------shopId:" + shopId);
                 return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
             }
+
+            //查询运费
+            TbUserAddr userAddr = iAddrDao.loadUserAddrById(userAddrId);
+            if (null == userAddr) {
+                LOG.info("----地址查询不存在----userAddrId:" + userAddrId);
+                return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+            }
+            BigDecimal freight = new BigDecimal("0.00");
+            String regionCodes = userAddr.getAreaIds();
+            String addrIdsArray[] = regionCodes.split("-");
+            regionCodes = regionCodes.replace("-", "','");
+            List<Map<String, Object>> listAddrs = iAddrDao.queryAddrByRegionCode(regionCodes);
+            //运费
+            Map<String, String> addrIdsFreightMap = new HashMap<>();
+            for (int i = 0; i < listAddrs.size(); i++) {
+                String regionCode = listAddrs.get(i).get("region_code").toString();
+                BigDecimal freight_ = new BigDecimal(listAddrs.get(i).get("freight").toString());
+                if (freight_.compareTo(new BigDecimal("0")) > 0) {
+                    addrIdsFreightMap.put(regionCode, freight_.toString());
+                }
+            }
+            //县
+            String freight3 = addrIdsArray[2];
+            //市
+            String freight2 = addrIdsArray[1];
+            //省
+            String freight1 = addrIdsArray[0];
+            if (addrIdsFreightMap.get(freight3) != null) {
+                freight = new BigDecimal(addrIdsFreightMap.get(freight3));
+            } else if (addrIdsFreightMap.get(freight2) != null) {
+                freight = new BigDecimal(addrIdsFreightMap.get(freight2));
+            } else if (addrIdsFreightMap.get(freight1) != null) {
+                freight = new BigDecimal(addrIdsFreightMap.get(freight1));
+            }
+            LOG.info("-------查询运费为------" + freight);
 
             String goodsIds = "";
             String skuIds = "";
@@ -482,7 +446,9 @@ public class CreateOrder implements IResultOut {
             String orderFrom = "";
             BigDecimal advancePrice = new BigDecimal("0.00");
             BigDecimal needpayPrice = new BigDecimal("0.00");
-
+            String userName = userAddr.getUserName();
+            String userPhone = userAddr.getUserPhone();
+            String userAddrDetail = userAddr.getAddrName();
             Integer advancePayWay = null;
             String advancePayCode = "";
             //Timestamp advancePayTime = null;
@@ -490,7 +456,7 @@ public class CreateOrder implements IResultOut {
             String payCode = "";
             //Timestamp payTime = null;
             String tradeChannel = "";
-
+            Integer postWay = 1;//收货方式 1.邮寄4.自取5配送
             Integer companyCode = null;
             String postNo = "";
             String userRemark = StringUtils.isEmpty(data.getString("user_remark")) ? "" : data.getString("user_remark");

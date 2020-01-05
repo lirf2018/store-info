@@ -49,8 +49,8 @@ public class QuerySecondGoodsDetail implements IResultOut {
             dataJson.put("goods_id", secondGoods.getId());
             dataJson.put("goods_name", secondGoods.getGoodsName());
             dataJson.put("goods_img", Constants.IMG_WEB_URL + secondGoods.getGoodsImg());
-            dataJson.put("true_price", secondGoods.getTruePrice().setScale(2, BigDecimal.ROUND_HALF_UP));
-            dataJson.put("now_price", secondGoods.getNowPrice().setScale(2, BigDecimal.ROUND_HALF_UP));
+            dataJson.put("true_price", secondGoods.getTruePrice());
+            dataJson.put("now_price", secondGoods.getNowPrice());
             dataJson.put("new_info", secondGoods.getNewInfo());
             dataJson.put("is_post", secondGoods.getIsPost());
             dataJson.put("about_price", secondGoods.getAboutPrice());

@@ -78,7 +78,7 @@ public class QueryOrderList implements IResultOut {
                     String shopName = orderData.get(i).get("shop_name").toString();
                     String shopLogo = orderData.get(i).get("shop_logo").toString();
                     mapOrder.put("order_id", Integer.parseInt(orderId));
-                    mapOrder.put("order_price", new BigDecimal(orderPrice).setScale(2, BigDecimal.ROUND_HALF_UP));
+                    mapOrder.put("order_price", new BigDecimal(orderPrice));
                     mapOrder.put("order_count", Integer.parseInt(orderCount));
                     mapOrder.put("order_status", Integer.parseInt(orderStatus));
                     mapOrder.put("order_status_name", statusName.get(orderStatus));
@@ -99,7 +99,7 @@ public class QueryOrderList implements IResultOut {
                         map.put("goods_img", goodsImg);
                         map.put("goods_id", Integer.parseInt(goodsId));
                         map.put("goods_name", goodsName);
-                        map.put("sale_money", new BigDecimal(saleMoney).setScale(2, BigDecimal.ROUND_HALF_UP));
+                        map.put("sale_money", new BigDecimal(saleMoney));
                         map.put("goods_count", Integer.parseInt(goodsCount));
                         map.put("goods_spec_name_str", goodsSpecNameStr);
                         detailList.add(map);
