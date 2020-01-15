@@ -157,4 +157,10 @@ public class Constants {
     public static Integer POST_WAY_2 = 2;
     public static Integer POST_WAY_3 = 3;
 
+
+    /**
+     * 支付结果
+     */
+    public static Integer PAY_STATUS = 1;//成功
+
 }

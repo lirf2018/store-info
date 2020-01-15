@@ -86,7 +86,9 @@ public class InfoController {
                 jsonHeaderBean.setResponse(response);
                 //请求业务验证包括时间戳间隔(请求时间相隔不能大于30秒)sign
                 Integer index = jsonHeaderBean.getCheckEmptyValue();
-//                log.info("系统参数为空校验结果=" + index + "---->注 1:req_type为空 2:sid为空 3:data为空 4:timestamp为空 5:sign为空0:正常 ");
+                if (0 != index) {
+                    log.info("系统参数为空校验结果=" + index + "---->注 1:req_type为空 2:sid为空 3:data为空 4:timestamp为空 5:sign为空0:正常 ");
+                }
                 if (null == index || index != 0) {
                     result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
                 } else {
@@ -101,9 +103,9 @@ public class InfoController {
                         if (VerifySign.checkSign(jsonHeaderBean, appsecret)) {
                             IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
                             boolean flag = resultOut.checkParam(jsonHeaderBean);
-                            if(!flag){
+                            if (!flag) {
                                 result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
-                            }else{
+                            } else {
                                 result = resultOut.getResult(jsonHeaderBean);
                             }
                         } else {
@@ -152,9 +154,9 @@ public class InfoController {
                 IResultOut resultOut = ServiceFactory.getService("ydui_citys");
                 //校验参数
                 boolean flag = resultOut.checkParam(jsonHeaderBean);
-                if(!flag){
+                if (!flag) {
                     result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
-                }else{
+                } else {
                     result = resultOut.getResult(jsonHeaderBean);
                 }
             } else {
@@ -195,9 +197,9 @@ public class InfoController {
                 IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
                 //校验参数
                 boolean flag = resultOut.checkParam(jsonHeaderBean);
-                if(!flag){
+                if (!flag) {
                     result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
-                }else{
+                } else {
                     result = resultOut.getResult(jsonHeaderBean);
                 }
             } else {

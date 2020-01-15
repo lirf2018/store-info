@@ -80,6 +80,8 @@ public interface IOrderDao {
      */
     public List<Map<String, Object>> queryUserOrderDetail(int userId, int orderId);
 
+    public List<Map<String, Object>> queryUserOrderDetail(int userId, String orderNo);
+
     /**
      * 查询订单详情属性
      *
@@ -132,6 +134,8 @@ public interface IOrderDao {
      */
     public TbOrder loadOrder(int orderId);
 
+    public TbOrder loadOrder(String orderNo);
+
     public TbOrder loadOrder(int orderId, int userId);
 
 
@@ -146,4 +150,12 @@ public interface IOrderDao {
      */
     public TbOrderRefund loadOrderRefund(String orderNo);
 
+
+    /**
+     * 订单支付成功
+     *
+     * @param orderNo
+     * @return
+     */
+    public int payOrderSuccess(String orderNo,Integer payWay,String payTime,String payCode);
 }

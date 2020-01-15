@@ -58,15 +58,15 @@ public class QueryOrderDetail implements IResultOut {
                 }
             }
             Integer userId = data.getInteger("user_id");
-            Integer orderId = data.getInteger("order_id");
+            String orderNo = data.getString("order_no");
 
             //商品总价
             BigDecimal goodsPriceAll = new BigDecimal(0.00);
 
-            List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderId);
+            List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderNo);
             List<Map<String, Object>> detailList = new ArrayList<>();
             for (int i = 0; i < listOrder.size(); i++) {
-                Object orderNo = listOrder.get(i).get("order_no");
+                Object orderId = listOrder.get(i).get("order_id");
                 Object orderPrice = listOrder.get(i).get("order_price");
                 Object realPrice = listOrder.get(i).get("real_price");
                 Object orderCount = listOrder.get(i).get("order_count");
@@ -165,8 +165,8 @@ public class QueryOrderDetail implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             Integer userId = data.getInteger("user_id");
-            Integer orderId = data.getInteger("order_id");
-            if (null == userId || orderId == null) {
+            String orderNo = data.getString("order_no");
+            if (null == userId || StringUtils.isEmpty(orderNo)) {
                 return false;
             }
             return true;

@@ -72,12 +72,14 @@ public class QueryOrderList implements IResultOut {
                 for (int i = 0; i < orderData.size(); i++) {
                     Map<String, Object> mapOrder = new HashMap<>();
                     String orderId = orderData.get(i).get("order_id").toString();
+                    String orderNo = orderData.get(i).get("order_no").toString();
                     String orderPrice = orderData.get(i).get("order_price").toString();
                     String orderCount = orderData.get(i).get("order_count").toString();
                     String orderStatus = orderData.get(i).get("order_status").toString();
                     String shopName = orderData.get(i).get("shop_name").toString();
                     String shopLogo = orderData.get(i).get("shop_logo").toString();
                     mapOrder.put("order_id", Integer.parseInt(orderId));
+                    mapOrder.put("order_no", orderNo);
                     mapOrder.put("order_price", new BigDecimal(orderPrice));
                     mapOrder.put("order_count", Integer.parseInt(orderCount));
                     mapOrder.put("order_status", Integer.parseInt(orderStatus));

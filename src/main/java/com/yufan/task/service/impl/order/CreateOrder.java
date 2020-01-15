@@ -580,6 +580,7 @@ public class CreateOrder implements IResultOut {
                         }
                     }
                 }
+                dataJson.put("order_no", orderNo);
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
             }
             LOG.info("------订单创建失败-----------");

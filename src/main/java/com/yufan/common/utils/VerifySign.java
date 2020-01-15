@@ -1,5 +1,6 @@
 package com.yufan.common.utils;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.utils.MD5;
@@ -30,16 +31,16 @@ public class VerifySign {
             MyMap map = new MyMap();
             //系统参数
             map.put("sid", bean.getSid());
-            map.put("appsecret", appsecret);
+            map.put("secretKey", appsecret);
             map.put("timestamp", bean.getTimestamp());
 
             JSONObject json = bean.getData();
             for (Object k : json.keySet()) {
                 Object v = json.get(k);
                 //只取data第一层数据
-//                if (null != v && !(v instanceof JSONArray) && v.toString().indexOf("{") == -1 && v.toString().indexOf("[") == -1) {
-                map.put(k.toString(), v);
-//                }
+                if (null != v && !(v instanceof JSONArray) && v.toString().indexOf("{") == -1 && v.toString().indexOf("[") == -1) {
+                    map.put(k.toString(), v);
+                }
             }
             String sign = MD5.enCodeStandard(HelpCommon.getSign(map) + appsecret);
             if (null != getSign && getSign.equals(sign)) {
@@ -50,34 +51,5 @@ public class VerifySign {
         }
 
         return false;
-    }
-
-    public static void main(String[] args) {
-        JSONObject obj = new JSONObject();
-        obj.put("name", "496");
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("b", "sad");
-        obj.put("listr", map);
-
-        List<Map<String, Object>> listmap = new ArrayList<>();
-        Map<String, Object> lmaps1 = new HashMap<String, Object>();
-        lmaps1.put("dd", "枯叶df");
-        Map<String, Object> lmaps2 = new HashMap<String, Object>();
-        lmaps2.put("dd", "枯叶df");
-        listmap.add(lmaps1);
-        listmap.add(lmaps2);
-
-        obj.put("lmaps", listmap);
-
-        List<String> listString = new ArrayList<>();
-        listString.add("工枯叶");
-        listString.add("工枯叶1");
-        obj.put("listString", listString);
-        System.out.println(obj);
-
-        ReceiveJsonBean bean = new ReceiveJsonBean();
-        bean.setData(obj);
-        checkSign(bean, "d");
-
     }
 }
