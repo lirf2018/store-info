@@ -78,8 +78,7 @@ public class OrderRefund implements IResultOut {
             orderRefund.setOrderNo(orderNo);
             orderRefund.setDetailId(0);//默认订单全部
             orderRefund.setApplyReason((byte) 0);//申请理由 0 无理由申请
-            String partnerTradeNo = CommonMethod.randomStr("TD");//商户订单号(作为调用第三方支付平台的凭证),退款流水号
-            orderRefund.setPartnerTradeNo(partnerTradeNo);
+            orderRefund.setPartnerTradeNo("");//由支付系统生成
             orderRefund.setStatus((byte) 0);//状态 0 处理中 1退款成功 2 退款失败  3退款异常
             orderRefund.setRefundDesc("");
             orderRefund.setUserId(userId);
