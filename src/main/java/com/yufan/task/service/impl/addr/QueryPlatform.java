@@ -23,7 +23,7 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 创建时间:  2019/8/28 9:29
  * 功能介绍: 查询平台地址
  */
-@Service("query_Platform")
+@Service("query_platform")
 public class QueryPlatform implements IResultOut {
 
     private Logger LOG = Logger.getLogger(QueryPlatform.class);
@@ -69,6 +69,7 @@ public class QueryPlatform implements IResultOut {
                     String addrName = list.get(j).get("addr_name").toString();
                     String addrLng = list.get(j).get("addr_lng").toString();
                     String addrLat = list.get(j).get("addr_lat").toString();
+                    String storeName = null == list.get(j).get("store_name") ? "" : list.get(j).get("store_name").toString();
                     BigDecimal freight = new BigDecimal(list.get(j).get("freight").toString());
                     detailMap.put("id", id);
                     detailMap.put("detail_addr", detailAddr);
@@ -78,12 +79,13 @@ public class QueryPlatform implements IResultOut {
                     detailMap.put("addr_lng", addrLng);
                     detailMap.put("addr_lat", addrLat);
                     detailMap.put("freight", freight);
+                    detailMap.put("store_name", storeName);
                     outAddrList.add(detailMap);
                 }
                 outMap.put("addr_list", outAddrList);
                 outList.add(outMap);
             }
-            dataJson.put("platform_addr_list",outList);
+            dataJson.put("platform_addr_list", outList);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);

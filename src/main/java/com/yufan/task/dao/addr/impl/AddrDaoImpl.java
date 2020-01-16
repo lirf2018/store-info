@@ -39,7 +39,8 @@ public class AddrDaoImpl implements IAddrDao {
     @Override
     public List<Map<String, Object>> queryPlatformListMap(Integer addrType) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT pa.id,pa.detail_addr,pa.freight,pa.sort_char,pa.addr_type,pa.addr_name,pa.addr_lng,pa.addr_lat from tb_platform_addr pa  ");
+        sql.append(" SELECT pa.id,pa.detail_addr,pa.freight,pa.sort_char,pa.addr_type,pa.addr_name,pa.addr_lng,pa.addr_lat,md.store_name from tb_platform_addr pa  ");
+        sql.append(" LEFT JOIN tb_mendian md on md.store_id=pa.store_id ");
         sql.append(" where pa.status=1  ");
         if (null != addrType) {
             sql.append(" and pa.addr_type=").append(addrType).append(" ");
