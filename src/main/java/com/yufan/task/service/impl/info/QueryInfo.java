@@ -6,7 +6,6 @@ import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbInfo;
 import com.yufan.task.dao.info.IInfoDao;
-import com.yufan.task.service.impl.Test;
 import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
 import org.apache.log4j.Logger;

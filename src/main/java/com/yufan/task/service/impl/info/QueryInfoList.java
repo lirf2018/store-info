@@ -31,8 +31,10 @@ public class QueryInfoList implements IResultOut {
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
+        JSONObject data = receiveJsonBean.getData();
         try {
-            List<Map<String, Object>> list = iInfoDao.queryInfoList(50);
+            Integer size = data.getInteger("size");
+            List<Map<String, Object>> list = iInfoDao.queryInfoList(size);
             dataJson.put("info_list", list);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
