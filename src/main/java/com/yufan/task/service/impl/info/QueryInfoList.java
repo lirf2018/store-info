@@ -1,17 +1,15 @@
-package com.yufan.task.service.impl.addr;
+package com.yufan.task.service.impl.info;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
-import com.yufan.task.dao.addr.IAddrDao;
+import com.yufan.task.dao.info.IInfoDao;
+import com.yufan.task.service.impl.Test;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,27 +17,23 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
  * 创建人: lirf
- * 创建时间:  2020/1/16 13:28
+ * 创建时间:  2020/1/17 22:30
  * 功能介绍:
  */
-@Service("query_platform_list")
-public class QueryPlatformList implements IResultOut {
+@Service("query_info_list")
+public class QueryInfoList implements IResultOut {
 
-    private Logger LOG = Logger.getLogger(QueryPlatformList.class);
+    private Logger LOG = Logger.getLogger(Test.class);
 
     @Autowired
-    private IAddrDao iAddrDao;
-
+    private IInfoDao iInfoDao;
 
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
-        JSONObject data = receiveJsonBean.getData();
         try {
-
-            Integer addrType = data.getInteger("addr_type");
-            List<Map<String, Object>> list = iAddrDao.queryPlatformListMap(addrType);
-            dataJson.put("platform_addr_list", list);
+            List<Map<String, Object>> list = iInfoDao.queryInfoList(50);
+            dataJson.put("info_list", list);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);

@@ -234,4 +234,16 @@ public class GoodsDaoImpl implements IGoodsDao {
         String sql = " update tb_goods_sku set sku_num=sku_num-" + num + " where goods_id=" + goodsId + " and sku_id=" + skuId + " ";
         iGeneralDao.executeUpdateForSQL(sql);
     }
+
+    @Override
+    public void updateGoodsSellCount(int goodsId, int count) {
+        String sql = " update tb_goods set sell_count=sell_count+" + count + " where goods_id=" + goodsId;
+        iGeneralDao.executeUpdateForSQL(sql);
+    }
+
+    @Override
+    public void updateGoodsSkuSellCount(int goodsId, String propCode, int count) {
+        String sql = " update tb_goods_sku set sell_count=sell_count+" + count + " where goods_id=" + goodsId + " and prop_code='" + propCode + "' ";
+        iGeneralDao.executeUpdateForSQL(sql);
+    }
 }

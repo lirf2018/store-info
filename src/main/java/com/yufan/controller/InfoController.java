@@ -90,7 +90,7 @@ public class InfoController {
                     log.info("系统参数为空校验结果=" + index + "---->注 1:req_type为空 2:sid为空 3:data为空 4:timestamp为空 5:sign为空0:正常 ");
                 }
                 if (null == index || index != 0) {
-                    result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+                    result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
                 } else {
                     long now = new Date().getTime() / 1000L;//秒//当前UTC时间戳
                     long betweenTime = Math.abs(now - jsonHeaderBean.getTimestamp());
@@ -104,20 +104,20 @@ public class InfoController {
                             IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
                             boolean flag = resultOut.checkParam(jsonHeaderBean);
                             if (!flag) {
-                                result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
+                                result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
                             } else {
                                 result = resultOut.getResult(jsonHeaderBean);
                             }
                         } else {
-                            result = packagMsg(ResultCode.ERROR_SIGN.getResp_code(), null);
+                            result = packagMsg(ResultCode.ERROR_SIGN.getResp_code(), new JSONObject());
                         }
                     } else {
                         log.info("---->请求的时间差有误,时间差:now=" + now + "-" + jsonHeaderBean.getTimestamp() + "=" + betweenTime + "  s");
-                        result = packagMsg(ResultCode.OUT_OF_TIME.getResp_code(), null);
+                        result = packagMsg(ResultCode.OUT_OF_TIME.getResp_code(), new JSONObject());
                     }
                 }
             } else {
-                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
             log.info("调用结果：" + result);
             pw.write(result);
@@ -126,7 +126,7 @@ public class InfoController {
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             pw.write(result);
             pw.flush();
             pw.close();
@@ -155,12 +155,12 @@ public class InfoController {
                 //校验参数
                 boolean flag = resultOut.checkParam(jsonHeaderBean);
                 if (!flag) {
-                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
+                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
                 } else {
                     result = resultOut.getResult(jsonHeaderBean);
                 }
             } else {
-                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
             log.info("调用结果：" + result);
             pw.write(result);
@@ -169,7 +169,7 @@ public class InfoController {
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             pw.write(result);
             pw.flush();
             pw.close();
@@ -198,12 +198,12 @@ public class InfoController {
                 //校验参数
                 boolean flag = resultOut.checkParam(jsonHeaderBean);
                 if (!flag) {
-                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), null);
+                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
                 } else {
                     result = resultOut.getResult(jsonHeaderBean);
                 }
             } else {
-                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
             log.info("调用结果：" + result);
             pw.write(result);
@@ -212,7 +212,7 @@ public class InfoController {
             return;
         } catch (Exception e) {
             e.printStackTrace();
-            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), null);
+            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             pw.write(result);
             pw.flush();
             pw.close();

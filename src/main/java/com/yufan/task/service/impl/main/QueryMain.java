@@ -10,6 +10,7 @@ import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.activity.IActivityDao;
 import com.yufan.task.dao.banner.IBannerDao;
 import com.yufan.task.dao.goods.IGoodsDao;
+import com.yufan.task.dao.info.IInfoDao;
 import com.yufan.task.dao.param.IParamDao;
 import com.yufan.utils.DatetimeUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,8 @@ public class QueryMain implements IResultOut {
     @Autowired
     private IActivityDao iActivityDao;
 
+    @Autowired
+    private IInfoDao iInfoDao;
 
     @Autowired
     private IParamDao iParamDao;
@@ -225,6 +228,18 @@ public class QueryMain implements IResultOut {
                     LOG.error("----设置参数抢购开始结束时间异常---", e);
                 }
             }
+
+            //查询一条资讯
+            List<Map<String, Object>> list = iInfoDao.queryInfoList(1);
+            String InfoTitle = "";
+            String InfoImg = "";
+            if (null != list && list.size() > 0) {
+                InfoTitle = list.get(0).get("info_title").toString();
+                InfoImg = list.get(0).get("info_img").toString();
+            }
+
+            dataJson.put("info_title", InfoTitle);
+            dataJson.put("info_img", InfoImg);
             dataJson.put("activity_list", activityArray);
             dataJson.put("banner_list", bannerArray);
             dataJson.put("weight_goods_list", weightGoodsArray);

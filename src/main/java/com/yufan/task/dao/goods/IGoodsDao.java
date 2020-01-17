@@ -127,4 +127,18 @@ public interface IGoodsDao {
      */
     public void subtractGoodsSkuStore(int goodsId, int skuId, int num);
 
+    /**
+     * 更新商品销售数
+     * @param goodsId
+     * @param count
+     */
+    public void updateGoodsSellCount(int goodsId, int count);
+
+    /**
+     * 更新商品SKU销售数
+     * @param goodsId
+     * @param propCode
+     * @param count
+     */
+    public void updateGoodsSkuSellCount(int goodsId, String propCode, int count);
 }

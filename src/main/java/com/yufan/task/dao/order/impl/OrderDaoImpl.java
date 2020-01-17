@@ -104,6 +104,7 @@ public class OrderDaoImpl implements IOrderDao {
     public List<Map<String, Object>> queryOrderDetailListmap(String orderIds) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT d.order_id,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
+        sql.append(" ,d.goods_spec ");
         sql.append(" from tb_order_detail d where d.order_id in (").append(orderIds).append(") ORDER BY d.detail_id desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }

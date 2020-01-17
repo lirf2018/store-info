@@ -68,12 +68,13 @@ public class CreateOrder implements IResultOut {
         try {
             Integer userId = data.getInteger("user_id");
             Integer userAddrId = data.getInteger("user_addr_id");//用户收货地址
+            Integer postWay = data.getInteger("post_way") ;
             Integer shopId = data.getInteger("shop_id");
             BigDecimal orderPrice = data.getBigDecimal("order_price");//订单支付价格
             BigDecimal realPrice = data.getBigDecimal("real_price");//订单实际价格
             BigDecimal goodsPriceAll = data.getBigDecimal("goods_price_all");//商品总价
             JSONArray goodsList = data.getJSONArray("goods_list");
-            if (null == goodsList || goodsList.size() == 0 || userId == null || userId == 0) {
+            if (null == postWay || null == goodsList || goodsList.size() == 0 || userId == null || userId == 0) {
                 return false;
             }
             for (int i = 0; i < goodsList.size(); i++) {
@@ -142,7 +143,7 @@ public class CreateOrder implements IResultOut {
             /**
              * 收货方式 1.邮寄4.自取5配送 postWay
              */
-            Integer postWay = data.getInteger("post_way") == null ? Constants.POST_WAY_1 : data.getInteger("post_way");//收货方式 1.邮寄4.自取5配送
+            Integer postWay = data.getInteger("post_way");//收货方式 1.邮寄4.自取5配送地址查询用户信息失败-
 
             //地址处理（全国地址）
             BigDecimal freight = new BigDecimal("0.00");// 邮费
@@ -156,7 +157,7 @@ public class CreateOrder implements IResultOut {
                     return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
                 }
                 //当取货方式为配送时使用
-                String peisongAddrDetail = data.getString("peisong_addr_detail");
+                String peisongAddrDetail = data.getString("peisong_addr_detail") == null ? "" : data.getString("peisong_addr_detail");
                 userAddrDetail = platformAddr.getDetailAddr() + peisongAddrDetail;//收货完整地址
                 freight = platformAddr.getFreight();
             } else {

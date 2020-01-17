@@ -78,8 +78,8 @@ public class QueryUserCenter implements IResultOut {
                 int status = Integer.parseInt(userOrderListMap.get(i).get("order_status").toString());
                 int userReadMark = Integer.parseInt(userOrderListMap.get(i).get("user_read_mark").toString());
                 BigDecimal orderPrice = new BigDecimal(userOrderListMap.get(i).get("order_price").toString());
-                if (status == 6) {
-                    orderPriceAll.add(orderPrice);
+                if (status == Constants.ORDER_STATUS_6) {
+                    orderPriceAll = orderPriceAll.add(orderPrice);
                 }
                 if (userReadMark != 1) {
                     continue;
