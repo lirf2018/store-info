@@ -28,7 +28,7 @@ public class InfoDaoImpl implements IInfoDao {
         if (null == size || size == 0) {
             size = 30;
         }
-        String sql = " SELECT info_id,info_title,info_url,CONCAT('" + Constants.IMG_WEB_URL + "',info_img) as info_img,DATE_FORMAT(create_time,'%Y-%m-%d %T') as create_time,DATE_FORMAT(create_time,'%c月%e日') as showTime,read_count from tb_info where `status`=1 ORDER BY info_index desc,info_id desc LIMIT " + size + " ";
+        String sql = " SELECT info_id,info_title,info_url,CONCAT('" + Constants.IMG_WEB_URL + "',info_img) as info_img,DATE_FORMAT(create_time,'%Y-%m-%d') as create_time,DATE_FORMAT(create_time,'%c月%e日') as show_time,read_count from tb_info where `status`=1 ORDER BY info_index desc,info_id desc LIMIT " + size + " ";
         return iGeneralDao.getBySQLListMap(sql);
     }
 
@@ -41,6 +41,6 @@ public class InfoDaoImpl implements IInfoDao {
     @Override
     public void updateReadCount(int id) {
         String sql = " update tb_info set read_count=read_count+1 where info_id=?  ";
-        iGeneralDao.queryUniqueByHql(sql, id);
+        iGeneralDao.executeUpdateForSQL(sql, id);
     }
 }

@@ -19,7 +19,7 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 创建时间:  2020/1/17 22:30
  * 功能介绍:
  */
-@Service("query_info")
+@Service("query_info_detail")
 public class QueryInfo implements IResultOut {
 
     private Logger LOG = Logger.getLogger(QueryInfo.class);
@@ -43,12 +43,11 @@ public class QueryInfo implements IResultOut {
             iInfoDao.updateReadCount(id);
 
             dataJson.put("info_id", id);
-            dataJson.put("info_img", Constants.IMG_WEB_URL + info.getInfoImg());
-            data.put("info_title", info.getInfoTitle());
-            data.put("info_url", info.getInfoUrl());
-            data.put("info_content", info.getInfoContent());
-            data.put("read_count", info.getReadCount());
-            data.put("create_time", DatetimeUtil.timeStamp2Date(info.getCreateTime().getTime() / 1000, "yyyy-MM-dd HH:mm:ss"));
+            dataJson.put("info_title", info.getInfoTitle());
+            dataJson.put("info_url", info.getInfoUrl());
+            dataJson.put("info_content", info.getInfoContent());
+            dataJson.put("read_count", info.getReadCount());
+            dataJson.put("create_time", DatetimeUtil.timeStamp2Date(info.getCreateTime().getTime(), "yyyy-MM-dd HH:mm:ss"));
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
