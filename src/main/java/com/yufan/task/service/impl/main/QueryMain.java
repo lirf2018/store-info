@@ -108,6 +108,7 @@ public class QueryMain implements IResultOut {
                 String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
+                int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
                 JSONObject goods = new JSONObject();
                 goods.put("goods_id", goodsId);
@@ -119,6 +120,7 @@ public class QueryMain implements IResultOut {
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
                 goods.put("sku_now_money", skuNowMoney);
+                goods.put("is_zi_yin", isZiYin);
 
                 weightGoodsArray.add(goods);
             }
@@ -139,6 +141,7 @@ public class QueryMain implements IResultOut {
                 String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
+                int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
                 JSONObject goods = new JSONObject();
                 goods.put("goods_id", goodsId);
@@ -150,6 +153,7 @@ public class QueryMain implements IResultOut {
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
                 goods.put("sku_now_money", skuNowMoney);
+                goods.put("is_zi_yin", isZiYin);
 
                 newGoodsArray.add(goods);
             }
@@ -170,6 +174,7 @@ public class QueryMain implements IResultOut {
                 String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
+                int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
                 JSONObject goods = new JSONObject();
                 goods.put("goods_id", goodsId);
@@ -180,7 +185,7 @@ public class QueryMain implements IResultOut {
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
-                goods.put("sku_now_money", skuNowMoney);
+                goods.put("is_zi_yin", isZiYin);
 
                 hotGoodsArray.add(goods);
             }
@@ -209,6 +214,7 @@ public class QueryMain implements IResultOut {
                             BigDecimal nowMoney = new BigDecimal(map.get("time_price").toString());//商品抢购价格
                             String goodsImg = map.get("goods_img").toString();
                             int sellCount = Integer.parseInt(map.get("sell_count").toString());
+                            int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                             //
                             JSONObject goods = new JSONObject();
                             goods.put("goods_id", goodsId);
@@ -218,6 +224,7 @@ public class QueryMain implements IResultOut {
                             goods.put("now_money", nowMoney);
                             goods.put("goods_img", goodsImg);
                             goods.put("sell_count", sellCount);
+                            goods.put("is_zi_yin", isZiYin);
 
                             timeGoodsArray.add(goods);
                         }

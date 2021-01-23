@@ -24,6 +24,7 @@ public class TbParam {
     private Integer status;
     private String remark;
     private Integer isMakeSure;
+    private Integer dataIndex;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -146,6 +147,16 @@ public class TbParam {
         this.isMakeSure = isMakeSure;
     }
 
+    @Basic
+    @Column(name = "data_index", nullable = true)
+    public Integer getDataIndex() {
+        return dataIndex;
+    }
+
+    public void setDataIndex(Integer dataIndex) {
+        this.dataIndex = dataIndex;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -162,12 +173,12 @@ public class TbParam {
                 Objects.equals(createtime, param.createtime) &&
                 Objects.equals(status, param.status) &&
                 Objects.equals(remark, param.remark) &&
-                Objects.equals(isMakeSure, param.isMakeSure);
+                Objects.equals(isMakeSure, param.isMakeSure) &&
+                Objects.equals(dataIndex, param.dataIndex);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(paramId, paramName, paramCode, paramKey, paramValue, paramValue1, paramValue2, createman, createtime, status, remark, isMakeSure);
+        return Objects.hash(paramId, paramName, paramCode, paramKey, paramValue, paramValue1, paramValue2, createman, createtime, status, remark, isMakeSure, dataIndex);
     }
 }

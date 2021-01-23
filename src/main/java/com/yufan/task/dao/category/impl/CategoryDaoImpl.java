@@ -72,11 +72,14 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public List<Map<String, Object>> loadLevelListMap(Integer status) {
+    public List<Map<String, Object>> loadLevelListMap(Integer status, Integer categoryTyp) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT level_id,level_code,level_name,concat('" + Constants.IMG_WEB_URL + "',level_img) as level_img from tb_category_level where 1=1 ");
+        sql.append(" SELECT level_id,level_code,level_name,concat('" + Constants.IMG_WEB_URL + "',level_img) as level_img,category_type from tb_category_level where 1=1 ");
         if (null != status) {
             sql.append(" and `status` =1 ");
+        }
+        if (null != categoryTyp) {
+            sql.append(" and `category_type` =").append(categoryTyp).append(" ");
         }
         sql.append(" ORDER BY data_index desc,level_id desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());

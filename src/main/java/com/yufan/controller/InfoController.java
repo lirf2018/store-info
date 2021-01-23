@@ -31,7 +31,7 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
  * 功能介绍: 接口入口
  */
 @Controller
-@RequestMapping(value = "/")
+@RequestMapping(value = "/info")
 public class InfoController {
 
     /**
@@ -80,7 +80,7 @@ public class InfoController {
 //            log.info("接收参数密文:" + message);
             log.info("接收参数明文:" + message);
             JSONObject obj = JSONObject.parseObject(message);
-            if (obj != null) {
+            if (obj != null && obj.size() > 0) {
                 ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
                 jsonHeaderBean.setRequest(request);
                 jsonHeaderBean.setResponse(response);
@@ -178,6 +178,56 @@ public class InfoController {
 
     @RequestMapping(value = "test")
     public void test(HttpServletRequest request, HttpServletResponse response) {
+        String result = "";
+        PrintWriter pw = null;
+        String message = null;
+        try {
+            pw = response.getWriter();
+            message = request.getParameter("message");
+
+            if (null == message || "".equals(message)) {
+                message = readStreamParameter(request.getInputStream());
+            }
+            log.info("接收参数:" + message);
+            JSONObject obj = JSONObject.parseObject(message);
+            if (obj != null && obj.size() > 0) {
+                ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
+                jsonHeaderBean.setRequest(request);
+                jsonHeaderBean.setResponse(response);
+                IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
+                //校验参数
+                boolean flag = resultOut.checkParam(jsonHeaderBean);
+                if (!flag) {
+                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
+                } else {
+                    result = resultOut.getResult(jsonHeaderBean);
+                }
+            } else {
+                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
+            }
+            log.info("调用结果：" + result);
+            pw.write(result);
+            pw.flush();
+            pw.close();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
+            pw.write(result);
+            pw.flush();
+            pw.close();
+        }
+    }
+
+
+    /**
+     * 库存系统
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "kc")
+    public void sysKC(HttpServletRequest request, HttpServletResponse response) {
         String result = "";
         PrintWriter pw = null;
         String message = null;

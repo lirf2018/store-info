@@ -31,7 +31,7 @@ public class ParamDaoImpl implements IParamDao {
             sql.append(" and `status`= ").append(status).append(" ");
         }
 
-        sql.append(" ORDER BY param_code,param_key ");
+        sql.append(" ORDER BY data_index desc, param_code,param_key ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
@@ -46,7 +46,7 @@ public class ParamDaoImpl implements IParamDao {
             sql.append(" and param_code='").append(paramCode).append("' ");
         }
 
-        sql.append(" ORDER BY param_code,param_key ");
+        sql.append(" ORDER BY data_index desc,param_code,param_key ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
@@ -64,7 +64,7 @@ public class ParamDaoImpl implements IParamDao {
             sql.append(" and param_key='").append(paramKey).append("' ");
         }
 
-        sql.append(" ORDER BY param_code,param_key ");
+        sql.append(" ORDER BY data_index desc,param_code,param_key ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

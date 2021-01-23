@@ -10,7 +10,7 @@
     </parent>
     <groupId>store-info</groupId>
     <artifactId>store-info</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>yufan</name>
     <description>Demo project for Spring Boot</description>
 

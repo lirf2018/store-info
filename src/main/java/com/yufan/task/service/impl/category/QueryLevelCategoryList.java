@@ -39,6 +39,7 @@ public class QueryLevelCategoryList implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
 
+            Integer categoryType = data.getInteger("category_type");// 菜单类型 1左侧菜单
             String levelCodes = data.getString("level_codes");//一级分类编码(默认全部)
             String categoryCodes = data.getString("category_codes");//类目编码(默认全部)
 
@@ -75,7 +76,7 @@ public class QueryLevelCategoryList implements IResultOut {
                 }
             }
 
-            List<Map<String, Object>> listLevel = iCategoryDao.loadLevelListMap(Constants.DATA_STATUS_YX);
+            List<Map<String, Object>> listLevel = iCategoryDao.loadLevelListMap(Constants.DATA_STATUS_YX, categoryType);
             List<Map<String, Object>> listLevelOut = new ArrayList<>();
             String levelIds = "";
             for (int i = 0; i < listLevel.size(); i++) {

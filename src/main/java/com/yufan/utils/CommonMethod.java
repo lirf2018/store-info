@@ -2,8 +2,12 @@ package com.yufan.utils;
 
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -152,5 +156,21 @@ public class CommonMethod {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static List<String> replaceSpecialChar(String parmas) {
+        String separator = ";|, |,|; |(\\r\\n)|(\\n)";
+        List<String> list = Arrays.asList(parmas.split(separator));
+        if (list.size() == 0) {
+            return list;
+        } else {
+            ArrayList<String> resultList = new ArrayList<>(list.size());
+            for (int i = 0; i < list.size(); i++) {
+                if (StringUtils.isEmpty((String) list.get(i))) {
+                    resultList.add(list.get(i).trim());
+                }
+            }
+            return resultList;
+        }
     }
 }

@@ -67,7 +67,18 @@ public enum ResultCode {
     OUT_TIME_FIND(10060, "不在活动时间范围内"),
     CHECK_FIND(10061, "校验失败"),
     PHONE_HAS_BANG(10062, "手机已经被绑定"),
-    PHONE_ERROR(10063, "当前手机不允许发送验证码");
+    PHONE_ERROR(10063, "当前手机不允许发送验证码"),
+    THE_SAME_GOODS_WARING(50001, "已存在相同条形码商品，请直接查询使用; 同一条形码的商品规格和规格数必须保持一致"),
+    GOODS_IS_EXIST(50002, "商品已存在"),
+    GOODS_NOT_SALE(50003, "商品已下架"),
+    MEMBER_NOT_EXIST(50004, "会员不存在"),
+    PRICE_ERROR(50005, "销售价格不能小于促销价格; 销售价格不能小于会员价格"),
+    ORDER_SHOPCODE_EXIST(50006, "该店铺码商品已出库,请勿重复添加"),
+    PRICE_ERROR2(50007, "非促销,销售价格必须等于促销价格"),
+    GOODS_NOT_FIND(50008, "店铺码对应的商品不存在"),
+    ORDER_IS_PAY(50009, "订单已付款,请重新开单"),
+    PASS_FAIL_1(50010, "验证不通过"),
+    ADD_TO_FAST(50011, "添加商品过快");
 
 
     private int resp_code;

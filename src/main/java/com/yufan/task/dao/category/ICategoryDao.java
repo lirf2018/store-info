@@ -44,9 +44,10 @@ public interface ICategoryDao {
      * 查询一级分类列表
      *
      * @param status
+     * @param categoryType  菜单类型 1左侧菜单);
      * @return
      */
-    public List<Map<String, Object>> loadLevelListMap(Integer status);
+    public List<Map<String, Object>> loadLevelListMap(Integer status, Integer categoryType);
 
 
     /**

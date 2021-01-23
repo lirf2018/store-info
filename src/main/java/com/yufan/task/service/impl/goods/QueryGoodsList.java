@@ -58,6 +58,7 @@ public class QueryGoodsList implements IResultOut {
                 map.put("true_money", listData.get(i).get("true_money") + "");
                 map.put("now_money", listData.get(i).get("now_money") + "");
                 map.put("goods_img", listData.get(i).get("goods_img"));
+                map.put("is_zi_yin", listData.get(i).get("is_zi_yin"));
                 map.put("sell_count", Integer.parseInt(listData.get(i).get("sell_count").toString()));
                 map.put("is_single", isSingle);//如果为非单品 页面价格应该显示sku区间价格
                 map.put("sku_now_money", 0);

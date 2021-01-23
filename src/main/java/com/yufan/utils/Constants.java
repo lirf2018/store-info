@@ -1,5 +1,8 @@
 package com.yufan.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 创建人: lirf
  * 创建时间:  2019/7/2 11:46
@@ -10,6 +13,7 @@ public class Constants {
     /**
      * 固定系统参数MD5
      */
+    public static String RESET_ORER_PASSWD = "13418915218";
     public static String ADMINPASSWORD = "40999628e3b875dae36bb4867c5c1c5f";//系统管理员固定参数
     public static String SHOPVALIDITY = "2019-01-01";//店铺有有效截止日期
     public static String ACTIVITYDATE = "2019-03-01";//jar包有效日期（4个月必须更新一次jar,防止合作单方面终止）
@@ -162,5 +166,62 @@ public class Constants {
      * 支付结果
      */
     public static Integer PAY_STATUS = 1;//成功
+
+
+    /**
+     * kc 生成序列号类型 1:入库商品店铺号
+     */
+    public static Integer GENERATE_TYPE = 1;//
+
+    /**
+     * 店铺号前缀
+     */
+    public static String SHOP_CODE_MARK = "";
+
+    /**
+     * 控制生成唯一订单
+     */
+    // String uniqueKey = data.getString("unique_key");
+    public static Map<String, String> ORDER_NO_KEY_MAP = new HashMap<>();
+
+    /**
+     * 支付方式 0现金付款1微信2支付宝3账户余额
+     */
+    public static int PAY_TYPE_0 = 0;
+    public static int PAY_TYPE_1 = 1;
+    public static int PAY_TYPE_2 = 2;
+    public static int PAY_TYPE_3 = 3;
+
+    /**
+     * 季度
+     */
+    public static String JIDU_1 = "1";
+    public static String JIDU_2 = "2";
+    public static String JIDU_3 = "3";
+    public static String JIDU_4 = "4";
+
+    public static Map<String, String> MAP_NAME = new HashMap<>();
+    //开单页面扫码添加商品防止重复提交
+    public static Map<String, Long> MAP_GOODS_CODE_LOCK = new HashMap<>();
+
+    static {
+        MAP_NAME.put("payType0", "现金");
+        MAP_NAME.put("payType1", "微信");
+        MAP_NAME.put("payType2", "支付宝");
+        MAP_NAME.put("payType3", "账户余额");
+        MAP_NAME.put("orderStatus0", "待付款");
+        MAP_NAME.put("orderStatus1", "已付款");
+        MAP_NAME.put("orderStatus3", "已失败");
+        MAP_NAME.put("orderStatus4", "待发货");
+        MAP_NAME.put("orderStatus5", "待收货");
+        MAP_NAME.put("orderStatus6", "已完成");
+        MAP_NAME.put("orderStatus7", "已取消");
+        MAP_NAME.put("orderStatus8", "已删除");
+        MAP_NAME.put("orderStatus9", "退款中");
+        MAP_NAME.put("orderStatus10", "已退款");
+        MAP_NAME.put("orderStatus11", "处理中");
+        MAP_NAME.put("orderStatus12", "还货中");
+        MAP_NAME.put("orderStatus13", "已还货");
+    }
 
 }

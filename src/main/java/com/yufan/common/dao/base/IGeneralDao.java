@@ -14,7 +14,7 @@ public interface IGeneralDao {
 //
 //	public List<?> list(String hql, Map<String, Object> params);
 //
-//	public List<?> queryListByHql(String hql, Object... values);
+	public List<?> queryListByHql(String hql, Object... values);
 //
 //	public List<Object[]> queryListBySql(String sql, Object... values);
 //

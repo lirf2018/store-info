@@ -33,7 +33,7 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 /**
  * 创建人: lirf
  * 创建时间:  2019/8/25 11:58
- * 功能介绍: 查询商品详情
+ * 功能介绍: 查询商品详情(加个点，查询sku商品规格时，只查询该商品数据关联的sku规格)
  */
 @Service("query_goods_detail")
 public class QueryGoodsDetail implements IResultOut {
@@ -110,6 +110,7 @@ public class QueryGoodsDetail implements IResultOut {
             BigDecimal advancePrice = goods.getAdvancePrice();
             Integer sellCount = goods.getSellCount();
             Integer isTimeGoods = goods.getIsTimeGoods();
+            Integer isZiYin = goods.getIsZiYin();
 
             Integer timeGoodsId = 0;//抢购商品标识
             BigDecimal timePrice = new BigDecimal(0);//抢购价格
@@ -148,14 +149,14 @@ public class QueryGoodsDetail implements IResultOut {
                             skuLowMoney = skuNowMoney;
                         }
                     }
-                    map.put("sku_true_money", map.get("sku_true_money") + "");
-                    map.put("sku_now_money", map.get("sku_now_money") + "");
-                    map.put("sku_id", skuId);
-                    map.put("sku_num", skuNum);
-                    map.put("sku_img", skuImg);
+                    map.put("skuTrueMoney", map.get("sku_true_money") + "");
+                    map.put("skuNowMoney", map.get("sku_now_money") + "");
+                    map.put("skuId", skuId);
+                    map.put("skuNum", skuNum);
+                    map.put("skuImg", skuImg);
                     skuList.add(map);
                 }
-                dataJson.put("sku_low_money", "￥" + skuLowMoney + " 起");
+                dataJson.put("skuLowMoney", "￥" + skuLowMoney + " 起");
             }
             if (couponId > 0) {
                 //卡券
@@ -201,7 +202,7 @@ public class QueryGoodsDetail implements IResultOut {
                 int imgType = Integer.parseInt(imgListMap.get(i).get("img_type").toString());
                 String imgUrl = imgListMap.get(i).get("img_url").toString();
                 JSONObject img = new JSONObject();
-                img.put("img_url", StringUtils.isEmpty(imgUrl) ? "" : Constants.IMG_WEB_URL + imgUrl);
+                img.put("imgUrl", StringUtils.isEmpty(imgUrl) ? "" : Constants.IMG_WEB_URL + imgUrl);
                 if (imgType == 1) {
                     bannerImgList.add(img);
                 } else if (imgType == 2) {
@@ -252,8 +253,8 @@ public class QueryGoodsDetail implements IResultOut {
                 Integer isShell = Integer.parseInt(propList.get(i).get("it_is_shell").toString());
                 String propName = propList.get(i).get("it_prop_name").toString();
                 Map<String, Object> mapProp = new HashMap<>();
-                mapProp.put("prop_id", propId);
-                mapProp.put("prop_name", propName);
+                mapProp.put("propId", propId);
+                mapProp.put("propName", propName);
 
                 List<Map<String, Object>> valueList = new ArrayList<>();
                 for (int j = 0; j < queryCategoryRelListMap.size(); j++) {
@@ -265,11 +266,11 @@ public class QueryGoodsDetail implements IResultOut {
                         continue;
                     }
                     Map<String, Object> mapValue = new HashMap<>();
-                    mapValue.put("value_id", queryCategoryRelListMap.get(j).get("pv_value_id").toString());
-                    mapValue.put("value_name", queryCategoryRelListMap.get(j).get("pv_value_name").toString());
+                    mapValue.put("valueId", queryCategoryRelListMap.get(j).get("pv_value_id").toString());
+                    mapValue.put("valueName", queryCategoryRelListMap.get(j).get("pv_value_name").toString());
                     valueList.add(mapValue);
                 }
-                mapProp.put("value_list", valueList);
+                mapProp.put("valueList", valueList);
                 if (isShell == 1) {
                     salePropList.add(mapProp);
                 } else {
@@ -282,55 +283,56 @@ public class QueryGoodsDetail implements IResultOut {
             if (null != userId && userId > 0) {
                 cartGoodsCount = iOrderDao.userCartCount(userId);
             }
-            dataJson.put("cart_goods_count", cartGoodsCount);//购物车数量
+            dataJson.put("cartGoodsCount", cartGoodsCount);//购物车数量
 
-            dataJson.put("sale_prop_list", salePropList);
-            dataJson.put("unsale_prop_list", unsalePropList);
+            dataJson.put("salePropList", salePropList);
+            dataJson.put("unsalePropList", unsalePropList);
 
             //商品信息
-            dataJson.put("all_status", allStatus);
-            dataJson.put("shop_id", shop.getShopId());
-            dataJson.put("shop_name", shop.getShopName());
-            dataJson.put("goods_name", goodsName);
+            dataJson.put("allStatus", allStatus);
+            dataJson.put("shopId", shop.getShopId());
+            dataJson.put("shopName", shop.getShopName());
+            dataJson.put("goodsName", goodsName);
             dataJson.put("title", title);
-            dataJson.put("goods_img", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
-            dataJson.put("true_money", trueMoney + "");
-            dataJson.put("now_money", nowMoney + "");
+            dataJson.put("goodsImg", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
+            dataJson.put("trueMoney", trueMoney + "");
+            dataJson.put("nowMoney", nowMoney + "");
             dataJson.put("intro", intro);
-            dataJson.put("is_yuding", isYuding);
-            dataJson.put("get_way", getWay);
-            dataJson.put("is_invoice", isInvoice);
-            dataJson.put("is_putaway", isPutaway);
+            dataJson.put("isYuding", isYuding);
+            dataJson.put("getWay", getWay);
+            dataJson.put("isInvoice", isInvoice);
+            dataJson.put("isPutaway", isPutaway);
             dataJson.put("property", property);
-            dataJson.put("begin_time", beginTime);
-            dataJson.put("end_time", endTime);
-            dataJson.put("goods_code", goodsCode);
-            dataJson.put("goods_unit", goodsUnit);
-            dataJson.put("is_single", isSingle);
-            dataJson.put("goods_num", goodsNum);
-            dataJson.put("is_return", isReturn);
-            dataJson.put("coupon_id", couponId);
+            dataJson.put("beginTime", beginTime);
+            dataJson.put("endTime", endTime);
+            dataJson.put("goodsCode", goodsCode);
+            dataJson.put("goodsUnit", goodsUnit);
+            dataJson.put("isSingle", isSingle);
+            dataJson.put("goodsNum", goodsNum);
+            dataJson.put("isReturn", isReturn);
+            dataJson.put("couponId", couponId);
             dataJson.put("status", status);
             dataJson.put("remark", remark);
-            dataJson.put("goods_type", goodsType);
-            dataJson.put("is_pay_online", isPayOnline);
-            dataJson.put("out_code", outCode);
-            dataJson.put("deposit_money", depositMoney);
-            dataJson.put("peisong_zc_desc", peisongZcDesc);
-            dataJson.put("peisong_pei_desc", peisongPeiDesc);
-            dataJson.put("advance_price", advancePrice);
-            dataJson.put("sell_count", sellCount);
-            dataJson.put("goods_id", goodsId);
+            dataJson.put("goodsType", goodsType);
+            dataJson.put("isPayOnline", isPayOnline);
+            dataJson.put("outCode", outCode);
+            dataJson.put("depositMoney", depositMoney);
+            dataJson.put("peisongZcDesc", peisongZcDesc);
+            dataJson.put("peisongPeiDesc", peisongPeiDesc);
+            dataJson.put("advancePrice", advancePrice);
+            dataJson.put("sellCount", sellCount);
+            dataJson.put("goodsId", goodsId);
+            dataJson.put("isZiYin", isZiYin);
             //抢购商品
-            dataJson.put("is_time_goods", isTimeGoods);
-            dataJson.put("time_goods_id", timeGoodsId);
-            dataJson.put("time_goods_store", timeGoodsStore);
-            dataJson.put("time_price", timePrice + "");
-            dataJson.put("is_time_goods_shell", isTimeGoodsShell);
+            dataJson.put("isTimeGoods", isTimeGoods);
+            dataJson.put("timeGoodsId", timeGoodsId);
+            dataJson.put("timeGoodsStore", timeGoodsStore);
+            dataJson.put("timePrice", timePrice + "");
+            dataJson.put("isTimeGoodsShell", isTimeGoodsShell);
 
-            dataJson.put("banner_img_list", bannerImgList);
-            dataJson.put("goods_img_list", goodsInfoImgList);
-            dataJson.put("goods_sku_list", skuList);
+            dataJson.put("bannerImgList", bannerImgList);
+            dataJson.put("goodsImgList", goodsInfoImgList);
+            dataJson.put("goodsSkuList", skuList);
 
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

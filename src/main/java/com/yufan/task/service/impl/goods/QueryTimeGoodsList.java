@@ -83,6 +83,7 @@ public class QueryTimeGoodsList implements IResultOut {
                 map.put("goods_img", listData.get(i).get("goods_img"));
                 map.put("sell_count", Integer.parseInt(listData.get(i).get("sell_count").toString()));
                 map.put("is_single", Integer.parseInt(listData.get(i).get("is_single").toString()));//如果为非单品 页面价格应该显示为多少起
+                map.put("is_zi_yin", Integer.parseInt(listData.get(i).get("is_zi_yin").toString()));
                 outList.add(map);
             }
 
