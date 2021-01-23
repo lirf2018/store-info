@@ -1,6 +1,7 @@
 package com.yufan.bean;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +13,7 @@ import java.sql.Timestamp;
  * 创建时间:  2019/8/24 19:57
  * 功能介绍:
  */
-@Setter
-@Getter
+@Data
 public class UserCartOrderDetail {
 
     @JSONField(name = "cart_id")
