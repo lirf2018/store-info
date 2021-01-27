@@ -43,7 +43,7 @@ public class ResetOrderPay implements IResultOut {
                 LOG.info("-------查询订单不存在--------");
                 return packagMsg(ResultCode.ORDER_NOT_EXIST.getResp_code(), dataJson);
             }
-            order.setOrderStatus(Constants.ORDER_STATUS_0.byteValue());
+            order.setOrderStatus(new Byte(String.valueOf(Constants.ORDER_STATUS_0)));
             order.setPayMethod(null);
             openOrderDao.updateObj(order);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);

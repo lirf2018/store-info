@@ -12,6 +12,7 @@ import com.yufan.task.dao.banner.IBannerDao;
 import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.task.dao.info.IInfoDao;
 import com.yufan.task.dao.param.IParamDao;
+import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,7 +59,7 @@ public class QueryMain implements IResultOut {
             /**
              * 活动   6个
              */
-            List<Map<String, Object>> activityList = iActivityDao.loadActivityListMap(6);
+            List<Map<String, Object>> activityList = iActivityDao.loadActivityListMap(Constants.SEARCH_COUNT_6);
             JSONArray activityArray = new JSONArray();
             for (int i = 0; i < activityList.size(); i++) {
                 Map<String, Object> map = activityList.get(i);
@@ -78,7 +79,7 @@ public class QueryMain implements IResultOut {
             /**
              * bannel 6个
              */
-            List<Map<String, Object>> bannerList = iBannerDao.loadBannerListMap(6);
+            List<Map<String, Object>> bannerList = iBannerDao.loadBannerListMap(Constants.SEARCH_COUNT_6);
             JSONArray bannerArray = new JSONArray();
             for (int i = 0; i < bannerList.size(); i++) {
                 Map<String, Object> map = bannerList.get(i);
@@ -92,9 +93,9 @@ public class QueryMain implements IResultOut {
             }
 
             /**
-             * 推荐 6个
+             * 推荐 8个
              */
-            List<Map<String, Object>> listWeight = iGoodsDao.mainGoodsListMap(6, "weight");
+            List<Map<String, Object>> listWeight = iGoodsDao.mainGoodsListMap(Constants.SEARCH_COUNT_8, "weight");
             JSONArray weightGoodsArray = new JSONArray();
             for (int i = 0; i < listWeight.size(); i++) {
                 Map<String, Object> map = listWeight.get(i);
@@ -126,9 +127,9 @@ public class QueryMain implements IResultOut {
             }
 
             /**
-             * 新品 6个
+             * 新品 12个
              */
-            List<Map<String, Object>> listNew = iGoodsDao.mainGoodsListMap(6, "new");
+            List<Map<String, Object>> listNew = iGoodsDao.mainGoodsListMap(Constants.SEARCH_COUNT_12, "new");
             JSONArray newGoodsArray = new JSONArray();
             for (int i = 0; i < listNew.size(); i++) {
                 Map<String, Object> map = listNew.get(i);
@@ -159,9 +160,9 @@ public class QueryMain implements IResultOut {
             }
 
             /**
-             * 最热 6个
+             * 最热 10个
              */
-            List<Map<String, Object>> listHot = iGoodsDao.mainGoodsListMap(6, "hot");
+            List<Map<String, Object>> listHot = iGoodsDao.mainGoodsListMap(Constants.SEARCH_COUNT_10, "hot");
             JSONArray hotGoodsArray = new JSONArray();
             for (int i = 0; i < listHot.size(); i++) {
                 Map<String, Object> map = listHot.get(i);
@@ -190,7 +191,7 @@ public class QueryMain implements IResultOut {
                 hotGoodsArray.add(goods);
             }
             /**
-             * 抢购   4个
+             * 抢购   8个
              */
             JSONArray timeGoodsArray = new JSONArray();
             //查询参数中是否设置了抢购开始结束时间time_goods_time
@@ -204,7 +205,7 @@ public class QueryMain implements IResultOut {
                     if (DatetimeUtil.compareDate(nowTime, setStime, format) > -1 && DatetimeUtil.compareDate(nowTime, setEtime, format) < 1) {
                         LOG.info("-------------参数抢购时间范围内------------------");
                         //抢购商品
-                        List<Map<String, Object>> timeGoodsList = iGoodsDao.mainTimeGoodsListMap(4);
+                        List<Map<String, Object>> timeGoodsList = iGoodsDao.mainTimeGoodsListMap(Constants.SEARCH_COUNT_8);
                         for (int i = 0; i < timeGoodsList.size(); i++) {
                             Map<String, Object> map = timeGoodsList.get(i);
                             int goodsId = Integer.parseInt(map.get("goods_id").toString());
@@ -237,7 +238,7 @@ public class QueryMain implements IResultOut {
             }
 
             //查询一条资讯
-            List<Map<String, Object>> list = iInfoDao.queryInfoList(1);
+            List<Map<String, Object>> list = iInfoDao.queryInfoList(Constants.SEARCH_COUNT_1);
             String InfoTitle = "";
             String InfoImg = "";
             if (null != list && list.size() > 0) {

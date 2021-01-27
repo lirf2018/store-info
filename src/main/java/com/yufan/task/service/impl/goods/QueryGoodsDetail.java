@@ -125,6 +125,7 @@ public class QueryGoodsDetail implements IResultOut {
             //是否单品
             List<Map<String, Object>> skuList = new ArrayList<>();
             if (goods.getIsSingle() == 0) {
+                goodsNum = 0;
                 //查询商品sku
                 List<Map<String, Object>> skuListData = iGoodsDao.queryGoodsSkuListMap(goodsId);
                 BigDecimal skuLowMoney = new BigDecimal(0);
@@ -149,11 +150,15 @@ public class QueryGoodsDetail implements IResultOut {
                             skuLowMoney = skuNowMoney;
                         }
                     }
+                    map.put("skuCode",map.get("sku_code"));
                     map.put("skuTrueMoney", map.get("sku_true_money") + "");
                     map.put("skuNowMoney", map.get("sku_now_money") + "");
                     map.put("skuId", skuId);
                     map.put("skuNum", skuNum);
                     map.put("skuImg", skuImg);
+                    map.put("skuName", map.get("sku_name"));
+                    map.put("propCode", map.get("prop_code"));
+                    map.put("skuPurchasePrice", map.get("sku_purchase_price"));
                     skuList.add(map);
                 }
                 dataJson.put("skuLowMoney", "￥" + skuLowMoney + " 起");
@@ -297,7 +302,7 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("goodsImg", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
             dataJson.put("trueMoney", trueMoney + "");
             dataJson.put("nowMoney", nowMoney + "");
-            dataJson.put("intro", intro);
+            dataJson.put("intro", intro==null?"<a></a>":intro);
             dataJson.put("isYuding", isYuding);
             dataJson.put("getWay", getWay);
             dataJson.put("isInvoice", isInvoice);

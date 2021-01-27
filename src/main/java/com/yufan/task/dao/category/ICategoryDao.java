@@ -144,4 +144,10 @@ public interface ICategoryDao {
     public List<Map<String, Object>> loadPropValueItem(String valueIds);
 
 
+    /**
+     * 查询main菜单
+     * @return
+     */
+    public List<Map<String, Object>> findMainMenu();
+
 }

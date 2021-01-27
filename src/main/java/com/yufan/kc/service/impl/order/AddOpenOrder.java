@@ -229,7 +229,7 @@ public class AddOpenOrder implements IResultOut {
             order.setDiscountsRemark(discountsRemark);
             order.setPayMethod(null);
             order.setConsumeCount(consumeCount);
-            order.setOrderStatus(Constants.ORDER_STATUS_0.byteValue());
+            order.setOrderStatus(new Byte(String.valueOf(Constants.ORDER_STATUS_0)));
             order.setCreateTime(dateTime);
             order.setLastUpdateTime(dateTime);
             order.setOrderSource(new Integer(1).byteValue());

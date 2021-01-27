@@ -273,4 +273,13 @@ public class CategoryDaoImpl implements ICategoryDao {
         sql.append(" ORDER BY it.data_index DESC,it.prop_id desc,pv.data_index DESC,pv.value_id DESC ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
+
+    @Override
+    public List<Map<String, Object>> findMainMenu() {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT menu_name as menuName,menu_url as menuUrl,leve1_ids as leve1Ids,category_ids  as categoryIds, ");
+        sql.append(" CONCAT('").append(Constants.IMG_WEB_URL).append("',menu_img) as menuImg ");
+        sql.append(" from tb_page_menu m  where menu_type = 0 and status=1 order by menu_sort desc ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
 }

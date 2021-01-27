@@ -39,29 +39,29 @@ public class Constants {
      * //12	还货中
      * //13	已还货
      */
-    public static Integer ORDER_STATUS_0 = 0;
-    public static Integer ORDER_STATUS_1 = 1;
-    public static Integer ORDER_STATUS_2 = 2;
-    public static Integer ORDER_STATUS_3 = 3;
-    public static Integer ORDER_STATUS_4 = 4;
-    public static Integer ORDER_STATUS_5 = 5;
-    public static Integer ORDER_STATUS_6 = 6;
-    public static Integer ORDER_STATUS_7 = 7;
-    public static Integer ORDER_STATUS_8 = 8;
-    public static Integer ORDER_STATUS_9 = 9;
-    public static Integer ORDER_STATUS_10 = 10;
-    public static Integer ORDER_STATUS_11 = 11;
-    public static Integer ORDER_STATUS_12 = 12;
-    public static Integer ORDER_STATUS_13 = 13;
+    public static int ORDER_STATUS_0 = 0;
+    public static int ORDER_STATUS_1 = 1;
+    public static int ORDER_STATUS_2 = 2;
+    public static int ORDER_STATUS_3 = 3;
+    public static int ORDER_STATUS_4 = 4;
+    public static int ORDER_STATUS_5 = 5;
+    public static int ORDER_STATUS_6 = 6;
+    public static int ORDER_STATUS_7 = 7;
+    public static int ORDER_STATUS_8 = 8;
+    public static int ORDER_STATUS_9 = 9;
+    public static int ORDER_STATUS_10 = 10;
+    public static int ORDER_STATUS_11 = 11;
+    public static int ORDER_STATUS_12 = 12;
+    public static int ORDER_STATUS_13 = 13;
 
     /**
      * 数据状态
      */
-    public static Integer DATA_STATUS_WX = 0;//无效
-    public static Integer DATA_STATUS_YX = 1;//有效
-    public static Integer DATA_STATUS_DJ = 2;//已冻结
-    public static Integer DATA_STATUS_DELETE = 3;//已删除
-    public static Integer DATA_STATUS_SHZ = 10;//10审核中
+    public static int DATA_STATUS_WX = 0;//无效
+    public static int DATA_STATUS_YX = 1;//有效
+    public static int DATA_STATUS_DJ = 2;//已冻结
+    public static int DATA_STATUS_DELETE = 3;//已删除
+    public static int DATA_STATUS_SHZ = 10;//10审核中
 
     /**
      * 图片访问路径
@@ -73,17 +73,17 @@ public class Constants {
      * 关联图片
      */
     //0.商品图片1.卡券图片2.店铺图片
-    public static Integer CLASSIFY_GOODS = 0;//商品图片
-    public static Integer CLASSIFY_COUPON = 1;//卡券图片
-    public static Integer CLASSIFY_SHOP = 2;//店铺图片
+    public static int CLASSIFY_GOODS = 0;//商品图片
+    public static int CLASSIFY_COUPON = 1;//卡券图片
+    public static int CLASSIFY_SHOP = 2;//店铺图片
 
     //1:商品banner 2:商品图片介绍 3:店铺banner 4:店铺介绍图片 5:卡券banner 6:卡券介绍图片
-    public static Integer IMGTYPE_GOODS_BANNER = 1;//
-    public static Integer IMGTYPE_GOODS_INFO = 2;//
-    public static Integer IMGTYPE_SHOP_BANNER = 3;//
-    public static Integer IMGTYPE_SHOP_INFO = 4;//
-    public static Integer IMGTYPE_COUPON_BANNER = 5;//
-    public static Integer IMGTYPE_COUPON_INFO = 6;//
+    public static int IMGTYPE_GOODS_BANNER = 1;//
+    public static int IMGTYPE_GOODS_INFO = 2;//
+    public static int IMGTYPE_SHOP_BANNER = 3;//
+    public static int IMGTYPE_SHOP_INFO = 4;//
+    public static int IMGTYPE_COUPON_BANNER = 5;//
+    public static int IMGTYPE_COUPON_INFO = 6;//
 
 
     /**
@@ -109,69 +109,69 @@ public class Constants {
     /**
      * 验证码类型:1手机绑定2修改密码3重置密码4手机解绑5手机注册6验证码登录7注销账号
      */
-    public static Integer VALID_TYPE_1 = 1;
-    public static Integer VALID_TYPE_2 = 2;
-    public static Integer VALID_TYPE_3 = 3;
-    public static Integer VALID_TYPE_4 = 4;
-    public static Integer VALID_TYPE_5 = 5;
-    public static Integer VALID_TYPE_6 = 6;
-    public static Integer VALID_TYPE_7 = 7;
+    public static int VALID_TYPE_1 = 1;
+    public static int VALID_TYPE_2 = 2;
+    public static int VALID_TYPE_3 = 3;
+    public static int VALID_TYPE_4 = 4;
+    public static int VALID_TYPE_5 = 5;
+    public static int VALID_TYPE_6 = 6;
+    public static int VALID_TYPE_7 = 7;
 
 
     /**
      * 用户状态   0待验证 1正常 2锁定 3已注销
      */
-    public static Integer USER_STATUS_0 = 0;
-    public static Integer USER_STATUS_1 = 1;
-    public static Integer USER_STATUS_2 = 2;
-    public static Integer USER_STATUS_3 = 3;
+    public static int USER_STATUS_0 = 0;
+    public static int USER_STATUS_1 = 1;
+    public static int USER_STATUS_2 = 2;
+    public static int USER_STATUS_3 = 3;
 
 
     /**
      * 用户sns  状态0无效1有效2已解绑
      */
-    public static Integer USER_SNS_STATUS_0 = 0;
-    public static Integer USER_SNS_STATUS_1 = 1;
-    public static Integer USER_SNS_STATUS_2 = 2;
+    public static int USER_SNS_STATUS_0 = 0;
+    public static int USER_SNS_STATUS_1 = 1;
+    public static int USER_SNS_STATUS_2 = 2;
 
     /**
      * 用户snsType   1、腾讯微博；2、新浪微博；3、人人网；4、微信；5、服务窗；6、一起沃；7、Q
      */
-    public static Integer USER_SNS_TYPE_0 = 0;
-    public static Integer USER_SNS_TYPE_1 = 1;
-    public static Integer USER_SNS_TYPE_2 = 2;
-    public static Integer USER_SNS_TYPE_3 = 3;
-    public static Integer USER_SNS_TYPE_4 = 4;
-    public static Integer USER_SNS_TYPE_5 = 5;
-    public static Integer USER_SNS_TYPE_6 = 6;
-    public static Integer USER_SNS_TYPE_7 = 7;
+    public static int USER_SNS_TYPE_0 = 0;
+    public static int USER_SNS_TYPE_1 = 1;
+    public static int USER_SNS_TYPE_2 = 2;
+    public static int USER_SNS_TYPE_3 = 3;
+    public static int USER_SNS_TYPE_4 = 4;
+    public static int USER_SNS_TYPE_5 = 5;
+    public static int USER_SNS_TYPE_6 = 6;
+    public static int USER_SNS_TYPE_7 = 7;
 
 
     //交易方式 0现金付款1微信2支付宝3账户余额
-    public static Integer PAY_WAY_0 = 0;
-    public static Integer PAY_WAY_1 = 1;
-    public static Integer PAY_WAY_2 = 2;
-    public static Integer PAY_WAY_3 = 3;
+    public static int PAY_WAY_0 = 0;
+    public static int PAY_WAY_1 = 1;
+    public static int PAY_WAY_2 = 2;
+    public static int PAY_WAY_3 = 3;
 
 
     /**
      * 取货方式 收货方式 1.邮寄4.自取5配送 postWay
      */
-    public static Integer POST_WAY_1 = 1;
-    public static Integer POST_WAY_2 = 2;
-    public static Integer POST_WAY_3 = 3;
+    public static int POST_WAY_1 = 1;
+    public static int POST_WAY_2 = 2;
+    public static int POST_WAY_3 = 3;
 
 
     /**
      * 支付结果
      */
-    public static Integer PAY_STATUS = 1;//成功
+    public static int PAY_STATUS = 1;//成功
 
 
     /**
      * kc 生成序列号类型 1:入库商品店铺号
      */
-    public static Integer GENERATE_TYPE = 1;//
+    public static int GENERATE_TYPE = 1;//
 
     /**
      * 店铺号前缀
@@ -203,6 +203,16 @@ public class Constants {
     public static Map<String, String> MAP_NAME = new HashMap<>();
     //开单页面扫码添加商品防止重复提交
     public static Map<String, Long> MAP_GOODS_CODE_LOCK = new HashMap<>();
+
+    /**
+     * 查询数量
+     */
+    public static int SEARCH_COUNT_1 = 1;
+    public static int SEARCH_COUNT_4 = 4;
+    public static int SEARCH_COUNT_6 = 6;
+    public static int SEARCH_COUNT_8 = 8;
+    public static int SEARCH_COUNT_10 = 10;
+    public static int SEARCH_COUNT_12 = 12;
 
     static {
         MAP_NAME.put("payType0", "现金");
