@@ -6,6 +6,7 @@ import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.category.ICategoryDao;
 import com.yufan.task.service.impl.Test;
+import com.yufan.utils.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class QueryMainMenu  implements IResultOut {
         JSONObject dataJson = new JSONObject();
         JSONObject data = receiveJsonBean.getData();
         try {
-            List<Map<String, Object>> list = iCategoryDao.findMainMenu();
+            List<Map<String, Object>> list = iCategoryDao.findMainMenu(Constants.MENU_TYPE_0);
             dataJson.put("list",list);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

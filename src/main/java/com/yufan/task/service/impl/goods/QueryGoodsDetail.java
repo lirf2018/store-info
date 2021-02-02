@@ -129,6 +129,7 @@ public class QueryGoodsDetail implements IResultOut {
                 //查询商品sku
                 List<Map<String, Object>> skuListData = iGoodsDao.queryGoodsSkuListMap(goodsId);
                 BigDecimal skuLowMoney = new BigDecimal(0);
+                BigDecimal skuLowMoneyTrue = new BigDecimal(0);
                 for (int i = 0; i < skuListData.size(); i++) {
                     Map<String, Object> map = skuListData.get(i);
                     Integer skuId = Integer.parseInt(map.get("sku_id").toString());
@@ -136,6 +137,7 @@ public class QueryGoodsDetail implements IResultOut {
                     goodsNum = goodsNum + skuNum;
                     String skuImg = map.get("sku_img") == null ? "" : Constants.IMG_WEB_URL + map.get("sku_img");
                     BigDecimal skuNowMoney = new BigDecimal(map.get("sku_now_money").toString());
+                    BigDecimal skuTrueMoney = new BigDecimal(map.get("sku_now_money").toString());
                     String valueIds = map.get("prop_code").toString();
                     String[] valueIdsArray = valueIds.split(";");
                     for (int j = 0; j < valueIdsArray.length; j++) {
@@ -145,14 +147,16 @@ public class QueryGoodsDetail implements IResultOut {
 
                     if (i == 0) {
                         skuLowMoney = skuNowMoney;
+                        skuLowMoneyTrue = skuTrueMoney;
                     } else {
                         if (skuLowMoney.compareTo(skuNowMoney) > 0) {
                             skuLowMoney = skuNowMoney;
+                            skuLowMoneyTrue = skuTrueMoney;
                         }
                     }
-                    map.put("skuCode",map.get("sku_code"));
-                    map.put("skuTrueMoney", map.get("sku_true_money") + "");
-                    map.put("skuNowMoney", map.get("sku_now_money") + "");
+                    map.put("skuCode", map.get("sku_code"));
+                    map.put("skuTrueMoney", skuTrueMoney );
+                    map.put("skuNowMoney", skuNowMoney);
                     map.put("skuId", skuId);
                     map.put("skuNum", skuNum);
                     map.put("skuImg", skuImg);
@@ -161,7 +165,8 @@ public class QueryGoodsDetail implements IResultOut {
                     map.put("skuPurchasePrice", map.get("sku_purchase_price"));
                     skuList.add(map);
                 }
-                dataJson.put("skuLowMoney", "￥" + skuLowMoney + " 起");
+                dataJson.put("skuLowMoney", skuLowMoney.setScale(2,BigDecimal.ROUND_HALF_UP));
+                dataJson.put("skuLowMoneyTrue", skuLowMoneyTrue.setScale(2,BigDecimal.ROUND_HALF_UP));
             }
             if (couponId > 0) {
                 //卡券
@@ -300,9 +305,9 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("goodsName", goodsName);
             dataJson.put("title", title);
             dataJson.put("goodsImg", goodsImg == null ? "" : Constants.IMG_WEB_URL + goodsImg);
-            dataJson.put("trueMoney", trueMoney + "");
-            dataJson.put("nowMoney", nowMoney + "");
-            dataJson.put("intro", intro==null?"<a></a>":intro);
+            dataJson.put("trueMoney", trueMoney);
+            dataJson.put("nowMoney", nowMoney);
+            dataJson.put("intro", intro);
             dataJson.put("isYuding", isYuding);
             dataJson.put("getWay", getWay);
             dataJson.put("isInvoice", isInvoice);
@@ -332,7 +337,7 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("isTimeGoods", isTimeGoods);
             dataJson.put("timeGoodsId", timeGoodsId);
             dataJson.put("timeGoodsStore", timeGoodsStore);
-            dataJson.put("timePrice", timePrice + "");
+            dataJson.put("timePrice", timePrice);
             dataJson.put("isTimeGoodsShell", isTimeGoodsShell);
 
             dataJson.put("bannerImgList", bannerImgList);

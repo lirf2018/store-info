@@ -115,12 +115,12 @@ public class QueryMain implements IResultOut {
                 goods.put("goods_id", goodsId);
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
-                goods.put("true_money", trueMoney);
-                goods.put("now_money", nowMoney);
+                goods.put("true_money", new BigDecimal(trueMoney));
+                goods.put("now_money", new BigDecimal(nowMoney));
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
-                goods.put("sku_now_money", skuNowMoney);
+                goods.put("sku_now_money", new BigDecimal(skuNowMoney));
                 goods.put("is_zi_yin", isZiYin);
 
                 weightGoodsArray.add(goods);
@@ -148,12 +148,12 @@ public class QueryMain implements IResultOut {
                 goods.put("goods_id", goodsId);
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
-                goods.put("true_money", trueMoney);
-                goods.put("now_money", nowMoney);
+                goods.put("true_money", new BigDecimal(trueMoney));
+                goods.put("now_money", new BigDecimal(nowMoney));
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
-                goods.put("sku_now_money", skuNowMoney);
+                goods.put("sku_now_money", new BigDecimal(skuNowMoney));
                 goods.put("is_zi_yin", isZiYin);
 
                 newGoodsArray.add(goods);
@@ -181,8 +181,8 @@ public class QueryMain implements IResultOut {
                 goods.put("goods_id", goodsId);
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
-                goods.put("true_money", trueMoney);
-                goods.put("now_money", nowMoney);
+                goods.put("true_money", new BigDecimal(trueMoney));
+                goods.put("now_money", new BigDecimal(nowMoney));
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);

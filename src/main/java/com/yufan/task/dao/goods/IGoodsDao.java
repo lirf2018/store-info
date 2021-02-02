@@ -40,7 +40,9 @@ public interface IGoodsDao {
      * @param
      * @return
      */
-    public PageInfo loadGoodsList(GoodsCondition condition);
+    public PageInfo loadGoodsListPage(GoodsCondition condition);
+
+    public List<Map<String, Object>> loadGoodsList(GoodsCondition condition);
 
     /**
      * 查询商品列表

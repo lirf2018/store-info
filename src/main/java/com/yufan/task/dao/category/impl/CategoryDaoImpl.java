@@ -275,11 +275,13 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public List<Map<String, Object>> findMainMenu() {
+    public List<Map<String, Object>> findMainMenu(int menuType) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT menu_name as menuName,menu_url as menuUrl,leve1_ids as leve1Ids,category_ids  as categoryIds, ");
-        sql.append(" CONCAT('").append(Constants.IMG_WEB_URL).append("',menu_img) as menuImg ");
-        sql.append(" from tb_page_menu m  where menu_type = 0 and status=1 order by menu_sort desc ");
+        sql.append(" CONCAT('").append(Constants.IMG_WEB_URL).append("',menu_img) as menuImg,rel_type as relType ");
+        sql.append(" from tb_page_menu m ");
+        sql.append(" where menu_type = " + menuType + " and status=1 ");
+        sql.append(" order by menu_sort desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

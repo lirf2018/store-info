@@ -148,6 +148,6 @@ public interface ICategoryDao {
      * 查询main菜单
      * @return
      */
-    public List<Map<String, Object>> findMainMenu();
+    public List<Map<String, Object>> findMainMenu(int menuType);
 
 }

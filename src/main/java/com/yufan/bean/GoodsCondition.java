@@ -13,27 +13,31 @@ import lombok.Setter;
 @Data
 public class GoodsCondition {
 
-    @JSONField(name = "curre_page")
+    @JSONField(name = "currePage")
     private Integer currePage;
 
-    @JSONField(name = "page_size")
+    @JSONField(name = "pageSize")
     private Integer pageSize;
 
-    @JSONField(name = "goods_name")
+    @JSONField(name = "goodsName")
     private String goodsName;
 
-    @JSONField(name = "search_type")
+    @JSONField(name = "searchType")
     private String searchType; //type 查询类别 最新new, 最热 hot, 推荐 weight
 
-    @JSONField(name = "level_ids")
+    @JSONField(name = "levelIds")
     private String levelIds;
 
-    @JSONField(name = "category_ids")
+    @JSONField(name = "categoryIds")
     private String categoryIds;
 
-    @JSONField(name = "prop_id")
+    @JSONField(name = "propId")
     private Integer propId;//属性
 
-    @JSONField(name = "user_id")
+    @JSONField(name = "userId")
     private Integer userId;
+
+    private Integer isSingle;
+
+    private String from;
 }

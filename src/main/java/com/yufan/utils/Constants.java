@@ -214,6 +214,18 @@ public class Constants {
     public static int SEARCH_COUNT_10 = 10;
     public static int SEARCH_COUNT_12 = 12;
 
+    /**
+     * 0main页 1分类页面
+     */
+    public static int MENU_TYPE_0 = 0;
+    public static int MENU_TYPE_1 = 1;
+
+    /**
+     * 用于分类页面的关联类型 1关联一级分类 2 关联2级分类
+     */
+    public static int MENU_REL__TYPE_1 = 1;
+    public static int MENU_REL_TYPE_2 = 2;
+
     static {
         MAP_NAME.put("payType0", "现金");
         MAP_NAME.put("payType1", "微信");
