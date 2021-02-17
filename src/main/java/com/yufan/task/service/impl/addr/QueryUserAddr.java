@@ -79,6 +79,7 @@ public class QueryUserAddr implements IResultOut {
             for (int i = 0; i < list.size(); i++) {
                 Map<String, Object> map = list.get(i);
                 String addrIds = list.get(i).get("area_ids").toString();
+                String userName = list.get(i).get("user_name").toString();
                 String addrIdsArray[] = addrIds.split("-");
                 BigDecimal freight = new BigDecimal("0.00");
                 //县
@@ -94,8 +95,8 @@ public class QueryUserAddr implements IResultOut {
                 } else if (addrIdsFreightMap.get(freight1) != null) {
                     freight = new BigDecimal(addrIdsFreightMap.get(freight1));
                 } else {
-                    //默认
-                    LOG.info("-------默认------");
+                    //默认运费
+//                    LOG.info("-------默认------");
                 }
 
                 Integer isDefault = Integer.parseInt(list.get(i).get("is_default").toString());
@@ -104,6 +105,7 @@ public class QueryUserAddr implements IResultOut {
                 }
 
                 map.put("freight", freight);
+                map.put("first_name", userName.substring(0, 1));
                 outList.add(map);
             }
 

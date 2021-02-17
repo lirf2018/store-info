@@ -16,50 +16,50 @@ import java.sql.Timestamp;
 @Data
 public class UserCartOrderDetail {
 
-    @JSONField(name = "cart_id")
+//    @JSONField(name = "cart_id")
     private int cartId;
 
-    @JSONField(name = "user_id")
+//    @JSONField(name = "user_id")
     private Integer userId;
 
-    @JSONField(name = "goods_id")
+//    @JSONField(name = "goods_id")
     private Integer goodsId;
 
-    @JSONField(name = "goods_name")
+//    @JSONField(name = "goods_name")
     private String goodsName;
 
-    @JSONField(name = "goods_spec")
+//    @JSONField(name = "goods_spec")
     private String goodsSpec;
 
-    @JSONField(name = "goods_spec_name")
+//    @JSONField(name = "goods_spec_name")
     private String goodsSpecName;
 
-    @JSONField(name = "goods_count")
+//    @JSONField(name = "goods_count")
     private Integer goodsCount;
 
-    @JSONField(name = "goods_price")
+//    @JSONField(name = "goods_price")
     private BigDecimal goodsPrice;
 
-    @JSONField(name = "true_money")
+//    @JSONField(name = "true_money")
     private BigDecimal trueMoney;
 
-    @JSONField(name = "status")
+//    @JSONField(name = "status")
     private Integer status;
 
-    @JSONField(name = "goods_spec_name_str")
+//    @JSONField(name = "goods_spec_name_str")
     private String goodsSpecNameStr;
 
-    @JSONField(name = "cart_type")
+//    @JSONField(name = "cart_type")
     private Integer cartType;
 
-    @JSONField(name = "goods_img")
+//    @JSONField(name = "goods_img")
     private String goodsImg;
 
-    @JSONField(name = "is_single")
+//    @JSONField(name = "is_single")
     private Integer isSingle;
 
 
-    @JSONField(name = "sku_id")
+//    @JSONField(name = "sku_id")
     private Integer skuId;
 
 }

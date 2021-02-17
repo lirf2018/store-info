@@ -58,7 +58,7 @@ public interface IOrderDao {
      *
      * @return
      */
-    public int userCartCount(int userId);
+    public int userCartCount(int userId,Integer goodsId);
 
 
     /**
@@ -158,4 +158,13 @@ public interface IOrderDao {
      * @return
      */
     public int payOrderSuccess(String orderNo,Integer payWay,String payTime,String payCode);
+
+    /**
+     * 查询购物车数量
+     *
+     * @param userId
+     * @param goodsId
+     * @return
+     */
+    List<Map<String, Object>> findCartCount(Integer userId, Integer goodsId);
 }

@@ -1,6 +1,7 @@
 package com.yufan.task.dao.info;
 
 import com.yufan.pojo.TbInfo;
+import com.yufan.utils.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -35,5 +36,8 @@ public interface IInfoDao {
      * @param id
      */
     public void updateReadCount(int id);
+
+
+    public PageInfo loadInfoPage(Integer currePage, Integer pageSize);
 
 }

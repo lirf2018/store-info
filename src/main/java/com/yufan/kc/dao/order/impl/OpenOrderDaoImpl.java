@@ -37,7 +37,7 @@ public class OpenOrderDaoImpl implements OpenOrderDao {
         sql.append(" de.sale_price_true as salePriceTrue, ");
         sql.append(" o.discounts_price as discountsPrice,o.discounts_member_price as discountsMemberPrice,o.discounts_ticket_price as discountsTicketPrice,o.order_price as orderPrice,o.real_price as realPrice,o.user_phone as userPhone,o.order_num as orderNum ");
         sql.append(" ,o.order_id as orderId,o.goods_count as goodsCount  ,o.server_name as serverName,o.person_count as personCount,o.table_name as tableName,o.order_status as orderStatus,o.pay_method as payMethod ");
-        sql.append(" ,DATE_FORMAT(o.last_update_time,'%y-%m-%d %T') as lastUpdateTime ");
+        sql.append(" ,DATE_FORMAT(o.last_update_time,'%Y-%m-%d %T') as lastUpdateTime ");
         sql.append("  from tb_kc_order_detail de JOIN tb_kc_order o on o.order_id=de.order_id  where de.status=1 ");
         if (StringUtils.isNotEmpty(conditionCommon.getOrderNo())) {
             sql.append(" and o.order_num='").append(conditionCommon.getOrderNo().trim()).append("' ");

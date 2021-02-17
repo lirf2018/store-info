@@ -11,6 +11,7 @@ import com.yufan.utils.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -67,11 +68,11 @@ public class QueryOrderCarts implements IResultOut {
             }
 
             int orderCount = 0;
+            boolean showCartEmptyFlag = true;// true 没有商品 false 有商品
 
             //购物车详情
             for (int i = 0; i < outList.size(); i++) {
                 UserOrderCart shop = outList.get(i);
-
                 List<UserCartOrderDetail> cartDetailList = new ArrayList<>();
                 for (int j = 0; j < mapList.size(); j++) {
                     Map<String, Object> map = mapList.get(j);
@@ -126,12 +127,18 @@ public class QueryOrderCarts implements IResultOut {
                         outTimeGoodsList.add(userCartOrderDetail);
                     }
                 }
+                if (!CollectionUtils.isEmpty(cartDetailList)) {
+                    shop.setShowCartEmptyFlag(false);
+                    // 有商品
+                    showCartEmptyFlag = false;
+                }
                 shop.setCartDetailList(cartDetailList);
             }
 
-            dataJson.put("cart_goods_count", orderCount);//购物车数量
-            dataJson.put("cart_list", outList);
-            dataJson.put("out_time_cart_list", outTimeGoodsList);
+            dataJson.put("cartGoodsCount", orderCount);//购物车数量
+            dataJson.put("cartList", outList);
+            dataJson.put("showCartEmptyFlag", showCartEmptyFlag);
+            dataJson.put("outTimeCartList", outTimeGoodsList);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-----error-----", e);

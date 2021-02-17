@@ -279,7 +279,7 @@ public class QueryGoodsDetail2 implements IResultOut {
             //返回购物车数量 购物车
             int cartGoodsCount = 0;
             if (null != userId && userId > 0) {
-                cartGoodsCount = iOrderDao.userCartCount(userId);
+                cartGoodsCount = iOrderDao.userCartCount(userId, null);
             }
             dataJson.put("cart_goods_count", cartGoodsCount);//购物车数量
 

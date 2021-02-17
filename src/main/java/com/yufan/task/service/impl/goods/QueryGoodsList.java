@@ -39,6 +39,9 @@ public class QueryGoodsList implements IResultOut {
     @Autowired
     private IHistoryDao iHistoryDao;
 
+    @Autowired
+    private ICategoryDao iCategoryDao;
+
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
@@ -48,7 +51,7 @@ public class QueryGoodsList implements IResultOut {
             PageInfo page = iGoodsDao.loadGoodsListPage(goodsCondition);
             List<Map<String, Object>> outList = new ArrayList<>();
             List<Map<String, Object>> listData = page.getResultListMap();
-            String categoryName = "";
+
             for (int i = 0; i < listData.size(); i++) {
                 Map<String, Object> map = new HashMap<>();
                 int isSingle = Integer.parseInt(listData.get(i).get("is_single").toString());
@@ -89,7 +92,13 @@ public class QueryGoodsList implements IResultOut {
 
                 iHistoryDao.saveSearchData(searchHistory);
             }
-
+            String categoryName = "";//catogeryId
+            // 查询分类
+            Integer catogeryId = goodsCondition.getCatogeryId();
+            if (null != catogeryId) {
+                TbCategory category = iCategoryDao.loadTbCategoryById(catogeryId);
+                categoryName = category.getCategoryName();
+            }
             dataJson.put("categoryName", categoryName);
 
             dataJson.put("hasNext", page.isHasNext());

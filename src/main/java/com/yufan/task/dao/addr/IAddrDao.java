@@ -58,7 +58,7 @@ public interface IAddrDao {
      * @param id
      * @param userId
      */
-    public void updateAddrDefaul(int id, int userId);
+    public void updateAddrDefaul(Integer id, int userId);
 
     /**
      * 删除用户地址
@@ -66,7 +66,7 @@ public interface IAddrDao {
      * @param id
      * @param userId
      */
-    public void deleteUserAddr(int id, int userId);
+    public void deleteUserAddr(Integer id, int userId);
 
     /**
      * 查询运费
@@ -93,5 +93,9 @@ public interface IAddrDao {
      * @return
      */
     public TbPlatformAddr loadPlatformAddr(int id);
+
+    List<Map<String,Object>> queryGlobelAddr(String parentId);
+
+    List<Map<String,Object>> queryGlobelAddrByIds(String ids);
 
 }

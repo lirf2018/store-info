@@ -68,10 +68,13 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
-    public int userCartCount(int userId) {
+    public int userCartCount(int userId, Integer goodsId) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT SUM(cart.goods_count) as goods_count from tb_order_cart cart  JOIN tb_goods g on g.goods_id=cart.goods_id ");
         sql.append(" where cart.user_id=? and cart.`status`=1 and cart.createtime>g.lastaltertime ");
+        if (null != goodsId) {
+            sql.append(" and cart.goods_id != ").append(goodsId).append(" ");
+        }
 
         List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql.toString(), userId);
         int count = 0;
@@ -239,5 +242,16 @@ public class OrderDaoImpl implements IOrderDao {
     public int payOrderSuccess(String orderNo, Integer payWay, String payTime, String payCode) {
         String sql = " update tb_order set pay_way=?,pay_time=?,pay_code=?,lastaltertime=now(),order_status=? where order_no=? ";
         return iGeneralDao.executeUpdateForSQL(sql, payWay, payTime, payCode, Constants.ORDER_STATUS_1, orderNo);
+    }
+
+    @Override
+    public List<Map<String, Object>> findCartCount(Integer userId, Integer goodsId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select cart.goods_id,count(cart.goods_id) as goodsCount from tb_order_cart cart where cart.user_id=").append(userId).append(" ");
+        if (null != goodsId) {
+            sql.append(" and cart.goods_id = ").append(goodsId).append(" ");
+        }
+        sql.append(" GROUP BY cart.goods_id ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

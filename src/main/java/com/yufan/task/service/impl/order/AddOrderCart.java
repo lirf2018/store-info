@@ -55,6 +55,7 @@ public class AddOrderCart implements IResultOut {
         try {
             Integer goodsId = data.getInteger("goods_id");
             Integer userId = data.getInteger("user_id");
+            Integer addModel = data.containsKey("add_model")?data.getInteger("add_model"):0;
             Integer goodsCount = data.getInteger("goods_count") == 0 ? 1 : data.getInteger("goods_count");
             String goodsSpec = data.getString("goods_spec") == null ? "" : data.getString("goods_spec");
 
@@ -68,7 +69,7 @@ public class AddOrderCart implements IResultOut {
 
 
             TbGoods goods = iGoodsJpaDao.findOne(goodsId);
-            BigDecimal goodsPrice = new BigDecimal(0);//销售价格
+            BigDecimal goodsPrice = BigDecimal.ZERO;//销售价格
             BigDecimal trueMoney = new BigDecimal(0);//商品原价
             String goodsSpecName = "";
             String goodsSpecNameStr = "";
@@ -103,8 +104,8 @@ public class AddOrderCart implements IResultOut {
                 trueMoney = goods.getTrueMoney();
             }
 
-            //返回购物车数量 购物车
-            int cartGoodsCount = iOrderDao.userCartCount(userId);
+            // 购物车 商品总数
+            int cartGoodsCount = iOrderDao.userCartCount(userId, goodsId);
             //购物车数量限制
             if ((cartGoodsCount + goodsCount) > 100) {
                 return packagMsg(ResultCode.FULL_ORDER_CARD.getResp_code(), dataJson);
@@ -123,6 +124,9 @@ public class AddOrderCart implements IResultOut {
                 int cartId = Integer.parseInt(cartList.get(i).get("cart_id").toString());
                 int goodsCount_ = Integer.parseInt(cartList.get(i).get("goods_count").toString());
                 int count = goodsCount_ + goodsCount;
+                if (addModel == 1) {
+                    count = goodsCount;
+                }
                 flag = true;
                 //判断是规格商品还是单品
                 if (goods.getIsSingle() == 0) {

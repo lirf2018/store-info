@@ -44,7 +44,7 @@ public class AddUserAddr implements IResultOut {
             Integer addrType = data.getInteger("addr_type");//地址类型1全国地址2平台配送或者自己取地址
             String userPhone = data.getString("user_phone");
             String userName = data.getString("user_name");
-            Integer isDefault = data.getInteger("is_default");
+            Integer isDefault = data.containsKey("is_default")?data.getInteger("is_default"):0;
 
             String addrName = areaNames + addrDetail;
 
@@ -60,6 +60,9 @@ public class AddUserAddr implements IResultOut {
             userAddr.setCreatetime(new Timestamp(new Date().getTime()));
             userAddr.setAddrName(addrName);
             userAddr.setAddrType(addrType);
+            if (isDefault == 1) {
+                iAddrDao.updateAddrDefaul(null, userId);
+            }
             if (null != id && id > 0) {
                 userAddr.setId(id);
                 iAddrDao.updateUserAddr(userAddr);

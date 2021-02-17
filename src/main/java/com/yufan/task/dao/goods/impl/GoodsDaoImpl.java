@@ -73,9 +73,11 @@ public class GoodsDaoImpl implements IGoodsDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
         sql.append(" ,IFNULL(sku.sku_now_money,0)  as sku_now_money,g.is_zi_yin,g.goods_num,g.level_id as levelId,g.category_id as categoryId ");
+        sql.append(" ,ifnull(t1.cartCount,0) as cartCount ");
         sql.append(" from tb_goods g ");
         sql.append(" LEFT JOIN (SELECT goods_id,group_concat(now_money ORDER BY now_money ) as sku_now_money from tb_goods_sku where `status`=1  GROUP BY goods_id) sku on sku.goods_id=g.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
+        sql.append("  LEFT JOIN (select cart.goods_id,cart.goods_count as cartCount from tb_order_cart cart where cart.user_id=0) t1 on t1.goods_id=g.goods_id ");
         if (null != goodsCondition.getPropId()) {
             sql.append(" JOIN tb_goods_attribute ga on ga.goods_id=g.goods_id and ga.prop_id=").append(goodsCondition.getPropId()).append(" ");
         }
@@ -86,24 +88,16 @@ public class GoodsDaoImpl implements IGoodsDao {
         if (goodsCondition.getIsSingle() != null) {
             sql.append(" and g.is_single=").append(goodsCondition.getIsSingle()).append(" ");
         }
+        if (goodsCondition.getCatogeryId() != null) {
+            sql.append(" and g.category_id=").append(goodsCondition.getCatogeryId()).append(" ");
+        }
 
-        if(StringUtils.isNotEmpty(goodsCondition.getFrom())){
-            //
-            if (StringUtils.isNotEmpty(goodsCondition.getLevelIds()) && StringUtils.isNotEmpty(goodsCondition.getCategoryIds())) {
-                sql.append(" and (g.level_id in (").append(goodsCondition.getLevelIds()).append(") and g.category_id in (").append(goodsCondition.getCategoryIds()).append(")) ");
-            } else if (StringUtils.isNotEmpty(goodsCondition.getLevelIds())) {
-                sql.append(" and g.level_id in (").append(goodsCondition.getLevelIds()).append(") ");
-            } else if (StringUtils.isNotEmpty(goodsCondition.getCategoryIds())) {
-                sql.append(" and g.category_id in (").append(goodsCondition.getCategoryIds()).append(") ");
-            }
-        }else{
-            //
-            if (StringUtils.isNotEmpty(goodsCondition.getCategoryIds())) {
-                sql.append(" and g.category_id in (").append(goodsCondition.getCategoryIds()).append(") ");
-            }
-            if (StringUtils.isNotEmpty(goodsCondition.getLevelIds())) {
-                sql.append(" and (g.level_id in (").append(goodsCondition.getLevelIds()).append(") or g.goods_id in (select goods_id from tb_goods where category_id in (SELECT ca.category_id from tb_category ca JOIN tb_level_category_rel rel on rel.category_id=ca.category_id where level_id in (").append(goodsCondition.getLevelIds()).append(")))) ");
-            }
+        if (StringUtils.isNotEmpty(goodsCondition.getLevelIds()) && StringUtils.isNotEmpty(goodsCondition.getCategoryIds())) {
+            sql.append(" and (g.level_id in (").append(goodsCondition.getLevelIds()).append(") or g.category_id in (").append(goodsCondition.getCategoryIds()).append(")) ");
+        } else if (StringUtils.isNotEmpty(goodsCondition.getLevelIds())) {
+            sql.append(" and g.level_id in (").append(goodsCondition.getLevelIds()).append(") ");
+        } else if (StringUtils.isNotEmpty(goodsCondition.getCategoryIds())) {
+            sql.append(" and g.category_id in (").append(goodsCondition.getCategoryIds()).append(") ");
         }
 
         if ("new".equals(goodsCondition.getSearchType())) {

@@ -54,7 +54,7 @@ public class QueryUserCenter implements IResultOut {
             //查询积分
             int jifen = iUserDao.userJifen(userId);
             //购物车
-            int cartGoodsCount = iOrderDao.userCartCount(userId);
+            int cartGoodsCount = iOrderDao.userCartCount(userId,null);
 
             //查询用户订单
             List<Map<String, Object>> userOrderListMap = iOrderDao.queryOrderPayAllListMap(userId);

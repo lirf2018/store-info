@@ -50,6 +50,7 @@ public class QuerySingleGoodsList implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         dataJson.put("menusList", new ArrayList<>());
         try {
+            Integer userId = data.getInteger("userId");
             // 查询分类菜单
             List<Map<String, Object>> menusList = iCategoryDao.findMainMenu(Constants.MENU_TYPE_1);
             if (!CollectionUtils.isNotEmpty(menusList)) {
@@ -94,6 +95,7 @@ public class QuerySingleGoodsList implements IResultOut {
             goodsCondition.setLevelIds(levelIds);
             goodsCondition.setCategoryIds(categoryIds);
             goodsCondition.setIsSingle(1);
+            goodsCondition.setUserId(userId);
             List<Map<String, Object>> goodsList = iGoodsDao.loadGoodsList(goodsCondition);
             if (CollectionUtils.isEmpty(goodsList)) {
                 // 未配置菜单
@@ -115,7 +117,7 @@ public class QuerySingleGoodsList implements IResultOut {
                 mapNew.put("goodsNum", Integer.parseInt(mapOld.get("goods_num").toString()));
                 mapNew.put("goodsImg", mapOld.get("goods_img"));
                 mapNew.put("trueMoney", new BigDecimal(mapOld.get("true_money").toString()));
-                mapNew.put("userGoodsCount", 0);
+                mapNew.put("userGoodsCount", Integer.parseInt(mapOld.get("cartCount").toString()));
                 int levelId = Integer.parseInt(mapOld.get("levelId").toString());
                 int categoryId = Integer.parseInt(mapOld.get("categoryId").toString());
                 //
@@ -127,6 +129,7 @@ public class QuerySingleGoodsList implements IResultOut {
                     List<Map<String, Object>> addGoods = levelGoodsMap.get(levelId);
                     addGoods.add(mapNew);
                     levelGoodsMap.put(levelId, addGoods);
+
                 }
                 if (categoryGoodsMap.get(categoryId) == null) {
                     List<Map<String, Object>> addGoods = new ArrayList<>();
@@ -148,16 +151,28 @@ public class QuerySingleGoodsList implements IResultOut {
             }
 
             // 处理结果
+            Map<String, Object> duplicateMap = new HashMap<>();//去重
             List<Map<String, Object>> resultsMenusThread = new ArrayList<>();
             for (int i = 0; i < fList.size(); i++) {
+                // 返回处理菜单（一组）
                 List<Map<String, Object>> result = fList.get(i).get();
-                System.out.println("=================================iiii================="+i);
                 for (int j = 0; j < result.size(); j++) {
                     Map<String, Object> map = result.get(j);
+                    // 获取菜单下面的商品列表
+                    List<Map<String, Object>> goodsListOld = (List<Map<String, Object>>) map.get("goodsList");
+                    List<Map<String, Object>> goodsListNew = new ArrayList<>();
+                    for (int k = 0; k < goodsListOld.size(); k++) {
+                        String goodsId = goodsListOld.get(k).get("goodsId").toString();
+                        if (duplicateMap.get(goodsId) != null) {
+                            continue;
+                        }
+                        duplicateMap.put(goodsId, goodsId);
+                        goodsListNew.add(goodsListOld.get(k));
+                    }
+                    map.put("goodsList", goodsListNew);
                     resultsMenusThread.add(map);
                 }
             }
-
             dataJson.put("menusList", resultsMenusThread);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
@@ -195,7 +210,6 @@ class FindGoodsList implements Callable<List<Map<String, Object>>> {
 
     @Override
     public List<Map<String, Object>> call() throws Exception {
-        System.out.println("=================================================="+index);
         int size = menusList.size();// 5
         // 处理的菜单数组数据下标
         int doCount = size / QuerySingleGoodsList.threadCount;
@@ -276,8 +290,7 @@ class FindGoodsList implements Callable<List<Map<String, Object>>> {
     }
 
     private void foreachGoods(List<Map<String, Object>> goodsListAdd, List<Map<String, Object>> goodsList) {
-        if(null==goodsList){
-            System.out.println("====================XXXXXXXX=================");
+        if (null == goodsList) {
             return;
         }
         for (int j = 0; j < goodsList.size(); j++) {

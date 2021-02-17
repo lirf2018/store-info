@@ -72,19 +72,27 @@ public class AddrDaoImpl implements IAddrDao {
     }
 
     @Override
-    public void updateAddrDefaul(int id, int userId) {
+    public void updateAddrDefaul(Integer id, int userId) {
         //取消默认
         String sql = " update tb_user_addr set is_default=0 where user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, userId);
+        if (id == null) {
+            return;
+        }
         //更新默认
         String sqlDefaul = " update tb_user_addr set is_default=1 where id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sqlDefaul, id, userId);
     }
 
     @Override
-    public void deleteUserAddr(int id, int userId) {
-        String sql = " update tb_user_addr set status=0 where id=? and user_id=? ";
-        iGeneralDao.executeUpdateForSQL(sql, id, userId);
+    public void deleteUserAddr(Integer id, int userId) {
+        if (null == id) {
+            String sql = " update tb_user_addr set status=0 where user_id=?  ";
+            iGeneralDao.executeUpdateForSQL(sql, userId);
+            return;
+        }
+        String sql = " update tb_user_addr set status=0 where user_id=? and id=?   ";
+        iGeneralDao.executeUpdateForSQL(sql, userId, id);
     }
 
     @Override
@@ -104,5 +112,22 @@ public class AddrDaoImpl implements IAddrDao {
     public TbPlatformAddr loadPlatformAddr(int id) {
         String hql = " from TbPlatformAddr where id=?1 and status=?2 ";
         return iGeneralDao.queryUniqueByHql(hql, id, Constants.DATA_STATUS_YX);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryGlobelAddr(String parentId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select re.region_id as regionId,re.region_code as regionCode,re.region_name as regionName,re.parent_id as parentId,re.freight,re.region_level as regionLevel  ");
+        sql.append(" from tb_region re where re.`status`=1 ");
+        sql.append(" and re.parent_id='").append(parentId).append("' ");
+        sql.append(" order by re.region_order desc ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> queryGlobelAddrByIds(String ids) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select re.region_id,re.region_name from tb_region re where re.region_id in (" + ids + ") ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

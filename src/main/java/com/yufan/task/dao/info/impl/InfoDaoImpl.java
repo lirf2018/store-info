@@ -4,6 +4,7 @@ import com.yufan.common.dao.base.IGeneralDao;
 import com.yufan.pojo.TbInfo;
 import com.yufan.task.dao.info.IInfoDao;
 import com.yufan.utils.Constants;
+import com.yufan.utils.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,5 +43,24 @@ public class InfoDaoImpl implements IInfoDao {
     public void updateReadCount(int id) {
         String sql = " update tb_info set read_count=read_count+1 where info_id=?  ";
         iGeneralDao.executeUpdateForSQL(sql, id);
+    }
+
+    @Override
+    public PageInfo loadInfoPage(Integer currePage, Integer pageSize) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select info.info_id as infoId ,info.info_title as infoTitle ,info.info_url as infoUrl,info.info_content as infoContent ");
+        sql.append(" ,CONCAT('" + Constants.IMG_WEB_URL + "',info.info_img) as infoImg,DATE_FORMAT(info.end_time,'%Y.%m.%d') as endTime ");
+        sql.append(" ,info.mark_msg as markMsg ");
+        sql.append(" from tb_info info ");
+        sql.append(" where info.`status`=1 and DATE_FORMAT(NOW(),'%y-%m-%d')>=DATE_FORMAT(info.start_time,'%y-%m-%d') ");
+        sql.append(" and DATE_FORMAT(NOW(),'%y-%m-%d')<=DATE_FORMAT(info.end_time,'%y-%m-%d') ");
+        sql.append(" ORDER BY info.info_index desc ");
+        //
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageSize(pageSize == null ? 20 : pageSize);
+        pageInfo.setCurrePage(currePage);
+        pageInfo.setSqlQuery(sql.toString());
+        pageInfo = iGeneralDao.loadPageInfoSQLListMap(pageInfo);
+        return pageInfo;
     }
 }

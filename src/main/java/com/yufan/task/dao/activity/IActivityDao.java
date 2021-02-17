@@ -1,5 +1,8 @@
 package com.yufan.task.dao.activity;
 
+import com.yufan.pojo.TbActivity;
+import com.yufan.utils.PageInfo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -16,5 +19,10 @@ public interface IActivityDao {
      * @return
      */
     public List<Map<String,Object>> loadActivityListMap(int size);
+
+
+    public PageInfo loadActivityPage(Integer currePage,Integer pageSize);
+
+    public TbActivity loadActivity(int id);
 
 }

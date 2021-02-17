@@ -40,4 +40,6 @@ public class GoodsCondition {
     private Integer isSingle;
 
     private String from;
+
+    private Integer catogeryId;
 }

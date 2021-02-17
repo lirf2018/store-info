@@ -1,44 +1,44 @@
-package com.yufan.task.service.impl.order;
+package com.yufan.task.service.impl.addr;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
-import com.yufan.task.dao.order.IOrderDao;
+import com.yufan.task.dao.addr.IAddrDao;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
  * 创建人: lirf
- * 创建时间:  2019/10/5 16:38
- * 功能介绍: 删除购物车
+ * 创建时间:  2021/2/15 16:22
+ * 功能介绍: 查询全国地址
  */
-@Service("delete_order_cart")
-public class DeleteOrderCart implements IResultOut {
+@Service("query_globle_addr_list")
+public class QueryGlobleAddr implements IResultOut {
 
-    private Logger LOG = Logger.getLogger(DeleteOrderCart.class);
+    private Logger LOG = Logger.getLogger(QueryGlobleAddr.class);
 
     @Autowired
-    private IOrderDao iOrderDao;
+    private IAddrDao iAddrDao;
 
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
         JSONObject data = receiveJsonBean.getData();
         try {
-            Integer userId = data.getInteger("user_id");
-            String cartIds = data.getString("cart_ids");
-            if (cartIds.endsWith(",")) {
-                cartIds = cartIds.substring(0, cartIds.length() - 1);
-            }
-            iOrderDao.deleteShopcart(userId, cartIds);
+            String parentId = data.getString("parentId");
+            List<Map<String, Object>> list = iAddrDao.queryGlobelAddr(parentId);
+            dataJson.put("list", list);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
-            LOG.error("-----error-----", e);
+            LOG.error("-------error----", e);
         }
         return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
     }
@@ -47,9 +47,8 @@ public class DeleteOrderCart implements IResultOut {
     public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
         JSONObject data = receiveJsonBean.getData();
         try {
-            Integer userId = data.getInteger("user_id");
-            String cartIds = data.getString("cart_ids");
-            if (null == userId || StringUtils.isEmpty(cartIds)) {
+            String parentId = data.getString("parentId");
+            if (StringUtils.isEmpty(parentId)) {
                 return false;
             }
             return true;

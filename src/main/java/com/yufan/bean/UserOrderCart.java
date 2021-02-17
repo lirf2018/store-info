@@ -15,15 +15,17 @@ import java.util.List;
 @Data
 public class UserOrderCart {
 
-    @JSONField(name = "shop_id")
+//    @JSONField(name = "shop_id")
     private Integer shopId;
 
-    @JSONField(name = "shop_name")
+//    @JSONField(name = "shop_name")
     private String shopName;
 
-    @JSONField(name = "shop_logo")
+//    @JSONField(name = "shop_logo")
     private String shopLogo;
 
-    @JSONField(name = "cart_detail_list")
+    private boolean showCartEmptyFlag = true;// 默认没有商品
+
+//    @JSONField(name = "cart_detail_list")
     private List<UserCartOrderDetail> cartDetailList;
 }
