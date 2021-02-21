@@ -5,10 +5,8 @@ import com.yufan.task.dao.account.IAccountDao;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * 创建人: lirf
@@ -159,18 +157,55 @@ public class CommonMethod {
     }
 
     public static List<String> replaceSpecialChar(String parmas) {
-        String separator = ";|, |,|; |(\\r\\n)|(\\n)";
+        String separator = "；|，|;|, |,|; |(\\r\\n)|(\\n)";
         List<String> list = Arrays.asList(parmas.split(separator));
         if (list.size() == 0) {
             return list;
         } else {
             ArrayList<String> resultList = new ArrayList<>(list.size());
             for (int i = 0; i < list.size(); i++) {
-                if (StringUtils.isEmpty((String) list.get(i))) {
+                if (!StringUtils.isEmpty((String) list.get(i))) {
                     resultList.add(list.get(i).trim());
                 }
             }
             return resultList;
         }
+    }
+
+    public static  BigDecimal findPostPrice(Map<Integer, BigDecimal> addrIdsFreightMap, BigDecimal userAddrDefaulFreight, String[] addrIdsArray) {
+        BigDecimal freight = new BigDecimal("0.00");
+        //镇
+        Integer freight4 = Integer.parseInt(addrIdsArray[3]);
+        //县
+        Integer freight3 = Integer.parseInt(addrIdsArray[2]);
+        //市
+        Integer freight2 = Integer.parseInt(addrIdsArray[1]);
+        //省
+        Integer freight1 = Integer.parseInt(addrIdsArray[0]);
+
+        // 地址如果失效，则默认运费
+        BigDecimal f4 = addrIdsFreightMap.get(freight4);
+        BigDecimal f3 = addrIdsFreightMap.get(freight3);
+        BigDecimal f2 = addrIdsFreightMap.get(freight2);
+        BigDecimal f1 = addrIdsFreightMap.get(freight1);
+        if (null == f1 || null == f2 || null == f3 || null == f4) {
+            //默认运费
+            LOG.info("-------默认运费------");
+            freight = userAddrDefaulFreight;
+        } else {
+            // 取最大的一个
+            BigDecimal maxfreight = f1;
+            if (maxfreight.compareTo(f2) < 0) {
+                maxfreight = f2;
+            }
+            if (maxfreight.compareTo(f3) < 0) {
+                maxfreight = f3;
+            }
+            if (maxfreight.compareTo(f4) < 0) {
+                maxfreight = f4;
+            }
+            freight = maxfreight;
+        }
+        return freight;
     }
 }

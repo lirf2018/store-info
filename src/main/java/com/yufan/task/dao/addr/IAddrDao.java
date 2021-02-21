@@ -74,8 +74,8 @@ public interface IAddrDao {
      * @param regionCode
      * @return
      */
-    public List<Map<String, Object>> queryAddrByRegionCode(String regionCode);
-
+    public List<Map<String, Object>> queryAddrByRegionCode(String regionCode,Integer status);
+    public List<Map<String, Object>> queryAddrByRegionIds(String regionIds,Integer status);
 
     /**
      * 查询用户收货地址

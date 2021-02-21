@@ -175,7 +175,7 @@ public class CreateOrder implements IResultOut {
                 String regionCodes = userAddr.getAreaIds();
                 String addrIdsArray[] = regionCodes.split("-");
                 regionCodes = regionCodes.replace("-", "','");
-                List<Map<String, Object>> listAddrs = iAddrDao.queryAddrByRegionCode(regionCodes);
+                List<Map<String, Object>> listAddrs = iAddrDao.queryAddrByRegionIds(regionCodes,Constants.USER_SNS_STATUS_1);
                 //运费
                 Map<String, String> addrIdsFreightMap = new HashMap<>();
                 for (int i = 0; i < listAddrs.size(); i++) {

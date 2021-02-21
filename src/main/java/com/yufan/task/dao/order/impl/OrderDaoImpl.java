@@ -247,11 +247,30 @@ public class OrderDaoImpl implements IOrderDao {
     @Override
     public List<Map<String, Object>> findCartCount(Integer userId, Integer goodsId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" select cart.goods_id,count(cart.goods_id) as goodsCount from tb_order_cart cart where cart.user_id=").append(userId).append(" ");
+        sql.append(" select cart.goods_id,count(cart.goods_id) as goodsCount from tb_order_cart cart JOIN tb_goods g on g.goods_id=cart.goods_id where 1=1 and cart.createtime>=g.lastaltertime and cart.status=1 and cart.user_id=").append(userId).append(" ");
         if (null != goodsId) {
             sql.append(" and cart.goods_id = ").append(goodsId).append(" ");
         }
         sql.append(" GROUP BY cart.goods_id ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+    @Override
+    public List<Map<String, Object>> findCartSumCount(Integer userId, Integer goodsId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select cart.goods_id,sum(cart.goods_count) as goodsCount from tb_order_cart cart JOIN tb_goods g on g.goods_id=cart.goods_id where 1=1 and cart.createtime>=g.lastaltertime and cart.status=1 and cart.user_id=").append(userId).append(" ");
+        if (null != goodsId) {
+            sql.append(" and cart.goods_id = ").append(goodsId).append(" ");
+        }
+        sql.append(" GROUP BY cart.goods_id ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> findCartsByCartIds(Integer userId, String cartIds) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT cart.goods_id,cart.sku_id,cart.shop_id,cart.goods_count from tb_order_cart cart JOIN tb_goods g on g.goods_id=cart.goods_id where 1=1 and cart.createtime>=g.lastaltertime and cart.`status` = 1 ");
+        sql.append(" and cart.cart_id in (").append(cartIds).append(") ");
+        sql.append(" and cart.user_id = ").append(userId).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

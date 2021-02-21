@@ -167,4 +167,14 @@ public interface IOrderDao {
      * @return
      */
     List<Map<String, Object>> findCartCount(Integer userId, Integer goodsId);
+    List<Map<String, Object>> findCartSumCount(Integer userId, Integer goodsId);
+
+    /**
+     * 查询购物车
+     *
+     * @param userId
+     * @param cartIds
+     * @return
+     */
+    List<Map<String, Object>> findCartsByCartIds(Integer userId, String cartIds);
 }

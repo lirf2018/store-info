@@ -73,11 +73,9 @@ public class GoodsDaoImpl implements IGoodsDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
         sql.append(" ,IFNULL(sku.sku_now_money,0)  as sku_now_money,g.is_zi_yin,g.goods_num,g.level_id as levelId,g.category_id as categoryId ");
-        sql.append(" ,ifnull(t1.cartCount,0) as cartCount ");
         sql.append(" from tb_goods g ");
         sql.append(" LEFT JOIN (SELECT goods_id,group_concat(now_money ORDER BY now_money ) as sku_now_money from tb_goods_sku where `status`=1  GROUP BY goods_id) sku on sku.goods_id=g.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");
-        sql.append("  LEFT JOIN (select cart.goods_id,cart.goods_count as cartCount from tb_order_cart cart where cart.user_id=0) t1 on t1.goods_id=g.goods_id ");
         if (null != goodsCondition.getPropId()) {
             sql.append(" JOIN tb_goods_attribute ga on ga.goods_id=g.goods_id and ga.prop_id=").append(goodsCondition.getPropId()).append(" ");
         }
@@ -176,18 +174,21 @@ public class GoodsDaoImpl implements IGoodsDao {
     @Override
     public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.goods_spec_name_str from tb_order_cart c JOIN tb_goods g on g.goods_id=c.goods_id and c.createtime>=g.lastaltertime ");
+        sql.append(" SELECT c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.goods_spec_name_str from tb_order_cart c JOIN tb_goods g on g.goods_id=c.goods_id ");
         sql.append(" where c.`status`=1 AND c.user_id=").append(userId).append(" ");
         sql.append(" and c.goods_id=").append(goodsId).append(" ");
+        sql.append(" and c.createtime>=g.lastaltertime  ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
     @Override
     public List<Map<String, Object>> queryUserOrderCart(int userId, Integer goodsId, String propCode) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.goods_spec_name_str from tb_order_cart c JOIN tb_goods g on g.goods_id=c.goods_id and c.createtime>=g.lastaltertime ");
+        sql.append(" SELECT c.cart_id,c.goods_id,c.goods_spec,c.goods_count,c.goods_price,c.goods_spec_name_str,ifnull(sku.sku_img,'') as sku_img from tb_order_cart c JOIN tb_goods g on g.goods_id=c.goods_id  ");
+        sql.append(" LEFT JOIN tb_goods_sku sku on sku.goods_id=g.goods_id and sku.prop_code=c.goods_spec ");
         sql.append(" where c.`status`=1 AND c.user_id=").append(userId).append(" and goods_spec='").append(propCode).append("' ");
         sql.append(" and c.goods_id=").append(goodsId).append(" ");
+        sql.append(" and c.createtime>=g.lastaltertime ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
@@ -266,5 +267,25 @@ public class GoodsDaoImpl implements IGoodsDao {
     public void updateGoodsSkuSellCount(int goodsId, String propCode, int count) {
         String sql = " update tb_goods_sku set sell_count=sell_count+" + count + " where goods_id=" + goodsId + " and prop_code='" + propCode + "' ";
         iGeneralDao.executeUpdateForSQL(sql);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllGoodsDetailInfo(String goodsIds) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select g.goods_id,g.goods_name,g.title,CONCAT('").append(Constants.IMG_WEB_URL).append("',g.goods_img) as goods_img,g.true_money,g.now_money,g.intro,g.shop_id,g.is_yuding,g.get_way, ");
+        sql.append(" g.is_invoice,g.is_putaway,g.data_index,g.category_id, ");
+        sql.append(" g.area_id,g.property,g.start_time,g.end_time,g.goods_code,g.goods_unit,g.is_single,g.goods_num,g.is_return,g.coupon_id,g.createman,g.createtime,g.lastaltertime,g.lastalterman, ");
+        sql.append(" g.remark,g.goods_type,g.is_pay_online,g.out_code,g.deposit_money,g.peisong_zc_desc,g.peisong_pei_desc,g.purchase_price,g.is_time_goods, ");
+        sql.append(" g.limit_num,g.limit_way,g.limit_begin_time,g.level_id,g.advance_price,g.bar_code,g.bar_code_shop,g.sell_count,g.is_zi_yin, ");
+        sql.append(" ifnull(sku.sku_id,'') as sku_id,ifnull(sku.sku_name,'') as sku_name,ifnull(sku.true_money,0) as sku_true_money,ifnull(sku.now_money,0) as sku_now_money,sku.sku_code, ");
+        sql.append(" ifnull(sku.prop_code,'') as prop_code,ifnull(sku.prop_code_name,'') as prop_code_name, ");
+        sql.append(" sku.sku_num,CONCAT('").append(Constants.IMG_WEB_URL).append("',ifnull(sku.sku_img,'')) as sku_img,sku.purchase_price as sku_purchase_price,sku.sell_count as sku_sell_count ");
+        sql.append(" ,s.shop_name ");
+        sql.append(" from tb_goods g ");
+        sql.append(" JOIN tb_shop s on s.shop_id = g.shop_id ");
+        sql.append(" LEFT JOIN tb_goods_sku sku on sku.goods_id=g.goods_id and sku.`status`=1 ");
+        sql.append(" where g.`status`=1 and g.is_putaway=2 and now()>=g.start_time and now()<=g.end_time ");
+        sql.append(" and g.goods_id in (").append(goodsIds).append(") ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

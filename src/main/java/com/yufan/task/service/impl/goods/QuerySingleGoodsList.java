@@ -7,6 +7,7 @@ import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.category.ICategoryDao;
 import com.yufan.task.dao.goods.IGoodsDao;
+import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.service.impl.Test;
 import com.yufan.utils.Constants;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,6 +41,10 @@ public class QuerySingleGoodsList implements IResultOut {
     @Autowired
     private ICategoryDao iCategoryDao;
 
+    @Autowired
+    private IOrderDao iOrderDao;
+
+
     private final static ExecutorService executorService = Executors.newCachedThreadPool();
 
     public static int threadCount = 3;// 拆分线程数
@@ -50,7 +55,7 @@ public class QuerySingleGoodsList implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         dataJson.put("menusList", new ArrayList<>());
         try {
-            Integer userId = data.getInteger("userId");
+            Integer userId = data.getInteger("user_id");
             // 查询分类菜单
             List<Map<String, Object>> menusList = iCategoryDao.findMainMenu(Constants.MENU_TYPE_1);
             if (!CollectionUtils.isNotEmpty(menusList)) {
@@ -83,6 +88,14 @@ public class QuerySingleGoodsList implements IResultOut {
                 // 未配置菜单
                 LOG.info("------未配置菜单-----");
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
+            }
+            // 查询购物车数量
+            Map<String, Integer> cartGoodsCountMap = new HashMap<>();
+            List<Map<String, Object>> cartList = iOrderDao.findCartSumCount(userId, null);
+            for (int i = 0; i < cartList.size(); i++) {
+                String goodsId = cartList.get(i).get("goods_id").toString();
+                int count = Integer.parseInt(cartList.get(i).get("goodsCount").toString());
+                cartGoodsCountMap.put(goodsId, count);
             }
             //
             if (levelIds.endsWith(",")) {
@@ -117,7 +130,8 @@ public class QuerySingleGoodsList implements IResultOut {
                 mapNew.put("goodsNum", Integer.parseInt(mapOld.get("goods_num").toString()));
                 mapNew.put("goodsImg", mapOld.get("goods_img"));
                 mapNew.put("trueMoney", new BigDecimal(mapOld.get("true_money").toString()));
-                mapNew.put("userGoodsCount", Integer.parseInt(mapOld.get("cartCount").toString()));
+                Integer count = cartGoodsCountMap.get(mapOld.get("goods_id").toString());
+                mapNew.put("userGoodsCount", count == null ? 0 : count);
                 int levelId = Integer.parseInt(mapOld.get("levelId").toString());
                 int categoryId = Integer.parseInt(mapOld.get("categoryId").toString());
                 //

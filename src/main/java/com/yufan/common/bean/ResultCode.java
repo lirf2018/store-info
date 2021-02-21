@@ -47,7 +47,7 @@ public enum ResultCode {
     PASSWD_ERROR(10040, "密码或账号不正确"),
     BIND_ERROR(10041, "未绑定"),
     NET_ERROR(10042, "网络异常,请稍后重试"),
-    GOODS_OUTTIME_ERROR(10043, "部分商品已失效"),
+    PART_GOODS_OUTTIME_ERROR(10043, "部分商品已失效"),
     GOODS_PEISONG_ERROR(10044, "商品配送方式不一致"),
     ORDER_NOT_EXIST(10045, "订单不存在"),
     ERROR_WORD_QUESTION(10046, "密保问题有误"),
@@ -78,7 +78,8 @@ public enum ResultCode {
     GOODS_NOT_FIND(50008, "店铺码对应的商品不存在"),
     ORDER_IS_PAY(50009, "订单已付款,请重新开单"),
     PASS_FAIL_1(50010, "验证不通过"),
-    ADD_TO_FAST(50011, "添加商品过快");
+    ADD_TO_FAST(50011, "添加商品过快"),
+    GOODS_OUTTIME_ERROR(10043, "商品已失效");
 
 
     private int resp_code;

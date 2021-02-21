@@ -12,6 +12,7 @@ import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.task.dao.goods.IGoodsJpaDao;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.service.impl.Test;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class AddOrderCart implements IResultOut {
             TbGoods goods = iGoodsJpaDao.findOne(goodsId);
             BigDecimal goodsPrice = BigDecimal.ZERO;//销售价格
             BigDecimal trueMoney = new BigDecimal(0);//商品原价
+            Integer skuId = null;
             String goodsSpecName = "";
             String goodsSpecNameStr = "";
             //查询选择的规格
@@ -96,9 +98,10 @@ public class AddOrderCart implements IResultOut {
                     LOG.info("----->查询规格失败2");
                     return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
                 }
+                skuId = goodsSku.getSkuId();
                 goodsPrice = goodsSku.getNowMoney();
                 trueMoney = goodsSku.getTrueMoney();
-
+                goods.setGoodsImg(goodsSku.getSkuImg());
             } else {
                 goodsPrice = goods.getNowMoney();
                 trueMoney = goods.getTrueMoney();
@@ -145,6 +148,7 @@ public class AddOrderCart implements IResultOut {
                 TbOrderCart orderCart = new TbOrderCart();
                 orderCart.setUserId(userId);
                 orderCart.setGoodsId(goodsId);
+                orderCart.setSkuId(skuId);
                 orderCart.setGoodsName(goods.getGoodsName());
                 orderCart.setGoodsImg(goods.getGoodsImg());
                 orderCart.setGoodsSpec(goodsSpec);

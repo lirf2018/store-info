@@ -6,12 +6,12 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * 创建人: lirf
- * 创建时间:  2019/8/24 20:12
- * 功能介绍:
+ * @description:
+ * @author: lirf
+ * @time: 2021/2/19
  */
 @Entity
-@Table(name = "tb_order_cart", schema = "testlirf", catalog = "")
+@Table(name = "tb_order_cart", schema = "store_db", catalog = "")
 public class TbOrderCart {
     private int cartId;
     private Integer userId;
@@ -31,7 +31,9 @@ public class TbOrderCart {
     private Timestamp lastaltertime;
     private String goodsSpecNameStr;
     private Integer cartType;
+    private Integer skuId;
 
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Id
     @Column(name = "cart_id", nullable = false)
     public int getCartId() {
@@ -212,34 +214,44 @@ public class TbOrderCart {
         this.cartType = cartType;
     }
 
+    @Basic
+    @Column(name = "sku_id", nullable = true)
+    public Integer getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Integer skuId) {
+        this.skuId = skuId;
+    }
+
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        TbOrderCart orderCart = (TbOrderCart) object;
-        return cartId == orderCart.cartId &&
-                Objects.equals(userId, orderCart.userId) &&
-                Objects.equals(goodsId, orderCart.goodsId) &&
-                Objects.equals(goodsName, orderCart.goodsName) &&
-                Objects.equals(goodsImg, orderCart.goodsImg) &&
-                Objects.equals(goodsSpec, orderCart.goodsSpec) &&
-                Objects.equals(goodsSpecName, orderCart.goodsSpecName) &&
-                Objects.equals(goodsCount, orderCart.goodsCount) &&
-                Objects.equals(goodsPrice, orderCart.goodsPrice) &&
-                Objects.equals(trueMoney, orderCart.trueMoney) &&
-                Objects.equals(shopId, orderCart.shopId) &&
-                Objects.equals(shopName, orderCart.shopName) &&
-                Objects.equals(createtime, orderCart.createtime) &&
-                Objects.equals(status, orderCart.status) &&
-                Objects.equals(remark, orderCart.remark) &&
-                Objects.equals(lastaltertime, orderCart.lastaltertime) &&
-                Objects.equals(goodsSpecNameStr, orderCart.goodsSpecNameStr) &&
-                Objects.equals(cartType, orderCart.cartType);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TbOrderCart that = (TbOrderCart) o;
+        return cartId == that.cartId &&
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(goodsId, that.goodsId) &&
+                Objects.equals(goodsName, that.goodsName) &&
+                Objects.equals(goodsImg, that.goodsImg) &&
+                Objects.equals(goodsSpec, that.goodsSpec) &&
+                Objects.equals(goodsSpecName, that.goodsSpecName) &&
+                Objects.equals(goodsCount, that.goodsCount) &&
+                Objects.equals(goodsPrice, that.goodsPrice) &&
+                Objects.equals(trueMoney, that.trueMoney) &&
+                Objects.equals(shopId, that.shopId) &&
+                Objects.equals(shopName, that.shopName) &&
+                Objects.equals(createtime, that.createtime) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(remark, that.remark) &&
+                Objects.equals(lastaltertime, that.lastaltertime) &&
+                Objects.equals(goodsSpecNameStr, that.goodsSpecNameStr) &&
+                Objects.equals(cartType, that.cartType) &&
+                Objects.equals(skuId, that.skuId);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(cartId, userId, goodsId, goodsName, goodsImg, goodsSpec, goodsSpecName, goodsCount, goodsPrice, trueMoney, shopId, shopName, createtime, status, remark, lastaltertime, goodsSpecNameStr, cartType);
+        return Objects.hash(cartId, userId, goodsId, goodsName, goodsImg, goodsSpec, goodsSpecName, goodsCount, goodsPrice, trueMoney, shopId, shopName, createtime, status, remark, lastaltertime, goodsSpecNameStr, cartType, skuId);
     }
 }

@@ -143,4 +143,11 @@ public interface IGoodsDao {
      * @param count
      */
     public void updateGoodsSkuSellCount(int goodsId, String propCode, int count);
+
+    /**
+     * 查询所有有效商品字段信息和sku信息
+     * @param goodsIds
+     * @return
+     */
+    List<Map<String,Object>> findAllGoodsDetailInfo(String goodsIds);
 }

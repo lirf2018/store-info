@@ -96,9 +96,22 @@ public class AddrDaoImpl implements IAddrDao {
     }
 
     @Override
-    public List<Map<String, Object>> queryAddrByRegionCode(String regionCode) {
+    public List<Map<String, Object>> queryAddrByRegionCode(String regionCode,Integer status) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT region_code,freight from tb_region where region_code in ('").append(regionCode).append("') ");
+        if(status != null){
+            sql.append(" and status=1 ");
+        }
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> queryAddrByRegionIds(String regionIds,Integer status) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" SELECT region_id,freight from tb_region where region_id in (").append(regionIds).append(") ");
+        if(status != null){
+            sql.append(" and status=1 ");
+        }
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 

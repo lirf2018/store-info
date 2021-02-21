@@ -79,12 +79,14 @@ public class QueryPlatform implements IResultOut {
                     detailMap.put("addr_lng", addrLng);
                     detailMap.put("addr_lat", addrLat);
                     detailMap.put("freight", freight);
+                    detailMap.put("freight_name", "费用: " + freight);
                     detailMap.put("store_name", storeName);
                     outAddrList.add(detailMap);
                 }
                 outMap.put("addr_list", outAddrList);
                 outList.add(outMap);
             }
+            dataJson.put("char_word", charWord);
             dataJson.put("platform_addr_list", outList);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

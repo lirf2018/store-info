@@ -123,6 +123,7 @@ public class QueryGoodsDetail2 implements IResultOut {
             //是否单品
             List<Map<String, Object>> skuList = new ArrayList<>();
             if (goods.getIsSingle() == 0) {
+                goodsNum = 0;
                 //查询商品sku
                 List<Map<String, Object>> skuListData = iGoodsDao.queryGoodsSkuListMap(goodsId);
                 BigDecimal skuLowMoney = new BigDecimal(0);

@@ -45,6 +45,7 @@ public class TbOrderDetail {
     private Integer timeGoodsId;
     private String goodsSpecNameStr;
 
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Id
     @Column(name = "detail_id", nullable = false)
     public int getDetailId() {

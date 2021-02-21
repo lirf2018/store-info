@@ -5,6 +5,8 @@ import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.addr.IAddrDao;
+import com.yufan.utils.CommonMethod;
+import com.yufan.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +45,13 @@ public class QueryUserAddr implements IResultOut {
             List<Map<String, Object>> list = iAddrDao.queryUserAddrListMap(userId, addrType);
             //处理运费
             Map<String, String> addrIdsMap = new HashMap<>();
-            String regionCodes = "";
+            String regionIds = "";// region_id
             for (int i = 0; i < list.size(); i++) {
                 String addrIds = list.get(i).get("area_ids").toString();
                 String addrIdsArray[] = addrIds.split("-");
                 for (int j = 0; j < addrIdsArray.length; j++) {
                     if (addrIdsMap.get(addrIdsArray[j]) == null) {
-                        regionCodes = regionCodes + addrIdsArray[j] + ",";
+                        regionIds = regionIds + addrIdsArray[j] + ",";
                     }
                     addrIdsMap.put(addrIdsArray[j], addrIdsArray[j]);
                 }
@@ -57,23 +59,20 @@ public class QueryUserAddr implements IResultOut {
 
             List<Map<String, Object>> outList = new ArrayList<>();
             //运费
-            Map<String, String> addrIdsFreightMap = new HashMap<>();
+            Map<Integer, BigDecimal> addrIdsFreightMap = new HashMap<>();
             //查询运费
-            if (StringUtils.isNotEmpty(regionCodes)) {
-                regionCodes = regionCodes.substring(0, regionCodes.length() - 1);
-                regionCodes = regionCodes.replace(",", "','");
-                List<Map<String, Object>> listAddrs = iAddrDao.queryAddrByRegionCode(regionCodes);
+            if (StringUtils.isNotEmpty(regionIds)) {
+                regionIds = regionIds.substring(0, regionIds.length() - 1);
+                List<Map<String, Object>> listAddrs = iAddrDao.queryAddrByRegionIds(regionIds, Constants.USER_SNS_STATUS_1);
                 for (int i = 0; i < listAddrs.size(); i++) {
-                    String regionCode = listAddrs.get(i).get("region_code").toString();
+                    int regionId = Integer.parseInt(listAddrs.get(i).get("region_id").toString());
                     BigDecimal freight = new BigDecimal(listAddrs.get(i).get("freight").toString());
-                    if (freight.compareTo(new BigDecimal("0")) > 0) {
-                        addrIdsFreightMap.put(regionCode, freight.toString());
-                    }
+                    addrIdsFreightMap.put(regionId, freight);
                 }
             }
 
             //用户默认收货地址运费
-            BigDecimal userAddrDefaulFreight = new BigDecimal("0.00");
+            BigDecimal userAddrDefaulFreight = new BigDecimal("20.00");
 
             //设置运费（以最小单位为优先）
             for (int i = 0; i < list.size(); i++) {
@@ -81,24 +80,7 @@ public class QueryUserAddr implements IResultOut {
                 String addrIds = list.get(i).get("area_ids").toString();
                 String userName = list.get(i).get("user_name").toString();
                 String addrIdsArray[] = addrIds.split("-");
-                BigDecimal freight = new BigDecimal("0.00");
-                //县
-                String freight3 = addrIdsArray[2];
-                //市
-                String freight2 = addrIdsArray[1];
-                //省
-                String freight1 = addrIdsArray[0];
-                if (addrIdsFreightMap.get(freight3) != null) {
-                    freight = new BigDecimal(addrIdsFreightMap.get(freight3));
-                } else if (addrIdsFreightMap.get(freight2) != null) {
-                    freight = new BigDecimal(addrIdsFreightMap.get(freight2));
-                } else if (addrIdsFreightMap.get(freight1) != null) {
-                    freight = new BigDecimal(addrIdsFreightMap.get(freight1));
-                } else {
-                    //默认运费
-//                    LOG.info("-------默认------");
-                }
-
+                BigDecimal freight = CommonMethod.findPostPrice(addrIdsFreightMap, userAddrDefaulFreight, addrIdsArray);
                 Integer isDefault = Integer.parseInt(list.get(i).get("is_default").toString());
                 if (isDefault == 1) {
                     userAddrDefaulFreight = freight;
