@@ -97,6 +97,9 @@ public class AddrDaoImpl implements IAddrDao {
 
     @Override
     public List<Map<String, Object>> queryAddrByRegionCode(String regionCode,Integer status) {
+        if(regionCode.endsWith(",")){
+            regionCode = regionCode.substring(0,regionCode.length()-1);
+        }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT region_code,freight from tb_region where region_code in ('").append(regionCode).append("') ");
         if(status != null){
@@ -107,6 +110,9 @@ public class AddrDaoImpl implements IAddrDao {
 
     @Override
     public List<Map<String, Object>> queryAddrByRegionIds(String regionIds,Integer status) {
+        if(regionIds.endsWith(",")){
+            regionIds = regionIds.substring(0,regionIds.length()-1);
+        }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT region_id,freight from tb_region where region_id in (").append(regionIds).append(") ");
         if(status != null){
@@ -139,6 +145,9 @@ public class AddrDaoImpl implements IAddrDao {
 
     @Override
     public List<Map<String, Object>> queryGlobelAddrByIds(String ids) {
+        if(ids.endsWith(",")){
+            ids = ids.substring(0,ids.length()-1);
+        }
         StringBuffer sql = new StringBuffer();
         sql.append(" select re.region_id,re.region_name from tb_region re where re.region_id in (" + ids + ") ");
         return iGeneralDao.getBySQLListMap(sql.toString());

@@ -51,12 +51,17 @@ public class BeforeSubmitOrder implements IResultOut {
             String cartIds = data.getString("cart_ids");// 购物车ids
             Integer userId = data.getInteger("user_id");//
             String goodsIds = goodsId == null ? "" : String.valueOf(goodsId);
+            String goodsIdsForTimeGoods = goodsIds;// 查询抢购商品
+            // 用于存在商品与购物车对应
+            Map<String, Map<String, Object>> cartGoodsMap = new HashMap<>();
+            //
             // keyMap  key=goodsId-skuId
             Map<String, Integer> keyMap = new HashMap<>();
             String key = goodsIds + "-" + (skuId == null ? "" : skuId);
             keyMap.put(key, buyCount);
             int cartCount = 0;
             if (StringUtils.isNotEmpty(cartIds)) {
+                // 购物车
                 keyMap = new HashMap<>();
                 goodsIds = "";
                 if (cartIds.endsWith(",")) {
@@ -70,12 +75,16 @@ public class BeforeSubmitOrder implements IResultOut {
                     LOG.info("---------查询购物车商品不一致------------");
                     return packagMsg(ResultCode.PART_GOODS_OUTTIME_ERROR.getResp_code(), dataJson);
                 }
-
+                //
                 int shopId = 0;
                 for (int i = 0; i < cartGoodsList.size(); i++) {
                     int goodsId_ = Integer.parseInt(cartGoodsList.get(i).get("goods_id").toString());
                     int shopId_ = Integer.parseInt(cartGoodsList.get(i).get("shop_id").toString());
                     int goodsCount_ = Integer.parseInt(cartGoodsList.get(i).get("goods_count").toString());
+                    int timeGoodsId = Integer.parseInt(cartGoodsList.get(i).get("time_goods_id").toString());
+                    if (timeGoodsId > 0) {
+                        goodsIdsForTimeGoods = goodsIdsForTimeGoods + goodsId_ + ",";
+                    }
                     if (shopId != 0) {
                         if (shopId != shopId_) {
                             LOG.info("------shopId != shopId_-------");
@@ -88,10 +97,26 @@ public class BeforeSubmitOrder implements IResultOut {
                     //
                     key = goodsId_ + "-" + sku_id_;
                     keyMap.put(key, goodsCount_);
+                    //
+                    String key2 = goodsId_ + "_" + sku_id_;
+                    cartGoodsMap.put(key2, cartGoodsList.get(i));
                 }
                 if (goodsIds.endsWith(",")) {
                     goodsIds = goodsIds.substring(0, goodsIds.length() - 1);
                 }
+            }
+            // 查询抢购商品
+            List<Map<String, Object>> timeGoodsListMap = new ArrayList<>();
+            if (StringUtils.isNotEmpty(goodsIdsForTimeGoods)) {
+                if (goodsIdsForTimeGoods.equals(",")) {
+                    goodsIdsForTimeGoods = goodsIdsForTimeGoods.substring(0, goodsIdsForTimeGoods.length() - 1);
+                }
+                timeGoodsListMap = iGoodsDao.queryTimeGoodsListMap(goodsIdsForTimeGoods);
+            }
+            Map<String, Map<String, Object>> timeGoodsMap = new HashMap<>();
+            for (int i = 0; i < timeGoodsListMap.size(); i++) {
+                String goodsId_ = timeGoodsListMap.get(i).get("goods_id").toString();
+                timeGoodsMap.put(goodsId_, timeGoodsListMap.get(i));
             }
             // 输出商品列表
             List<Map<String, Object>> outGoodsList = new ArrayList<>();
@@ -102,6 +127,8 @@ public class BeforeSubmitOrder implements IResultOut {
                 return packagMsg(ResultCode.PART_GOODS_OUTTIME_ERROR.getResp_code(), dataJson);
             }
             BigDecimal goodsPriceAll = BigDecimal.ZERO;
+            BigDecimal advancePriceAll = BigDecimal.ZERO;
+            BigDecimal depositMoneyAll = BigDecimal.ZERO;
             for (Map.Entry<String, Integer> map : keyMap.entrySet()) {
                 String goodsKey = map.getKey();//goodsId-skuId
                 Integer buyCount_ = map.getValue();
@@ -126,15 +153,20 @@ public class BeforeSubmitOrder implements IResultOut {
                         continue;
                     }
                     //
+                    int timeGoodsId = 0;
+                    if (null != timeGoodsMap.get(goodsId_)) {
+                        nowMoney = new BigDecimal(timeGoodsMap.get(goodsId_).get("time_price").toString());
+                        timeGoodsId = Integer.parseInt(timeGoodsMap.get(goodsId_).get("time_goods_id").toString());
+                    }
+                    //
                     Map<String, Object> outGoodsMap = new HashMap<>();
-                    outGoodsMap.put("goodsId", goodsId);
+                    outGoodsMap.put("goodsId", goodsId_);
                     outGoodsMap.put("goodsName", goodsName);
                     outGoodsMap.put("trueMoney", trueMoney);
                     outGoodsMap.put("nowMoney", nowMoney);
                     outGoodsMap.put("goodsImg", goodsImg);
                     outGoodsMap.put("buyCount", buyCount_);
                     if (isSingle == 0) {
-                        outGoodsMap.put("goodsName", skuName);
                         outGoodsMap.put("trueMoney", skuTrueMoney);
                         outGoodsMap.put("nowMoney", skuNowMoney);
                         outGoodsMap.put("skuImg", skuImg);
@@ -142,9 +174,24 @@ public class BeforeSubmitOrder implements IResultOut {
                     outGoodsMap.put("skuId", skuId_);
                     outGoodsMap.put("propCode", propCode);
                     outGoodsMap.put("propCodeName", propCodeName);
+                    outGoodsMap.put("timeGoodsId", timeGoodsId);
+                    Integer cartId = 0;
+                    String key2 = goodsId_+"_"+skuId_;
+                    if(cartGoodsMap.get(key2)!=null){
+                        cartId = Integer.parseInt(cartGoodsMap.get(key2).get("cart_id").toString());
+                    }
+                    outGoodsMap.put("cartId", cartId);
                     // 计算商品总价
-                    BigDecimal goodsPrice = new BigDecimal(outGoodsMap.get("nowMoney").toString()).multiply(new BigDecimal(buyCount_.toString()));
+                    BigDecimal salePrice =  new BigDecimal(outGoodsMap.get("nowMoney").toString());
+                    BigDecimal goodsPrice = salePrice.multiply(new BigDecimal(buyCount_.toString()));
                     goodsPriceAll = goodsPriceAll.add(goodsPrice);
+                    // 预付款总价
+                    BigDecimal advancePrice = new BigDecimal(goodsData.get(i).get("advance_price").toString());
+                    advancePriceAll = advancePriceAll.add(advancePrice.multiply(new BigDecimal(buyCount_.toString())));
+                    // 押金总价
+                    BigDecimal depositMoney = new BigDecimal(goodsData.get(i).get("deposit_money").toString());
+                    depositMoneyAll = depositMoneyAll.add(depositMoney.multiply(new BigDecimal(buyCount_.toString())));
+                    //
                     outGoodsList.add(outGoodsMap);
                     break;
                 }
@@ -166,11 +213,15 @@ public class BeforeSubmitOrder implements IResultOut {
             }
 
             String shopName = goodsData.get(0).get("shop_name").toString();
+            String shopId = goodsData.get(0).get("shop_id").toString();
 
             // 输出
             dataJson.put("goods_price_all", goodsPriceAll);
+            dataJson.put("deposit_money_all", depositMoneyAll);
+            dataJson.put("advance_price_all", advancePriceAll);
             dataJson.put("goods_list", outGoodsList);// 输出商品列表
             dataJson.put("shop_name", shopName);// 店铺名称
+            dataJson.put("shop_id", shopId);//
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);

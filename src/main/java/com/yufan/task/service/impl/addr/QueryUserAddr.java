@@ -5,6 +5,7 @@ import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.addr.IAddrDao;
+import com.yufan.task.service.impl.IBusinessService;
 import com.yufan.utils.CommonMethod;
 import com.yufan.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,9 @@ public class QueryUserAddr implements IResultOut {
 
     @Autowired
     private IAddrDao iAddrDao;
+
+    @Autowired
+    private IBusinessService iBusinessService;
 
 
     @Override
@@ -71,8 +75,6 @@ public class QueryUserAddr implements IResultOut {
                 }
             }
 
-            //用户默认收货地址运费
-            BigDecimal userAddrDefaulFreight = new BigDecimal("20.00");
 
             //设置运费（以最小单位为优先）
             for (int i = 0; i < list.size(); i++) {
@@ -80,12 +82,7 @@ public class QueryUserAddr implements IResultOut {
                 String addrIds = list.get(i).get("area_ids").toString();
                 String userName = list.get(i).get("user_name").toString();
                 String addrIdsArray[] = addrIds.split("-");
-                BigDecimal freight = CommonMethod.findPostPrice(addrIdsFreightMap, userAddrDefaulFreight, addrIdsArray);
-                Integer isDefault = Integer.parseInt(list.get(i).get("is_default").toString());
-                if (isDefault == 1) {
-                    userAddrDefaulFreight = freight;
-                }
-
+                BigDecimal freight = iBusinessService.findPostPrice(addrIdsFreightMap, addrIdsArray);
                 map.put("freight", freight);
                 map.put("first_name", userName.substring(0, 1));
                 outList.add(map);

@@ -64,6 +64,9 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public void deleteGoods(String ids) {
+        if(ids.endsWith(",")){
+            ids = ids.substring(0,ids.length()-1);
+        }
         String sql = " delete from tb_kc_goods where goods_code in (select goods_code where goods_id in ("+ids+")) ";
         iGeneralDao.executeUpdateForSQL(sql);
     }

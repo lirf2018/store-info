@@ -1,5 +1,8 @@
 package com.yufan.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +10,8 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 创建人: lirf
@@ -172,40 +177,67 @@ public class CommonMethod {
         }
     }
 
-    public static  BigDecimal findPostPrice(Map<Integer, BigDecimal> addrIdsFreightMap, BigDecimal userAddrDefaulFreight, String[] addrIdsArray) {
-        BigDecimal freight = new BigDecimal("0.00");
-        //镇
-        Integer freight4 = Integer.parseInt(addrIdsArray[3]);
-        //县
-        Integer freight3 = Integer.parseInt(addrIdsArray[2]);
-        //市
-        Integer freight2 = Integer.parseInt(addrIdsArray[1]);
-        //省
-        Integer freight1 = Integer.parseInt(addrIdsArray[0]);
+    public Map<String, Object> jsonToMap(JSONObject jsonObject) {
+        return JSON.parseObject(jsonObject.toJSONString(), new TypeReference<Map<String, Object>>() {
+        });
+    }
 
-        // 地址如果失效，则默认运费
-        BigDecimal f4 = addrIdsFreightMap.get(freight4);
-        BigDecimal f3 = addrIdsFreightMap.get(freight3);
-        BigDecimal f2 = addrIdsFreightMap.get(freight2);
-        BigDecimal f1 = addrIdsFreightMap.get(freight1);
-        if (null == f1 || null == f2 || null == f3 || null == f4) {
-            //默认运费
-            LOG.info("-------默认运费------");
-            freight = userAddrDefaulFreight;
-        } else {
-            // 取最大的一个
-            BigDecimal maxfreight = f1;
-            if (maxfreight.compareTo(f2) < 0) {
-                maxfreight = f2;
+
+    /**
+     * 正则匹配和替换1
+     * @param sql
+     * @param paramMap
+     * @return
+     */
+    public static String getSqlReplace1(String sql, Map<String, Object> paramMap) {
+        // String sql = " select * from tb_a whre 1=1 ##and a.id=${id}## ##and a.name=${name}## limit 80"
+        String reg = "##(.*?\\$\\{(.*?)\\}.*?)##";
+        Pattern pattern = Pattern.compile(reg);
+        Matcher matcher = pattern.matcher(sql);
+
+        while (matcher.find()) {
+            String key = matcher.group(2);
+            String con = matcher.group(1);
+            if (!paramMap.containsKey(key)) {
+                sql = sql.replaceFirst(reg, "");
+                continue;
             }
-            if (maxfreight.compareTo(f3) < 0) {
-                maxfreight = f3;
-            }
-            if (maxfreight.compareTo(f4) < 0) {
-                maxfreight = f4;
-            }
-            freight = maxfreight;
+            con = con.replaceAll("\\$\\{.*?\\}", (String) paramMap.get(key));
+            sql = sql.replaceFirst(reg, con);
         }
-        return freight;
+        return sql;
+    }
+
+
+    /**
+     * 正则匹配和替换1
+     * @param sql
+     * @param paramMap
+     * @return
+     */
+    public static Pattern pattern = Pattern.compile("##(.*?\\$\\{(.*?)\\}.*?)##");
+    public static String getSqlReplace2(String sql, Map<String, Object> paramMap) {
+        // String sql = " select * from tb_a whre 1=1 ##and a.id=${id}## ##and a.name=${name}## limit 80"
+
+        Matcher matcher = pattern.matcher(sql);
+        while (matcher.find()) {
+            String key = matcher.group(2);
+            String con = matcher.group(1);
+            String con00 = matcher.group(0);
+            if (!paramMap.containsKey(key)) {
+                sql = sql.replaceFirst(matcher.group(0), "");
+                continue;
+            }
+            con = con.replaceAll("\\$\\{.*?\\}", (String) paramMap.get(key));
+            sql = sql.replaceFirst(matcher.group(0), con);
+        }
+        return sql;
+    }
+
+    public static void main(String[] args) {
+        String sql = " select * from tb_a whre 1=1 ##and a.id=${id}## ##and a.name=${name}## limit 80";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("id", "10");
+        System.out.println(getSqlReplace2(sql, paramMap));
     }
 }

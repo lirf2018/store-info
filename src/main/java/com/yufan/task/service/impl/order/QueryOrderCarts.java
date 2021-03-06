@@ -44,6 +44,8 @@ public class QueryOrderCarts implements IResultOut {
             Integer userId = data.getInteger("user_id");
             Integer carType = data.getInteger("car_type");
 
+            // 先清理失效的购物车数据
+            iOrderDao.clearOrderCart(userId);
             List<Map<String, Object>> mapList = iOrderDao.queryUserOrderCartListMap(userId, carType);
             List<UserCartOrderDetail> outTimeGoodsList = new ArrayList<>();//失效商品
 
@@ -94,11 +96,11 @@ public class QueryOrderCarts implements IResultOut {
                     Integer skuId = Integer.parseInt(map.get("sku_id").toString());
                     //如果商品的修改时间>购物车商品的创建时间,则购物车视为无效
                     int lastStatus = Integer.parseInt(map.get("last_status").toString());
-                    if (lastStatus == 0) {
+                    if (lastStatus == 2) {
                         status = lastStatus;
                     }
 
-                    if (!(status == 1 || status == 0)) {
+                    if (!(status == 1 || status == 2)) {
                         continue;
                     }
 

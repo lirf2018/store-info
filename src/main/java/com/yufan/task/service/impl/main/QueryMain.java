@@ -111,17 +111,25 @@ public class QueryMain implements IResultOut {
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
+                int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
+                String timePrice = map.get("time_price").toString();
+                BigDecimal salePrice = new BigDecimal(nowMoney);
+                if(timeGoodsId>0){
+                    salePrice = new BigDecimal(timePrice);
+                }
+                //
                 JSONObject goods = new JSONObject();
                 goods.put("goods_id", goodsId);
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
                 goods.put("true_money", new BigDecimal(trueMoney));
-                goods.put("now_money", new BigDecimal(nowMoney));
+                goods.put("now_money", salePrice);
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
                 goods.put("sku_now_money", new BigDecimal(skuNowMoney));
                 goods.put("is_zi_yin", isZiYin);
+                goods.put("time_goods_id", timeGoodsId);
 
                 weightGoodsArray.add(goods);
             }
@@ -144,18 +152,25 @@ public class QueryMain implements IResultOut {
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
+                int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
+                String timePrice = map.get("time_price").toString();
+                BigDecimal salePrice = new BigDecimal(nowMoney);
+                if(timeGoodsId>0){
+                    salePrice = new BigDecimal(timePrice);
+                }
+                //
                 JSONObject goods = new JSONObject();
                 goods.put("goods_id", goodsId);
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
                 goods.put("true_money", new BigDecimal(trueMoney));
-                goods.put("now_money", new BigDecimal(nowMoney));
+                goods.put("now_money", salePrice);
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
                 goods.put("sku_now_money", new BigDecimal(skuNowMoney));
                 goods.put("is_zi_yin", isZiYin);
-
+                goods.put("time_goods_id", timeGoodsId);
                 newGoodsArray.add(goods);
             }
 
@@ -177,17 +192,24 @@ public class QueryMain implements IResultOut {
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
+                int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
+                String timePrice = map.get("time_price").toString();
+                BigDecimal salePrice = new BigDecimal(nowMoney);
+                if(timeGoodsId>0){
+                    salePrice = new BigDecimal(timePrice);
+                }
+                //
                 JSONObject goods = new JSONObject();
                 goods.put("goods_id", goodsId);
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
                 goods.put("true_money", new BigDecimal(trueMoney));
-                goods.put("now_money", new BigDecimal(nowMoney));
+                goods.put("now_money",salePrice );
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
                 goods.put("is_zi_yin", isZiYin);
-
+                goods.put("time_goods_id", timeGoodsId);
                 hotGoodsArray.add(goods);
             }
             /**

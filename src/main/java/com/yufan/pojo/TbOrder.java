@@ -6,12 +6,12 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * 创建人: lirf
- * 创建时间:  2019/8/6 17:49
- * 功能介绍:
+ * @description:
+ * @author: lirf
+ * @time: 2021/2/28
  */
 @Entity
-@Table(name = "tb_order", schema = "store-db", catalog = "")
+@Table(name = "tb_order", schema = "store_db", catalog = "")
 public class TbOrder {
     private int orderId;
     private Integer userId;
@@ -58,6 +58,7 @@ public class TbOrder {
     private Timestamp lastaltertime;
     private String lastalterman;
     private Integer userReadMark;
+    private Integer userSex;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -500,63 +501,6 @@ public class TbOrder {
         this.lastalterman = lastalterman;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TbOrder order = (TbOrder) o;
-        return orderId == order.orderId &&
-                Objects.equals(userId, order.userId) &&
-                Objects.equals(orderNo, order.orderNo) &&
-                Objects.equals(orderFrom, order.orderFrom) &&
-                Objects.equals(orderCount, order.orderCount) &&
-                Objects.equals(orderPrice, order.orderPrice) &&
-                Objects.equals(realPrice, order.realPrice) &&
-                Objects.equals(advancePrice, order.advancePrice) &&
-                Objects.equals(needpayPrice, order.needpayPrice) &&
-                Objects.equals(userName, order.userName) &&
-                Objects.equals(userPhone, order.userPhone) &&
-                Objects.equals(userAddr, order.userAddr) &&
-                Objects.equals(userAddrId, order.userAddrId) &&
-                Objects.equals(advancePayWay, order.advancePayWay) &&
-                Objects.equals(advancePayCode, order.advancePayCode) &&
-                Objects.equals(advancePayTime, order.advancePayTime) &&
-                Objects.equals(payWay, order.payWay) &&
-                Objects.equals(payCode, order.payCode) &&
-                Objects.equals(payTime, order.payTime) &&
-                Objects.equals(tradeChannel, order.tradeChannel) &&
-                Objects.equals(postPrice, order.postPrice) &&
-                Objects.equals(postWay, order.postWay) &&
-                Objects.equals(companyCode, order.companyCode) &&
-                Objects.equals(postNo, order.postNo) &&
-                Objects.equals(userRemark, order.userRemark) &&
-                Objects.equals(serviceRemark, order.serviceRemark) &&
-                Objects.equals(orderStatus, order.orderStatus) &&
-                Objects.equals(orderTime, order.orderTime) &&
-                Objects.equals(postTime, order.postTime) &&
-                Objects.equals(businessType, order.businessType) &&
-                Objects.equals(discountsId, order.discountsId) &&
-                Objects.equals(discountsPrice, order.discountsPrice) &&
-                Objects.equals(discountsRemark, order.discountsRemark) &&
-                Objects.equals(tradeNo, order.tradeNo) &&
-                Objects.equals(refundPrice, order.refundPrice) &&
-                Objects.equals(refundRemark, order.refundRemark) &&
-                Objects.equals(remark, order.remark) &&
-                Objects.equals(postPhone, order.postPhone) &&
-                Objects.equals(postMan, order.postMan) &&
-                Objects.equals(statusOpration, order.statusOpration) &&
-                Objects.equals(shopId, order.shopId) &&
-                Objects.equals(finishTime, order.finishTime) &&
-                Objects.equals(lastaltertime, order.lastaltertime) &&
-                Objects.equals(lastalterman, order.lastalterman);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(orderId, userId, orderNo, orderFrom, orderCount, orderPrice, realPrice, advancePrice, needpayPrice, userName, userPhone, userAddr, userAddrId, advancePayWay, advancePayCode, advancePayTime, payWay, payCode, payTime, tradeChannel, postPrice, postWay, companyCode, postNo, userRemark, serviceRemark, orderStatus, orderTime, postTime, businessType, discountsId, discountsPrice, discountsRemark, tradeNo, refundPrice, refundRemark, remark, postPhone, postMan, statusOpration, shopId, finishTime, lastaltertime, lastalterman);
-    }
-
     @Basic
     @Column(name = "user_read_mark", nullable = true)
     public Integer getUserReadMark() {
@@ -565,5 +509,73 @@ public class TbOrder {
 
     public void setUserReadMark(Integer userReadMark) {
         this.userReadMark = userReadMark;
+    }
+
+    @Basic
+    @Column(name = "user_sex", nullable = true)
+    public Integer getUserSex() {
+        return userSex;
+    }
+
+    public void setUserSex(Integer userSex) {
+        this.userSex = userSex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TbOrder tbOrder = (TbOrder) o;
+        return orderId == tbOrder.orderId &&
+                Objects.equals(userId, tbOrder.userId) &&
+                Objects.equals(orderNo, tbOrder.orderNo) &&
+                Objects.equals(orderFrom, tbOrder.orderFrom) &&
+                Objects.equals(orderCount, tbOrder.orderCount) &&
+                Objects.equals(orderPrice, tbOrder.orderPrice) &&
+                Objects.equals(realPrice, tbOrder.realPrice) &&
+                Objects.equals(advancePrice, tbOrder.advancePrice) &&
+                Objects.equals(needpayPrice, tbOrder.needpayPrice) &&
+                Objects.equals(userName, tbOrder.userName) &&
+                Objects.equals(userPhone, tbOrder.userPhone) &&
+                Objects.equals(userAddr, tbOrder.userAddr) &&
+                Objects.equals(userAddrId, tbOrder.userAddrId) &&
+                Objects.equals(advancePayWay, tbOrder.advancePayWay) &&
+                Objects.equals(advancePayCode, tbOrder.advancePayCode) &&
+                Objects.equals(advancePayTime, tbOrder.advancePayTime) &&
+                Objects.equals(payWay, tbOrder.payWay) &&
+                Objects.equals(payCode, tbOrder.payCode) &&
+                Objects.equals(payTime, tbOrder.payTime) &&
+                Objects.equals(tradeChannel, tbOrder.tradeChannel) &&
+                Objects.equals(postPrice, tbOrder.postPrice) &&
+                Objects.equals(postWay, tbOrder.postWay) &&
+                Objects.equals(companyCode, tbOrder.companyCode) &&
+                Objects.equals(postNo, tbOrder.postNo) &&
+                Objects.equals(userRemark, tbOrder.userRemark) &&
+                Objects.equals(serviceRemark, tbOrder.serviceRemark) &&
+                Objects.equals(orderStatus, tbOrder.orderStatus) &&
+                Objects.equals(orderTime, tbOrder.orderTime) &&
+                Objects.equals(postTime, tbOrder.postTime) &&
+                Objects.equals(businessType, tbOrder.businessType) &&
+                Objects.equals(discountsId, tbOrder.discountsId) &&
+                Objects.equals(discountsPrice, tbOrder.discountsPrice) &&
+                Objects.equals(discountsRemark, tbOrder.discountsRemark) &&
+                Objects.equals(tradeNo, tbOrder.tradeNo) &&
+                Objects.equals(refundPrice, tbOrder.refundPrice) &&
+                Objects.equals(refundRemark, tbOrder.refundRemark) &&
+                Objects.equals(remark, tbOrder.remark) &&
+                Objects.equals(postPhone, tbOrder.postPhone) &&
+                Objects.equals(postMan, tbOrder.postMan) &&
+                Objects.equals(statusOpration, tbOrder.statusOpration) &&
+                Objects.equals(shopId, tbOrder.shopId) &&
+                Objects.equals(finishTime, tbOrder.finishTime) &&
+                Objects.equals(lastaltertime, tbOrder.lastaltertime) &&
+                Objects.equals(lastalterman, tbOrder.lastalterman) &&
+                Objects.equals(userReadMark, tbOrder.userReadMark) &&
+                Objects.equals(userSex, tbOrder.userSex);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId, userId, orderNo, orderFrom, orderCount, orderPrice, realPrice, advancePrice, needpayPrice, userName, userPhone, userAddr, userAddrId, advancePayWay, advancePayCode, advancePayTime, payWay, payCode, payTime, tradeChannel, postPrice, postWay, companyCode, postNo, userRemark, serviceRemark, orderStatus, orderTime, postTime, businessType, discountsId, discountsPrice, discountsRemark, tradeNo, refundPrice, refundRemark, remark, postPhone, postMan, statusOpration, shopId, finishTime, lastaltertime, lastalterman, userReadMark, userSex);
     }
 }

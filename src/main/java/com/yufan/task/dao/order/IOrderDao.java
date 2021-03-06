@@ -58,7 +58,7 @@ public interface IOrderDao {
      *
      * @return
      */
-    public int userCartCount(int userId,Integer goodsId);
+    public int userCartCount(int userId, Integer goodsId);
 
 
     /**
@@ -157,7 +157,7 @@ public interface IOrderDao {
      * @param orderNo
      * @return
      */
-    public int payOrderSuccess(String orderNo,Integer payWay,String payTime,String payCode);
+    public int payOrderSuccess(String orderNo, Integer payWay, String payTime, String payCode);
 
     /**
      * 查询购物车数量
@@ -167,6 +167,7 @@ public interface IOrderDao {
      * @return
      */
     List<Map<String, Object>> findCartCount(Integer userId, Integer goodsId);
+
     List<Map<String, Object>> findCartSumCount(Integer userId, Integer goodsId);
 
     /**
@@ -177,4 +178,30 @@ public interface IOrderDao {
      * @return
      */
     List<Map<String, Object>> findCartsByCartIds(Integer userId, String cartIds);
+
+
+    /**
+     * 查询用户订单商品数量
+     *
+     * @param limitBeginTime
+     * @param goodsId
+     * @param timeGoodsId
+     * @return
+     */
+    List<Map<String, Object>> findUserOrderByCount(Integer userId, String limitBeginTime, Integer goodsId, Integer timeGoodsId);
+
+    /**
+     * 更新购物车，当商品不中抢购商品的时候
+     *
+     * @param goodsIds
+     */
+    void updateOrderCartStatus(Integer userId,String goodsIds, int status,Integer withTimeGoods);
+
+    /**
+     * 清理失效的购物车
+     * @param userId
+     */
+    void clearOrderCart(int userId);
+
+
 }

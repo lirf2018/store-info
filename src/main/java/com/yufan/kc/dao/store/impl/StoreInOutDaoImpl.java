@@ -124,6 +124,9 @@ public class StoreInOutDaoImpl implements StoreInOutDao {
 
     @Override
     public void batchSureStore(String incomeIds, Integer incomeType) {
+        if(incomeIds.endsWith(",")){
+            incomeIds = incomeIds.substring(0,incomeIds.length()-1);
+        }
         StringBuffer sql = new StringBuffer();
         if (incomeType == 0) {
             // 出库
@@ -143,6 +146,9 @@ public class StoreInOutDaoImpl implements StoreInOutDao {
 
     @Override
     public void updateStoreMatching2(String goodsIds, int matching) {
+        if(goodsIds.endsWith(",")){
+            goodsIds = goodsIds.substring(0,goodsIds.length()-1);
+        }
         String sql = " update tb_store_inout set is_matching=" + matching + " where goods_code in (select goods_code from tb_kc_goods where goods_id in (" + goodsIds + ")) ";
         iGeneralDao.executeUpdateForSQL(sql);
     }

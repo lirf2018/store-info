@@ -121,12 +121,20 @@ public class QuerySingleGoodsList implements IResultOut {
             for (int i = 0; i < goodsList.size(); i++) {
                 //
                 Map<String, Object> mapOld = goodsList.get(i);
+                //
+                int timeGoodsId = Integer.parseInt(mapOld.get("time_goods_id").toString());
+                String timePrice = mapOld.get("time_price").toString();
+                BigDecimal salePrice = new BigDecimal(mapOld.get("now_money").toString());
+                if(timeGoodsId>0){
+                    salePrice = new BigDecimal(timePrice);
+                }
+                //
                 Map<String, Object> mapNew = new HashMap<>();
                 mapNew.put("goodsName", mapOld.get("goods_name"));
                 mapNew.put("sellCount", Integer.parseInt(mapOld.get("sell_count").toString()));
                 mapNew.put("goodsId", Integer.parseInt(mapOld.get("goods_id").toString()));
                 mapNew.put("title", mapOld.get("title"));
-                mapNew.put("nowMoney", new BigDecimal(mapOld.get("now_money").toString()));
+                mapNew.put("nowMoney", salePrice);
                 mapNew.put("goodsNum", Integer.parseInt(mapOld.get("goods_num").toString()));
                 mapNew.put("goodsImg", mapOld.get("goods_img"));
                 mapNew.put("trueMoney", new BigDecimal(mapOld.get("true_money").toString()));
@@ -134,7 +142,6 @@ public class QuerySingleGoodsList implements IResultOut {
                 mapNew.put("userGoodsCount", count == null ? 0 : count);
                 int levelId = Integer.parseInt(mapOld.get("levelId").toString());
                 int categoryId = Integer.parseInt(mapOld.get("categoryId").toString());
-                //
                 if (levelGoodsMap.get(levelId) == null) {
                     List<Map<String, Object>> addGoods = new ArrayList<>();
                     addGoods.add(mapNew);

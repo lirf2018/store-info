@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @description:
  * @author: lirf
- * @time: 2021/2/19
+ * @time: 2021/2/28
  */
 @Entity
 @Table(name = "tb_order_cart", schema = "store_db", catalog = "")
@@ -32,8 +32,9 @@ public class TbOrderCart {
     private String goodsSpecNameStr;
     private Integer cartType;
     private Integer skuId;
+    private Integer timeGoodsId;
 
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "cart_id", nullable = false)
     public int getCartId() {
@@ -224,6 +225,16 @@ public class TbOrderCart {
         this.skuId = skuId;
     }
 
+    @Basic
+    @Column(name = "time_goods_id", nullable = true)
+    public Integer getTimeGoodsId() {
+        return timeGoodsId;
+    }
+
+    public void setTimeGoodsId(Integer timeGoodsId) {
+        this.timeGoodsId = timeGoodsId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -247,11 +258,12 @@ public class TbOrderCart {
                 Objects.equals(lastaltertime, that.lastaltertime) &&
                 Objects.equals(goodsSpecNameStr, that.goodsSpecNameStr) &&
                 Objects.equals(cartType, that.cartType) &&
-                Objects.equals(skuId, that.skuId);
+                Objects.equals(skuId, that.skuId) &&
+                Objects.equals(timeGoodsId, that.timeGoodsId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cartId, userId, goodsId, goodsName, goodsImg, goodsSpec, goodsSpecName, goodsCount, goodsPrice, trueMoney, shopId, shopName, createtime, status, remark, lastaltertime, goodsSpecNameStr, cartType, skuId);
+        return Objects.hash(cartId, userId, goodsId, goodsName, goodsImg, goodsSpec, goodsSpecName, goodsCount, goodsPrice, trueMoney, shopId, shopName, createtime, status, remark, lastaltertime, goodsSpecNameStr, cartType, skuId, timeGoodsId);
     }
 }

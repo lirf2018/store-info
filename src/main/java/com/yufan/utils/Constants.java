@@ -27,6 +27,7 @@ public class Constants {
      * 订单状态
      * //0	待付款
      * //1	已付款
+     * //2	确认中
      * //3	已失败
      * //4	待发货
      * //5	待收货
@@ -90,6 +91,13 @@ public class Constants {
      * 参数paramCode
      */
     public static String PARAM_CODE_LIMIT_WAY = "limit_way";//限购方式
+
+    //1.每天一次2每月一次3.每年一次4不限购5只允许购买一次
+    public static int LIMIT_WAY_1 = 1;
+    public static int LIMIT_WAY_2 = 2;
+    public static int LIMIT_WAY_3 = 3;
+    public static int LIMIT_WAY_4 = 4;
+    public static int LIMIT_WAY_5 = 5;
 
     /**
      * 网易短信参数

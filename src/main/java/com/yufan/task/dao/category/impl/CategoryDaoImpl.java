@@ -233,6 +233,12 @@ public class CategoryDaoImpl implements ICategoryDao {
 
     @Override
     public List<Map<String, Object>> loadLeveCategoryRel(String levelIds, String categoryIds) {
+        if(levelIds.endsWith(",")){
+            levelIds = levelIds.substring(0,levelIds.length()-1);
+        }
+        if(categoryIds.endsWith(",")){
+            categoryIds = categoryIds.substring(0,categoryIds.length()-1);
+        }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT level_id,category_id from tb_level_category_rel where 1=1 ");
         if (StringUtils.isNotEmpty(levelIds)) {
@@ -265,6 +271,9 @@ public class CategoryDaoImpl implements ICategoryDao {
 
     @Override
     public List<Map<String, Object>> loadPropValueItem(String valueIds) {
+        if(valueIds.endsWith(",")){
+            valueIds = valueIds.substring(0,valueIds.length()-1);
+        }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT pv.value_id,it.prop_name,pv.value_name ");
         sql.append(" from tb_props_value pv JOIN tb_itemprops it on it.prop_id = pv.prop_id ");

@@ -62,4 +62,6 @@ public class UserCartOrderDetail {
 //    @JSONField(name = "sku_id")
     private Integer skuId;
 
+    private boolean isChecked;
+
 }

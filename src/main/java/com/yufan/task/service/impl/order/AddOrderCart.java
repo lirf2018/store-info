@@ -56,7 +56,9 @@ public class AddOrderCart implements IResultOut {
         try {
             Integer goodsId = data.getInteger("goods_id");
             Integer userId = data.getInteger("user_id");
-            Integer addModel = data.containsKey("add_model")?data.getInteger("add_model"):0;
+            Integer timeGoodsId = data.getInteger("time_goods_id");
+            String nowMoney = data.getString("now_price");
+            Integer addModel = data.containsKey("add_model") ? data.getInteger("add_model") : 0;
             Integer goodsCount = data.getInteger("goods_count") == 0 ? 1 : data.getInteger("goods_count");
             String goodsSpec = data.getString("goods_spec") == null ? "" : data.getString("goods_spec");
 
@@ -68,13 +70,29 @@ public class AddOrderCart implements IResultOut {
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
             }
 
-
             TbGoods goods = iGoodsJpaDao.findOne(goodsId);
             BigDecimal goodsPrice = BigDecimal.ZERO;//销售价格
+            BigDecimal timePrice = null;//抢购价格
             BigDecimal trueMoney = new BigDecimal(0);//商品原价
             Integer skuId = null;
             String goodsSpecName = "";
             String goodsSpecNameStr = "";
+            if (timeGoodsId != null && timeGoodsId > 0 && goods.getIsSingle() == 1 && goods.getIsTimeGoods() > 0) {
+                // 查询抢购商品信息
+                List<Map<String, Object>> list = iGoodsDao.queryTimeGoodsListMap(goodsId.toString());
+                if (CollectionUtils.isNotEmpty(list)) {
+                    Map<String, Object> timeGoods = list.get(0);
+                    int goodsStore = Integer.parseInt(timeGoods.get("goods_store").toString());
+                    if (goodsStore <= 0) {
+                        return packagMsg(ResultCode.TIMEGOODS_STORE_EMPTY.getResp_code(), dataJson);
+                    }
+                    timePrice = new BigDecimal(timeGoods.get("time_price").toString());
+                }else{
+                    // 失效购物车 对应抢购商品
+                    iOrderDao.updateOrderCartStatus(userId, goodsId.toString(), 2, 1);
+                }
+            }
+
             //查询选择的规格
             if (StringUtils.isNotEmpty(goodsSpec)) {
                 String valueIds = goodsSpec.replace(";", ",");
@@ -105,6 +123,9 @@ public class AddOrderCart implements IResultOut {
             } else {
                 goodsPrice = goods.getNowMoney();
                 trueMoney = goods.getTrueMoney();
+                if (null != timePrice) {
+                    goodsPrice = timePrice;
+                }
             }
 
             // 购物车 商品总数
@@ -132,15 +153,8 @@ public class AddOrderCart implements IResultOut {
                 }
                 flag = true;
                 //判断是规格商品还是单品
-                if (goods.getIsSingle() == 0) {
-                    //sku商品    //判断规格
-                    iGoodsDao.updateOrderCart(cartId, count, goodsSpec, goodsSpecName, goodsSpecNameStr, goodsPrice, trueMoney);
-                    break;
-                } else {
-                    //单品
-                    iGoodsDao.updateOrderCart(cartId, count, goodsSpec, goodsSpecName, goodsSpecNameStr, goodsPrice, trueMoney);
-                    break;
-                }
+                iGoodsDao.updateOrderCart(cartId, count, goodsSpec, goodsSpecName, goodsSpecNameStr, goodsPrice, trueMoney, timeGoodsId);
+                break;
             }
 
             if (!flag) {
@@ -156,6 +170,7 @@ public class AddOrderCart implements IResultOut {
                 orderCart.setGoodsCount(goodsCount);
                 orderCart.setGoodsPrice(goodsPrice);
                 orderCart.setTrueMoney(trueMoney);
+                orderCart.setTimeGoodsId(timeGoodsId);
                 orderCart.setShopId(goods.getShopId());
                 orderCart.setCreatetime(new Timestamp(new Date().getTime()));
                 orderCart.setStatus(1);

@@ -32,7 +32,7 @@ public interface IGoodsDao {
      * @param goodsId
      * @return
      */
-    public List<Map<String, Object>> queryTimeGoodsListMap(Integer goodsId);
+    public List<Map<String, Object>> queryTimeGoodsListMap(String goodsId);
 
     /**
      * 查询商品列表
@@ -92,7 +92,8 @@ public interface IGoodsDao {
     /**
      * 更新购物车
      */
-    public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr, BigDecimal goodsPrice, BigDecimal trueMoney);
+    public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr,
+                                BigDecimal goodsPrice, BigDecimal trueMoney,Integer timeGoodsId);
 
     /**
      * 查询商品sku
@@ -109,6 +110,8 @@ public interface IGoodsDao {
      * 查询抢购商品
      */
     public TbTimeGoods loadTimeGoods(int timeGoodsId);
+
+    public List<Map<String, Object>> queryTimeGoodsListMapByTimeGoodsIds(String timeGoodsIds);
 
     public List<Map<String, Object>> queryTbGoodsListMapByGoodsIds(String goodsIds);
 
@@ -131,6 +134,7 @@ public interface IGoodsDao {
 
     /**
      * 更新商品销售数
+     *
      * @param goodsId
      * @param count
      */
@@ -138,6 +142,7 @@ public interface IGoodsDao {
 
     /**
      * 更新商品SKU销售数
+     *
      * @param goodsId
      * @param propCode
      * @param count
@@ -146,8 +151,10 @@ public interface IGoodsDao {
 
     /**
      * 查询所有有效商品字段信息和sku信息
+     *
      * @param goodsIds
      * @return
      */
-    List<Map<String,Object>> findAllGoodsDetailInfo(String goodsIds);
+    List<Map<String, Object>> findAllGoodsDetailInfo(String goodsIds);
+
 }
