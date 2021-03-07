@@ -41,8 +41,8 @@ public class GoodsDaoImpl implements IGoodsDao {
 
     @Override
     public List<Map<String, Object>> queryTimeGoodsListMap(String goodsId) {
-        if(goodsId.endsWith(",")){
-            goodsId = goodsId.substring(0,goodsId.length()-1);
+        if (goodsId.endsWith(",")) {
+            goodsId = goodsId.substring(0, goodsId.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT  tg.id as time_goods_id,tg.goods_id,DATE_FORMAT(tg.begin_time,'%Y-%m-%d %T') as begin_time,DATE_FORMAT(tg.end_time,'%Y-%m-%d %T') as end_time,tg.time_price,tg.goods_store, ");
@@ -204,9 +204,9 @@ public class GoodsDaoImpl implements IGoodsDao {
 
     @Override
     public void updateOrderCart(int cartId, int goodsCount, String goodsSpec, String goodsSpecName, String goodsSpecNameStr,
-                                BigDecimal goodsPrice, BigDecimal trueMoney,Integer timeGoodsId) {
+                                BigDecimal goodsPrice, BigDecimal trueMoney, Integer timeGoodsId) {
         String sql = " update tb_order_cart set goods_spec=?,goods_spec_name=?,goods_count=?,goods_price=?,goods_spec_name_str=?,true_money=?,time_goods_id=?,lastaltertime=now() where cart_id=? ";
-        iGeneralDao.executeUpdateForSQL(sql, goodsSpec, goodsSpecName, goodsCount, goodsPrice, goodsSpecNameStr, trueMoney,timeGoodsId, cartId);
+        iGeneralDao.executeUpdateForSQL(sql, goodsSpec, goodsSpecName, goodsCount, goodsPrice, goodsSpecNameStr, trueMoney, timeGoodsId, cartId);
     }
 
     @Override
@@ -230,8 +230,8 @@ public class GoodsDaoImpl implements IGoodsDao {
 
     @Override
     public List<Map<String, Object>> queryTbGoodsListMapByGoodsIds(String goodsIds) {
-        if(goodsIds.endsWith(",")){
-            goodsIds = goodsIds.substring(0,goodsIds.length()-1);
+        if (goodsIds.endsWith(",")) {
+            goodsIds = goodsIds.substring(0, goodsIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" select goods_id,goods_name,title,goods_img,true_money,now_money,shop_id,is_yuding,get_way,is_invoice,is_putaway,data_index,category_id,property,is_single,goods_num,is_return,coupon_id,goods_type,is_pay_online,out_code, ");
@@ -243,8 +243,8 @@ public class GoodsDaoImpl implements IGoodsDao {
 
     @Override
     public List<Map<String, Object>> queryTimeGoodsListMapByTimeGoodsIds(String timeGoodsIds) {
-        if(timeGoodsIds.endsWith(",")){
-            timeGoodsIds = timeGoodsIds.substring(0,timeGoodsIds.length()-1);
+        if (timeGoodsIds.endsWith(",")) {
+            timeGoodsIds = timeGoodsIds.substring(0, timeGoodsIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT id as time_goods_id,goods_id,goodssku_id,begin_time,end_time,time_price,goods_store,limit_num,time_way,weight,is_make_sure,DATE_FORMAT(limit_begin_time,'%Y-%m-%d') as limit_begin_time ");
@@ -254,8 +254,8 @@ public class GoodsDaoImpl implements IGoodsDao {
 
     @Override
     public List<Map<String, Object>> queryTbGoodsSkuListMapBySkuIds(String skuIds) {
-        if(skuIds.endsWith(",")){
-            skuIds = skuIds.substring(0,skuIds.length()-1);
+        if (skuIds.endsWith(",")) {
+            skuIds = skuIds.substring(0, skuIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT sku_id,goods_id,sku_name,true_money,now_money,sku_code,prop_code,prop_code_name,goods_spec_name_str,sku_num,sku_img,purchase_price,shop_id,sell_count,status from tb_goods_sku ");
@@ -295,8 +295,8 @@ public class GoodsDaoImpl implements IGoodsDao {
 
     @Override
     public List<Map<String, Object>> findAllGoodsDetailInfo(String goodsIds) {
-        if(goodsIds.endsWith(",")){
-            goodsIds = goodsIds.substring(0,goodsIds.length()-1);
+        if (goodsIds.endsWith(",")) {
+            goodsIds = goodsIds.substring(0, goodsIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" select g.goods_id,g.goods_name,g.title,CONCAT('").append(Constants.IMG_WEB_URL).append("',g.goods_img) as goods_img,g.true_money,g.now_money,g.intro,g.shop_id,g.is_yuding,g.get_way, ");

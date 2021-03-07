@@ -80,10 +80,10 @@ public enum ResultCode {
     ORDER_IS_PAY(50009, "订单已付款,请重新开单"),
     PASS_FAIL_1(50010, "验证不通过"),
     ADD_TO_FAST(50011, "添加商品过快"),
-    GOODS_OUTTIME_ERROR(10043, "商品已失效"),
-    TIMEGOODS_OUTTIME_ERROR(10044, "商品抢购活动已结束"),
-    TIMEGOODS_STORE_EMPTY(10045, "抢购商品库存不足"),
-    LIMIT_GOODS_RULE(10046, "不满足限购商品规则");
+    GOODS_OUTTIME_ERROR(10064, "商品已失效"),
+    TIMEGOODS_OUTTIME_ERROR(10065, "商品抢购活动已结束"),
+    TIMEGOODS_STORE_EMPTY(10066, "抢购商品库存不足"),
+    LIMIT_GOODS_RULE(10067, "不满足限购商品规则");
 
 
     private int resp_code;

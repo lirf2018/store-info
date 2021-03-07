@@ -76,7 +76,7 @@ public class CreateOrder implements IResultOut {
             BigDecimal postPrice = data.getBigDecimal("post_price");//
             Integer couponId = data.getInteger("coupon_id");// 优惠券标识
             JSONArray goodsList = data.getJSONArray("goods_list");
-            if (null == businessType || null == postWay || null == goodsList || goodsList.size() == 0 || userId == null  || userAddrId == null
+            if (null == businessType || null == postWay || null == goodsList || goodsList.size() == 0 || userId == null || userAddrId == null
                     || shopId == null || shopId == 0 || null == orderPrice || realPrice == null || null == goodsPriceAll || depositMoneyAll == null
                     || discountsPriceAll == null || postPrice == null || couponId == null || null == advancePriceAll) {
                 return false;
@@ -253,7 +253,7 @@ public class CreateOrder implements IResultOut {
             int orderCount = 0;
             for (int i = 0; i < goodsList.size(); i++) {
                 Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");
-                Map<String,Object> goods = goodsMap.get(goodsId);
+                Map<String, Object> goods = goodsMap.get(goodsId);
                 BigDecimal dbGoodsTrueMoney = new BigDecimal(goods.get("true_money").toString());
                 BigDecimal dbGoodsPurchasePrice = new BigDecimal(goods.get("purchase_price").toString());
                 String dbGoodsImg = goods.get("goods_img").toString();
@@ -377,7 +377,7 @@ public class CreateOrder implements IResultOut {
                 }
                 needpayPrice = dbOrderRealPriceAll.multiply(dbAdvancePriceAll);
             }
-            if(needpayPrice.compareTo(BigDecimal.ZERO)<0){
+            if (needpayPrice.compareTo(BigDecimal.ZERO) < 0) {
                 return packagMsg(ResultCode.ORDWE_PRICE_ERROR.getResp_code(), dataJson);
             }
 
@@ -439,31 +439,29 @@ public class CreateOrder implements IResultOut {
             order.setUserReadMark(1);//用户打开标记 0 已读 1未读
             order.setUserSex(userSex);
             int orderId = iOrderDao.createOrder(order, detailList, new HashMap<>());
-            LOG.info("---------------orderId="+orderId);
+            LOG.info("---------------orderId=" + orderId);
             if (orderId > 0) {
                 //删除购物车
                 if (StringUtils.isNotEmpty(cartIds)) {
                     iOrderDao.deleteShopCartByCartIds(userId, cartIds, 3);
                 }
-//                修改库存
-//                if (null != timeGoodsId && timeGoodsId > 0) {
-//                    Integer goodsCount = goodsList.getJSONObject(0).getInteger("goods_count");
-//                    LOG.info("----删除抢购商品库存----timeGoodsId:" + timeGoodsId + "  goodsCount:" + goodsCount);
-//                    iGoodsDao.subtractTimeGoodsStore(timeGoodsId, goodsCount);
-//                } else {
-//                    for (int i = 0; i < goodsList.size(); i++) {
-//                        Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");
-//                        Integer goodsCount = goodsList.getJSONObject(i).getInteger("goods_count");
-//                        Integer skuId = goodsList.getJSONObject(i).getInteger("sku_id");
-//                        if (null != skuId && skuId > 0) {
-//                            LOG.info("----删除商品sku库存----goodsId:" + goodsId + "  skuId:" + skuId + "  goodsCount:" + goodsCount);
-//                            iGoodsDao.subtractGoodsSkuStore(goodsId, skuId, goodsCount);
-//                        } else {
-//                            LOG.info("----删除商品库存----goodsId:" + goodsId + "  goodsCount:" + goodsCount);
-//                            iGoodsDao.subtractGoodsStore(goodsId, goodsCount);
-//                        }
-//                    }
-//                }
+
+                for (int i = 0; i < goodsList.size(); i++) {
+                    Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");
+                    BigDecimal buyCount = new BigDecimal(goodsList.getJSONObject(i).getString("buy_count"));
+                    Integer skuId = goodsList.getJSONObject(i).getInteger("sku_id");
+                    Integer timeGoodsId = goodsList.getJSONObject(i).getInteger("time_goods_id");
+                    if (null != timeGoodsId && timeGoodsId > 0) {
+                        LOG.info("----删除抢购商品库存----timeGoodsId:" + timeGoodsId + "  goodsCount:" + buyCount);
+                        iGoodsDao.subtractTimeGoodsStore(timeGoodsId, buyCount.intValue());
+                    }
+                    if (null != skuId && skuId > 0) {
+                        LOG.info("----删除商品sku库存----goodsId:" + goodsId + "  skuId:" + skuId + "  buyCount:" + buyCount);
+                        iGoodsDao.subtractGoodsSkuStore(goodsId, skuId, buyCount.intValue());
+                    }
+                    LOG.info("----删除商品库存----goodsId:" + goodsId + "  goodsCount:" + buyCount);
+                    iGoodsDao.subtractGoodsStore(goodsId, buyCount.intValue());
+                }
                 dataJson.put("order_no", orderNo);
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
             }
