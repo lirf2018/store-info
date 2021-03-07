@@ -54,12 +54,19 @@ public class QueryUserCenter implements IResultOut {
             //查询积分
             int jifen = iUserDao.userJifen(userId);
             //购物车
-            int cartGoodsCount = iOrderDao.userCartCount(userId,null);
+            int cartGoodsCount = 0;
+            List<Map<String, Object>> list = iOrderDao.findCartCount(userId, null);
+            for (int i = 0; i < list.size(); i++) {
+                int c = Integer.parseInt(list.get(i).get("goodsCount").toString());
+                cartGoodsCount = cartGoodsCount + c;
+            }
+            //
 
             //查询用户订单
             List<Map<String, Object>> userOrderListMap = iOrderDao.queryOrderPayAllListMap(userId);
             int c0 = 0;//0	待付款
             int c1 = 0;//1	已付款
+            int c2 = 0;//	确认中
             int c3 = 0;//3	已失败
             int c4 = 0;//4	待发货
             int c5 = 0; //5	待收货
@@ -90,6 +97,9 @@ public class QueryUserCenter implements IResultOut {
                         break;
                     case 1:
                         c1++;
+                        break;
+                    case 2:
+                        c2++;
                         break;
                     case 3:
                         c3++;
@@ -141,6 +151,7 @@ public class QueryUserCenter implements IResultOut {
             dataJson.put("order_yhh", c13 > 99 ? "99+" : c13);//13	已还货*/
             dataJson.put("order_dfk", c0);//0	待付款
             dataJson.put("order_yfk", c1);//1	已付款
+            dataJson.put("order_qrz", c2);//2	确认中
             dataJson.put("order_ysb", c3);//3	已失败
             dataJson.put("order_dfh", c4);//4	待发货
             dataJson.put("order_dsh", c5);//5	待收货

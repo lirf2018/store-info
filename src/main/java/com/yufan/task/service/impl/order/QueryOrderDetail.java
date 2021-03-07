@@ -58,15 +58,16 @@ public class QueryOrderDetail implements IResultOut {
                 }
             }
             Integer userId = data.getInteger("user_id");
-            String orderNo = data.getString("order_no");
+            Integer orderId = data.getInteger("order_id");
 
             //商品总价
-            BigDecimal goodsPriceAll = new BigDecimal(0.00);
+            BigDecimal goodsPriceAll = BigDecimal.ZERO;
+            BigDecimal depositPriceAll = BigDecimal.ZERO;
 
-            List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderNo);
+            List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderId);
             List<Map<String, Object>> detailList = new ArrayList<>();
             for (int i = 0; i < listOrder.size(); i++) {
-                Object orderId = listOrder.get(i).get("order_id");
+                Object orderNo = listOrder.get(i).get("order_no");
                 Object orderPrice = listOrder.get(i).get("order_price");
                 Object realPrice = listOrder.get(i).get("real_price");
                 Object orderCount = listOrder.get(i).get("order_count");
@@ -85,6 +86,7 @@ public class QueryOrderDetail implements IResultOut {
                 Object payWay = listOrder.get(i).get("pay_way") == null ? "" : listOrder.get(i).get("pay_way");
                 Object shopLogo = listOrder.get(i).get("shop_logo");
                 Object shopName = listOrder.get(i).get("shop_name");
+                Object userRemark = listOrder.get(i).get("user_remark");
                 dataJson.put("order_id", orderId);
                 dataJson.put("order_no", orderNo);
                 dataJson.put("order_price", new BigDecimal(orderPrice.toString()));
@@ -113,6 +115,7 @@ public class QueryOrderDetail implements IResultOut {
                 dataJson.put("pay_way_name", payWayName == null ? "" : payWayName);
                 dataJson.put("shop_logo", shopLogo);
                 dataJson.put("shop_name", shopName);
+                dataJson.put("user_remark", userRemark);
 
 
                 Map<String, Object> detailMap = new HashMap<>();
@@ -121,6 +124,8 @@ public class QueryOrderDetail implements IResultOut {
                 Object goodsName = listOrder.get(i).get("goods_name");
                 Object saleMoney = listOrder.get(i).get("sale_money");
                 Object goodsCount = listOrder.get(i).get("goods_count");
+                String depositPrice = listOrder.get(i).get("deposit_price").toString();
+                Object goodsSpecName = listOrder.get(i).get("goods_spec_name");
                 Object goodsSpecNameStr = listOrder.get(i).get("goods_spec_name_str");
                 detailMap.put("goods_img", goodsImg);
                 detailMap.put("goods_id", Integer.parseInt(goodsId.toString()));
@@ -129,10 +134,12 @@ public class QueryOrderDetail implements IResultOut {
 
                 detailMap.put("sale_money", saleMoney);
                 detailMap.put("goods_count", goodsCount);
+                detailMap.put("goods_spec_name", goodsSpecName);
                 detailMap.put("goods_spec_name_str", goodsSpecNameStr);
                 detailList.add(detailMap);
                 //计算商品总价
                 goodsPriceAll = goodsPriceAll.add(new BigDecimal(saleMoney.toString()).multiply(new BigDecimal(goodsCount.toString())));
+                depositPriceAll = depositPriceAll.add(new BigDecimal(depositPrice));
             }
 
             //查询退款信息
@@ -149,6 +156,7 @@ public class QueryOrderDetail implements IResultOut {
                 }
             }
 
+            dataJson.put("deposit_price_all", depositPriceAll);
             dataJson.put("refund_apply_time", refundApplyTime);
             dataJson.put("refund_finish_time", refundFinishTime);
             dataJson.put("goods_price_all", goodsPriceAll.toString());
@@ -165,8 +173,8 @@ public class QueryOrderDetail implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             Integer userId = data.getInteger("user_id");
-            String orderNo = data.getString("order_no");
-            if (null == userId || StringUtils.isEmpty(orderNo)) {
+            Integer orderId = data.getInteger("order_id");
+            if (null == userId || orderId == null) {
                 return false;
             }
             return true;

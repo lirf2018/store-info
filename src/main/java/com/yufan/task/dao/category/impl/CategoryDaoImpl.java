@@ -236,7 +236,7 @@ public class CategoryDaoImpl implements ICategoryDao {
         if(levelIds.endsWith(",")){
             levelIds = levelIds.substring(0,levelIds.length()-1);
         }
-        if(categoryIds.endsWith(",")){
+        if(null!=categoryIds && categoryIds.endsWith(",")){
             categoryIds = categoryIds.substring(0,categoryIds.length()-1);
         }
         StringBuffer sql = new StringBuffer();

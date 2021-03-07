@@ -76,9 +76,7 @@ public class GoodsDaoImpl implements IGoodsDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT g.goods_id,g.title,g.goods_name,g.true_money,g.now_money,CONCAT('" + Constants.IMG_WEB_URL + "',g.goods_img) as goods_img,IFNULL(g.sell_count,0) as sell_count,g.is_single ");
         sql.append(" ,IFNULL(sku.sku_now_money,0)  as sku_now_money,g.is_zi_yin,g.goods_num,g.level_id as levelId,g.category_id as categoryId,IFNULL(tg.id,0) as time_goods_id,IFNULL(tg.time_price,0) as time_price ");
-        sql.append(" ,IFNULL(tg.id,0) as time_goods_id,IFNULL(tg.time_price,0) as time_price ");
         sql.append(" from tb_goods g ");
-        sql.append(" LEFT JOIN tb_time_goods tg on tg.goods_id=g.goods_id and NOW()>tg.begin_time and NOW()<tg.end_time and tg.`status`=1 and tg.goods_store>0 ");
         sql.append(" LEFT JOIN tb_time_goods tg on tg.goods_id=g.goods_id and NOW()>tg.begin_time and NOW()<tg.end_time and tg.`status`=1 and tg.goods_store>0 ");
         sql.append(" LEFT JOIN (SELECT goods_id,group_concat(now_money ORDER BY now_money ) as sku_now_money from tb_goods_sku where `status`=1  GROUP BY goods_id) sku on sku.goods_id=g.goods_id ");
         sql.append(" JOIN tb_shop s on s.shop_id=g.shop_id ");

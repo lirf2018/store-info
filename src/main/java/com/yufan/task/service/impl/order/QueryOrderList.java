@@ -74,19 +74,27 @@ public class QueryOrderList implements IResultOut {
                     String orderId = orderData.get(i).get("order_id").toString();
                     String orderNo = orderData.get(i).get("order_no").toString();
                     String orderPrice = orderData.get(i).get("order_price").toString();
+                    String realPrice = orderData.get(i).get("real_price").toString();
                     String orderCount = orderData.get(i).get("order_count").toString();
                     String orderStatus = orderData.get(i).get("order_status").toString();
+                    String orderTime = orderData.get(i).get("order_time").toString();
                     String shopName = orderData.get(i).get("shop_name").toString();
                     String shopLogo = orderData.get(i).get("shop_logo").toString();
+                    String userRemark = orderData.get(i).get("user_remark").toString();
                     mapOrder.put("order_id", Integer.parseInt(orderId));
                     mapOrder.put("order_no", orderNo);
+                    mapOrder.put("order_time", orderTime);
                     mapOrder.put("order_price", new BigDecimal(orderPrice));
+                    mapOrder.put("real_price", new BigDecimal(realPrice));
                     mapOrder.put("order_count", Integer.parseInt(orderCount));
                     mapOrder.put("order_status", Integer.parseInt(orderStatus));
                     mapOrder.put("order_status_name", statusName.get(orderStatus));
                     mapOrder.put("shop_name", shopName);
                     mapOrder.put("shop_logo", shopLogo);
+                    mapOrder.put("user_remark", userRemark);
                     List<Map<String, Object>> detailList = new ArrayList<>();
+                    BigDecimal goodsPriceAll = BigDecimal.ZERO;
+                    BigDecimal depositPriceAll = BigDecimal.ZERO;
                     for (int j = 0; j < orderDetailList.size(); j++) {
                         if (!orderId.equals(orderDetailList.get(j).get("order_id").toString())) {
                             continue;
@@ -96,6 +104,7 @@ public class QueryOrderList implements IResultOut {
                         String goodsName = orderDetailList.get(j).get("goods_name").toString();
                         String saleMoney = orderDetailList.get(j).get("sale_money").toString();
                         String goodsCount = orderDetailList.get(j).get("goods_count").toString();
+                        String goodsSpecName = orderDetailList.get(j).get("goods_spec_name").toString();
                         String goodsSpecNameStr = orderDetailList.get(j).get("goods_spec_name_str").toString();
                         Map<String, Object> map = new HashMap<>();
                         map.put("goods_img", goodsImg);
@@ -103,10 +112,14 @@ public class QueryOrderList implements IResultOut {
                         map.put("goods_name", goodsName);
                         map.put("sale_money", new BigDecimal(saleMoney));
                         map.put("goods_count", Integer.parseInt(goodsCount));
+                        map.put("goods_spec_name", goodsSpecName);
                         map.put("goods_spec_name_str", goodsSpecNameStr);
+                        goodsPriceAll = goodsPriceAll.add(new BigDecimal(saleMoney).multiply(new BigDecimal(goodsCount)));
                         detailList.add(map);
                     }
                     mapOrder.put("detail_list", detailList);
+                    mapOrder.put("goods_price_all", goodsPriceAll);
+                    mapOrder.put("deposit_price_all", depositPriceAll);
                     outList.add(mapOrder);
                 }
 

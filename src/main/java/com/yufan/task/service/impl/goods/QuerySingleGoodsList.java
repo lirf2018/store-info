@@ -125,7 +125,7 @@ public class QuerySingleGoodsList implements IResultOut {
                 int timeGoodsId = Integer.parseInt(mapOld.get("time_goods_id").toString());
                 String timePrice = mapOld.get("time_price").toString();
                 BigDecimal salePrice = new BigDecimal(mapOld.get("now_money").toString());
-                if(timeGoodsId>0){
+                if (timeGoodsId > 0) {
                     salePrice = new BigDecimal(timePrice);
                 }
                 //
@@ -135,6 +135,7 @@ public class QuerySingleGoodsList implements IResultOut {
                 mapNew.put("goodsId", Integer.parseInt(mapOld.get("goods_id").toString()));
                 mapNew.put("title", mapOld.get("title"));
                 mapNew.put("nowMoney", salePrice);
+                mapNew.put("timeGoodsId", timeGoodsId);
                 mapNew.put("goodsNum", Integer.parseInt(mapOld.get("goods_num").toString()));
                 mapNew.put("goodsImg", mapOld.get("goods_img"));
                 mapNew.put("trueMoney", new BigDecimal(mapOld.get("true_money").toString()));
@@ -325,6 +326,7 @@ class FindGoodsList implements Callable<List<Map<String, Object>>> {
             mapNew.put("goodsNum", Integer.parseInt(goodsList.get(j).get("goodsNum").toString()));
             mapNew.put("goodsImg", goodsList.get(j).get("goodsImg"));
             mapNew.put("trueMoney", new BigDecimal(goodsList.get(j).get("trueMoney").toString()));
+            mapNew.put("timeGoodsId", goodsList.get(j).get("timeGoodsId").toString());
             mapNew.put("userGoodsCount", Integer.parseInt(goodsList.get(j).get("userGoodsCount").toString()));
             goodsListAdd.add(mapNew);
         }

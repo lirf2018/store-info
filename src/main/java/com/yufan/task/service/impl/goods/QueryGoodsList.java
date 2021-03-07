@@ -53,15 +53,15 @@ public class QueryGoodsList implements IResultOut {
             List<Map<String, Object>> listData = page.getResultListMap();
 
             for (int i = 0; i < listData.size(); i++) {
-                Map<String, Object> map = new HashMap<>();
                 int isSingle = Integer.parseInt(listData.get(i).get("is_single").toString());
                 //
-                int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
-                String timePrice = map.get("time_price").toString();
+                int timeGoodsId = Integer.parseInt(listData.get(i).get("time_goods_id").toString());
+                String timePrice = listData.get(i).get("time_price").toString();
                 BigDecimal salePrice = new BigDecimal(listData.get(i).get("now_money").toString());
                 if(timeGoodsId>0){
                     salePrice = new BigDecimal(timePrice);
                 }
+                Map<String, Object> map = new HashMap<>();
                 map.put("goodsId", Integer.parseInt(listData.get(i).get("goods_id").toString()));
                 map.put("title", listData.get(i).get("title"));
                 map.put("goodsName", listData.get(i).get("goods_name"));

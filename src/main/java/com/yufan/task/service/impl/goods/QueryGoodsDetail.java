@@ -70,6 +70,7 @@ public class QueryGoodsDetail implements IResultOut {
 
             Integer goodsId = data.getInteger("goods_id");
             Integer userId = data.getInteger("user_id");
+            Integer timeGoodsId = data.getInteger("time_goods_id");
             if (!checkParam(receiveJsonBean)) {
                 return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
             }
@@ -162,7 +163,6 @@ public class QueryGoodsDetail implements IResultOut {
             if (couponId > 0) {
                 //卡券
             }
-            Integer timeGoodsId = 0;//抢购商品标识
             String timeStime = "";
             String timeEtime = "";
             if (goods.getIsSingle() == 1 && isTimeGoods == 1) {
@@ -170,11 +170,13 @@ public class QueryGoodsDetail implements IResultOut {
                 List<Map<String, Object>> timeGoodsListMap = iGoodsDao.queryTimeGoodsListMap(goodsId.toString());
                 if (timeGoodsListMap.size() > 0) {
                     Map<String, Object> map = timeGoodsListMap.get(0);
-                    timeStime = map.get("begin_time").toString();
-                    timeEtime = map.get("end_time").toString();
-                    timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
-                    nowMoney = new BigDecimal(map.get("time_price").toString());//抢购价格
-                    goodsNum = Integer.parseInt(map.get("goods_store").toString());//抢购库存
+                    Integer timeGoodsIdDb = Integer.parseInt(map.get("time_goods_id").toString());
+                    if(timeGoodsIdDb == timeGoodsId){
+                        timeStime = map.get("begin_time").toString();
+                        timeEtime = map.get("end_time").toString();
+                        nowMoney = new BigDecimal(map.get("time_price").toString());//抢购价格
+                        goodsNum = Integer.parseInt(map.get("goods_store").toString());//抢购库存
+                    }
                 }
             }
 

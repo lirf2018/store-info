@@ -55,8 +55,6 @@ public class FindUserOrderCartCount implements IResultOut {
         try {
             Integer userId = data.getInteger("userId");
             Integer goodsId = data.getInteger("goodsId");
-
-
             return true;
         } catch (Exception e) {
             LOG.error("----check-error---", e);
