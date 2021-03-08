@@ -44,17 +44,27 @@ public class AddStoreInOut implements IResultOut {
             // 相同商品入库数量
             Integer store = data.getInteger("store");
             Integer warning = data.getInteger("warning");
+            Integer endTimeType = data.getInteger("endTimeType");//0 结束日期1年2月3天
+            Integer year = data.getInteger("year");
+            Integer month = data.getInteger("month");
             TbStoreInout storeInout = JSONObject.toJavaObject(data, TbStoreInout.class);
             storeInout.setLastUpdateTime(new Timestamp(new Date().getTime()));
-            if (storeInout.getEffectToTime() == null) {
-                // 计算截止天数
-                Date date = DatetimeUtil.convertStrToDate(DatetimeUtil.timeStamp2Date(storeInout.getMakeDay().getTime(), null));
-                storeInout.setEffectToTime(new Timestamp(DatetimeUtil.addDays(date, storeInout.getEffectDay()+1).getTime()));
-            } else {
+            // 计算截止天数
+            if (endTimeType == 0) {
                 // 计算有效天数
-                Long day = (storeInout.getEffectToTime().getTime() - storeInout.getMakeDay().getTime()) / (1000 * 60 * 60 * 24)+1;
+                Long day = (storeInout.getEffectToTime().getTime() - storeInout.getMakeDay().getTime()) / (1000 * 60 * 60 * 24) + 1;
                 storeInout.setEffectDay(day.intValue());
+            } else if (endTimeType == 1) {
+                Date date = DatetimeUtil.convertStrToDate(DatetimeUtil.timeStamp2Date(storeInout.getMakeDay().getTime(), null));
+                storeInout.setEffectToTime(new Timestamp(DatetimeUtil.addYears(date, year).getTime()));
+            } else if (endTimeType == 2) {
+                Date date = DatetimeUtil.convertStrToDate(DatetimeUtil.timeStamp2Date(storeInout.getMakeDay().getTime(), null));
+                storeInout.setEffectToTime(new Timestamp(DatetimeUtil.addMonths(date, month).getTime()));
+            } else {
+                Date date = DatetimeUtil.convertStrToDate(DatetimeUtil.timeStamp2Date(storeInout.getMakeDay().getTime(), null));
+                storeInout.setEffectToTime(new Timestamp(DatetimeUtil.addDays(date, storeInout.getEffectDay()).getTime()));
             }
+
             // 查询相同商品条形码的商品是否是相同规格和规格数据
             Map<String, Object> checkMap = storeInOutDao.findOneStoreByGoodsCode(storeInout.getGoodsCode());
             if (null == warning && null != checkMap) {
@@ -129,10 +139,17 @@ public class AddStoreInOut implements IResultOut {
         try {
             TbStoreInout storeInout = JSONObject.toJavaObject(data, TbStoreInout.class);
             Integer store = data.getInteger("store");
+            Integer endTimeType = data.getInteger("endTimeType");//0 结束日期1年2月3天
+            Integer year = data.getInteger("year");
+            Integer month = data.getInteger("month");
+            Integer effectDay = data.getInteger("effectDay");
             if (null == store || store == 0) {
                 return false;
             }
-            if (storeInout.getEffectToTime() == null && storeInout.getEffectDay() == null) {
+            if (null == endTimeType || (endTimeType != 0 && endTimeType != 1 && endTimeType != 2 && endTimeType != 3)) {
+                return false;
+            }
+            if (storeInout.getEffectToTime() == null && year == null && month == null && effectDay == null) {
                 return false;
             }
             return true;

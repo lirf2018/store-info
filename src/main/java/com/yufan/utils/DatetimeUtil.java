@@ -217,6 +217,13 @@ public class DatetimeUtil {
         return calendar.getTime();
     }
 
+    public static Date addYears(Date date, int years) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, years);
+        return calendar.getTime();
+    }
+
     public static Date decMonths(Date date, int months) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

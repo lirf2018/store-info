@@ -64,10 +64,10 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public void deleteGoods(String ids) {
-        if(ids.endsWith(",")){
-            ids = ids.substring(0,ids.length()-1);
+        if (ids.endsWith(",")) {
+            ids = ids.substring(0, ids.length() - 1);
         }
-        String sql = " delete from tb_kc_goods where goods_code in (select goods_code where goods_id in ("+ids+")) ";
+        String sql = " delete from tb_kc_goods where goods_code in (select goods_code where goods_id in (" + ids + ")) ";
         iGeneralDao.executeUpdateForSQL(sql);
     }
 
@@ -89,7 +89,11 @@ public class GoodsDaoImpl implements GoodsDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" select ins.income_id,ins.goods_name,ins.goods_code,ins.goods_unit,ins.unit_count,CONCAT('≈',round(AVG(ins.income_price),2)) as income_price,p.param_value as goods_unit_name ");
         sql.append(" from tb_store_inout ins LEFT JOIN tb_param p on p.param_code='goods_unit' and p.param_key=ins.goods_unit and p.`status`=1 ");
-        sql.append(" where ins.is_matching = 0 and ins.status !=2 and ins.income_type=1  GROUP BY ins.goods_code ORDER BY ins.in_time desc ");
+        sql.append(" where ins.is_matching = 0 and ins.status !=2 and ins.income_type=1   ");
+        if (StringUtils.isNotEmpty(conditionCommon.getGoodsCode())) {
+            sql.append(" and ins.goods_code ='").append(conditionCommon.getGoodsCode()).append("' ");
+        }
+        sql.append(" GROUP BY ins.goods_code ORDER BY ins.in_time desc ");
 
         PageInfo pageInfo = new PageInfo();
         pageInfo.setPageSize(conditionCommon.getPageSize() == null ? 20 : conditionCommon.getPageSize());
@@ -120,7 +124,7 @@ public class GoodsDaoImpl implements GoodsDao {
     }
 
 
-    private String findGoodsListSQl(ConditionCommon conditionCommon){
+    private String findGoodsListSQl(ConditionCommon conditionCommon) {
         StringBuffer sql = new StringBuffer();
         sql.append(" select g.goods_id as id,g.goods_py as goodsPingYin,g.goods_code as goodsCode,g.goods_name as goodsName,g.store,g.store_warning,g.sale_price as goodsSalePrice,g.member_price as memberPrice, ");
         sql.append(" if(g.is_discounts=1,g.discounts_price,g.sale_price) as goodsDiscountsPrice,g.status,g.goods_unit,g.unit_count as unitCount,g.is_discounts,p.param_value as goodsUnitName,IFNULL(tab.buyCount,0)  as buyCount,'mouse-out-goods-ul' as style ");
@@ -129,10 +133,10 @@ public class GoodsDaoImpl implements GoodsDao {
         sql.append(" left join(select sum(de.buy_count) as buyCount,de.goods_code  from tb_kc_order_detail de join tb_kc_order o on o.order_id=de.order_id where de.status=1 and o.order_num='").append(conditionCommon.getOrderNo().trim()).append("' GROUP BY de.goods_code ) tab on tab.goods_code=g.goods_code ");
         sql.append(" where g.`status` = 1 ");
         // 添加商品--查询商品
-        if(conditionCommon.getSearchAbsolute()==1){
+        if (conditionCommon.getSearchAbsolute() == 1) {
             sql.append("  and (g.goods_code =  '").append(conditionCommon.getGoodsCode()).append("'  ");
             sql.append(" or g.goods_code = (select ins.goods_code from tb_store_inout ins where ins.shop_code = '").append(conditionCommon.getGoodsCode().trim()).append("'))  ");
-        }else{
+        } else {
             if (StringUtils.isNotEmpty(conditionCommon.getGoodsCode())) {
                 sql.append("  and g.goods_code like '%").append(conditionCommon.getGoodsCode()).append("%'  ");
             }
