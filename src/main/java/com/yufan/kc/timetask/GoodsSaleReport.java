@@ -23,12 +23,15 @@ public class GoodsSaleReport {
     @Autowired
     private TimeTaskDao timeTaskDao;
 
-    @Scheduled(cron = "0 10 21 * * ?")
+    @Scheduled(cron = "0 33 22 * * ?")
     public void goodsStoreInPriceAll() {
         long st = System.currentTimeMillis();
         timeTaskDao.deleteGoodsSaleReport(null);
         List<Map<String, Object>> monthList = timeTaskDao.findOrderPayDateMonth();
         for (int i = 0; i < monthList.size(); i++) {
+            if (null == monthList.get(i).get("pay_month")) {
+                continue;
+            }
             String month = monthList.get(i).get("pay_month").toString();
             timeTaskDao.goodsSaleReport(month);
             timeTaskDao.goodsStoreInPriceAll(month);

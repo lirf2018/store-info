@@ -21,7 +21,7 @@ public class UpdateGoodsStore {
     @Autowired
     private TimeTaskDao timeTaskDao;
 
-    @Scheduled(cron = "0 57 20 * * ?")
+    @Scheduled(cron = "0 33 22 * * ?")
     public void updateGoodsStore() {
         long st = System.currentTimeMillis();
         timeTaskDao.updateGoodsStore(null);
