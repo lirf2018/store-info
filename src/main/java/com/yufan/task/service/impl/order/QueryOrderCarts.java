@@ -143,6 +143,8 @@ public class QueryOrderCarts implements IResultOut {
             dataJson.put("cartList", outList);
             dataJson.put("showCartEmptyFlag", showCartEmptyFlag);
             dataJson.put("outTimeCartList", outTimeGoodsList);
+            String cartNullImg = Constants.IMG_WEB_URL + "shopcart.jpg";
+            dataJson.put("cartNullImg", cartNullImg);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-----error-----", e);

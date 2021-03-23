@@ -127,7 +127,8 @@ public class BeforeSubmitOrder implements IResultOut {
                 LOG.info("----------查询商品----------");
                 return packagMsg(ResultCode.PART_GOODS_OUTTIME_ERROR.getResp_code(), dataJson);
             }
-            BigDecimal goodsPriceAll = BigDecimal.ZERO;
+            BigDecimal goodsPriceAll = BigDecimal.ZERO;//
+            BigDecimal goodsTruePriceAll = BigDecimal.ZERO;// 商品现价总和
             BigDecimal advancePriceAll = BigDecimal.ZERO;
             BigDecimal depositMoneyAll = BigDecimal.ZERO;
             for (Map.Entry<String, Integer> map : keyMap.entrySet()) {
@@ -188,6 +189,10 @@ public class BeforeSubmitOrder implements IResultOut {
                     BigDecimal salePrice = new BigDecimal(outGoodsMap.get("nowMoney").toString());
                     BigDecimal goodsPrice = salePrice.multiply(new BigDecimal(buyCount_.toString()));
                     goodsPriceAll = goodsPriceAll.add(goodsPrice);
+                    // 计算商品原价总和
+                    BigDecimal saleTruePrice = new BigDecimal(outGoodsMap.get("trueMoney").toString());
+                    BigDecimal goodsTruePrice = saleTruePrice.multiply(new BigDecimal(buyCount_.toString()));
+                    goodsTruePriceAll = goodsTruePriceAll.add(goodsTruePrice);
                     // 预付款总价
                     BigDecimal advancePrice = new BigDecimal(goodsData.get(i).get("advance_price").toString());
                     advancePriceAll = advancePriceAll.add(advancePrice.multiply(new BigDecimal(buyCount_.toString())));
@@ -220,11 +225,21 @@ public class BeforeSubmitOrder implements IResultOut {
 
             // 输出
             dataJson.put("goods_price_all", goodsPriceAll);
+            dataJson.put("goods_true_price_all", goodsTruePriceAll);
             dataJson.put("deposit_money_all", depositMoneyAll);
             dataJson.put("advance_price_all", advancePriceAll);
             dataJson.put("goods_list", outGoodsList);// 输出商品列表
             dataJson.put("shop_name", shopName);// 店铺名称
             dataJson.put("shop_id", shopId);//
+            // orderPrice
+            BigDecimal orderPrice = BigDecimal.ZERO;
+            // 原价商品价格总额 + 押金总额 + 邮费总额(根据页面选择的相加)
+            orderPrice = orderPrice.add(goodsTruePriceAll).add(depositMoneyAll);
+            dataJson.put("order_price", orderPrice);
+            // 商品优惠价格
+            BigDecimal goodsDiscountsPrice = BigDecimal.ZERO;
+            goodsDiscountsPrice =  goodsTruePriceAll.subtract(goodsPriceAll);
+            dataJson.put("goods_discounts_price", goodsDiscountsPrice);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);

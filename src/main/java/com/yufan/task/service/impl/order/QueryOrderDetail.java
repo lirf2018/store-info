@@ -62,6 +62,7 @@ public class QueryOrderDetail implements IResultOut {
 
             //商品总价
             BigDecimal goodsPriceAll = BigDecimal.ZERO;
+            BigDecimal goodsTruePriceAll = BigDecimal.ZERO;
             BigDecimal depositPriceAll = BigDecimal.ZERO;
 
             List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderId);
@@ -127,18 +128,21 @@ public class QueryOrderDetail implements IResultOut {
                 String depositPrice = listOrder.get(i).get("deposit_price").toString();
                 Object goodsSpecName = listOrder.get(i).get("goods_spec_name");
                 Object goodsSpecNameStr = listOrder.get(i).get("goods_spec_name_str");
+                Object goodsTrueMoney = listOrder.get(i).get("goods_true_money") == null ? "0" : listOrder.get(i).get("goods_true_money");
                 detailMap.put("goods_img", goodsImg);
                 detailMap.put("goods_id", Integer.parseInt(goodsId.toString()));
                 detailMap.put("goods_name", goodsName);
 
 
                 detailMap.put("sale_money", saleMoney);
+                detailMap.put("goods_true_money", goodsTrueMoney);
                 detailMap.put("goods_count", goodsCount);
                 detailMap.put("goods_spec_name", goodsSpecName);
                 detailMap.put("goods_spec_name_str", goodsSpecNameStr);
                 detailList.add(detailMap);
                 //计算商品总价
                 goodsPriceAll = goodsPriceAll.add(new BigDecimal(saleMoney.toString()).multiply(new BigDecimal(goodsCount.toString())));
+                goodsTruePriceAll = goodsTruePriceAll.add(new BigDecimal(goodsTrueMoney.toString()).multiply(new BigDecimal(goodsCount.toString())));
                 depositPriceAll = depositPriceAll.add(new BigDecimal(depositPrice));
             }
 
@@ -159,7 +163,8 @@ public class QueryOrderDetail implements IResultOut {
             dataJson.put("deposit_price_all", depositPriceAll);
             dataJson.put("refund_apply_time", refundApplyTime);
             dataJson.put("refund_finish_time", refundFinishTime);
-            dataJson.put("goods_price_all", goodsPriceAll.toString());
+            dataJson.put("goods_price_all", goodsPriceAll);
+            dataJson.put("goods_true_price_all", goodsTruePriceAll);
             dataJson.put("detail_list", detailList);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

@@ -23,7 +23,7 @@ public class GoodsSaleReport {
     @Autowired
     private TimeTaskDao timeTaskDao;
 
-    @Scheduled(cron = "0 33 22 * * ?")
+    @Scheduled(cron = "0 40 22 * * ?")
     public void goodsStoreInPriceAll() {
         long st = System.currentTimeMillis();
         timeTaskDao.deleteGoodsSaleReport(null);

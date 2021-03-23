@@ -7,7 +7,10 @@ import com.yufan.utils.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.*;
 
 /**
  * 创建人: lirf
@@ -21,12 +24,18 @@ public class LoadCacheService implements InitializingBean {
     @Autowired
     private IParamCodeJpaDao iParamCodeJpaDao;
 
+    ScheduledExecutorService  fixedThreadPool = Executors.newScheduledThreadPool(1);
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        initParamList();
-        initFileSavePath();
+        fixedThreadPool.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                initParamList();
+                initFileSavePath();
+            }
+        },0,20, TimeUnit.MINUTES);
     }
-
     /**
      * 初始化参数列表
      */

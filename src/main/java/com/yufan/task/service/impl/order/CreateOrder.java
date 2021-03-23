@@ -242,10 +242,13 @@ public class CreateOrder implements IResultOut {
             List<TbOrderDetail> detailList = new ArrayList<>();
             // 校验订单价格  "goods_list":{"goods_id":100, "time_goods_id":0,"buy_count":10,"sku_id":0,"cart_id":22}
             BigDecimal dbGoodsAllPrice = BigDecimal.ZERO;// 商品总价格
+            BigDecimal dbGoodsAllTruePrice = BigDecimal.ZERO;// 商品原总价格
             BigDecimal dbDepositAllMoney = BigDecimal.ZERO;// 押金总价格
             BigDecimal dbAdvancePriceAll = BigDecimal.ZERO; // (邮费+商品预付款总和) = 预付款
-            //
-            BigDecimal dbDiscountsPriceAll = BigDecimal.ZERO;// 优惠券总价格
+            // 商品优惠价格
+            BigDecimal goodsDiscountsPrice = BigDecimal.ZERO;
+            // 优惠券+商品优惠总额
+            BigDecimal dbDiscountsPrice = BigDecimal.ZERO;// 优惠券总价格
             if (couponId != null && couponId > 0) {
                 // 查询优惠券获取优惠价格 userId+couponId
             }
@@ -293,6 +296,7 @@ public class CreateOrder implements IResultOut {
                 }
                 // 商品总价格
                 dbGoodsAllPrice = dbGoodsAllPrice.add(dbPrice.multiply(buyCount));
+                dbGoodsAllTruePrice = dbGoodsAllTruePrice.add(dbGoodsTrueMoney.multiply(buyCount));
                 // 押金总价格
                 BigDecimal depositMoney = new BigDecimal(goods.get("deposit_money").toString());
                 dbDepositAllMoney = dbDepositAllMoney.add(depositMoney.multiply(buyCount));
@@ -312,7 +316,7 @@ public class CreateOrder implements IResultOut {
                 orderDetail.setDetailStatus(0);
                 orderDetail.setCreatetime(new Timestamp(new Date().getTime()));
                 orderDetail.setLastaltertime(new Timestamp(new Date().getTime()));
-                orderDetail.setDepositPrice(dbDepositAllMoney);//押金总和
+                orderDetail.setDepositPrice(depositMoney.multiply(buyCount));//押金总和
                 orderDetail.setLastalterman("");
                 orderDetail.setRemark("");
                 orderDetail.setCartId(cartId);
@@ -328,20 +332,29 @@ public class CreateOrder implements IResultOut {
                 orderDetail.setGoodsSpecNameStr(goodsSpecNameStr);
                 detailList.add(orderDetail);
             }
+            // 商品优惠总额
+            goodsDiscountsPrice = dbGoodsAllTruePrice.subtract(dbGoodsAllPrice);
+            BigDecimal dbDiscountsPriceAll = dbDiscountsPrice.add(goodsDiscountsPrice);
             // (邮费+商品预付款总和) = 预付款
             // 校验订单价格（订单总价格）
             boolean flag = false;
-            BigDecimal dbOrderPriceAll = postPrice.add(dbGoodsAllPrice).add(dbDepositAllMoney);// 邮费+商品总价格+押金总价格
             // 校验订单价格（订单优惠总价格）
             if (dbDiscountsPriceAll.compareTo(discountsPriceAll) != 0) {
                 LOG.info("----- 校验订单价格（订单优惠总价格）不一致-------");
                 flag = true;
             }
-            BigDecimal dbOrderRealPriceAll = BigDecimal.ZERO;
+            BigDecimal dbOrderPriceAll = postPrice.add(dbGoodsAllTruePrice).add(dbDepositAllMoney);// 邮费+商品原总价格+押金总价格
+            BigDecimal dbOrderRealPriceAll = dbOrderPriceAll.subtract(dbDiscountsPriceAll);
+
             BigDecimal needpayPrice = BigDecimal.ZERO;
-            // price1 = 邮费+商品总价
-            BigDecimal price1 = postPrice.add(dbGoodsAllPrice);// 入账的总金额
-            if (dbDiscountsPriceAll.compareTo(price1) >= 0) {
+            // price1 = 邮费+商品总价 实际支付
+            BigDecimal price1 = postPrice.add(dbGoodsAllPrice);// 入账的总金额 = 邮费 + 商品现价总额
+            // 优惠券优惠金额不能大于 price1
+            if(dbDiscountsPrice.compareTo(price1)>0){
+                LOG.info("------ 优惠券优惠金额不能大于 price1 --------");
+                flag = true;
+            }
+            if (dbDiscountsPrice.compareTo(price1) >= 0) {
                 // 免费(用户只需要付押金)
                 dbOrderPriceAll = dbDepositAllMoney;
                 dbOrderRealPriceAll = dbDepositAllMoney;
@@ -352,7 +365,6 @@ public class CreateOrder implements IResultOut {
                     flag = true;
                 }
                 // 校验订单价格（订单实际支付价格）
-                dbOrderRealPriceAll = orderPrice.subtract(dbDiscountsPriceAll);
                 if (dbOrderRealPriceAll.compareTo(realPrice) != 0) {
                     LOG.info("----- 校验订单价格（订单实际支付价格）不一致-------");
                     flag = true;

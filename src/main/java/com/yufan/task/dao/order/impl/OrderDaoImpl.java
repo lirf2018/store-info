@@ -72,6 +72,7 @@ public class OrderDaoImpl implements IOrderDao {
     public List<Map<String, Object>> queryOrderPayAllListMap(int userId) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT order_price,order_status,user_read_mark from tb_order where user_id=").append(userId).append(" ");
+        sql.append(" and order_status in (0,2,5) ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
@@ -119,7 +120,7 @@ public class OrderDaoImpl implements IOrderDao {
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT d.order_id,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
-        sql.append(" ,d.goods_spec,d.goods_spec_name ");
+        sql.append(" ,d.goods_spec,d.goods_spec_name,d.goods_true_money ");
         sql.append(" from tb_order_detail d where d.order_id in (").append(orderIds).append(") ORDER BY d.detail_id desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
@@ -324,7 +325,7 @@ public class OrderDaoImpl implements IOrderDao {
         if(goodsIds.endsWith(",")){
             goodsIds = goodsIds.substring(0,goodsIds.length()-1);
         }
-        String sql = " update tb_order_cart set status =  " + status + " where user_id=" + userId + " and goods_id in (" + goodsIds + ") ";
+        String sql = " update tb_order_cart set status =  " + status + " where status = 1 and user_id=" + userId + " and goods_id in (" + goodsIds + ") ";
         if (null != withTimeGoods) {
             sql = sql + " and time_goods_id>0";
         }

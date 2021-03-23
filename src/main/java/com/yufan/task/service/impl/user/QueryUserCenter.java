@@ -88,9 +88,9 @@ public class QueryUserCenter implements IResultOut {
                 if (status == Constants.ORDER_STATUS_6) {
                     orderPriceAll = orderPriceAll.add(orderPrice);
                 }
-                if (userReadMark != 1) {
-                    continue;
-                }
+//                if (userReadMark != 1) {
+//                    continue;
+//                }
                 switch (status) {
                     case 0:
                         c0++;
