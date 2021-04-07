@@ -6,7 +6,6 @@ import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.kc.dao.goods.GoodsDao;
-import com.yufan.kc.dao.param.ParamDao;
 import com.yufan.utils.DatetimeUtil;
 import com.yufan.utils.PageInfo;
 import org.apache.commons.lang3.StringUtils;

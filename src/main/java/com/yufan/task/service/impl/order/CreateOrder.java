@@ -475,6 +475,7 @@ public class CreateOrder implements IResultOut {
                     iGoodsDao.subtractGoodsStore(goodsId, buyCount.intValue());
                 }
                 dataJson.put("order_no", orderNo);
+                dataJson.put("order_id", order.getOrderId());
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
             }
             LOG.info("------订单创建失败-----------");

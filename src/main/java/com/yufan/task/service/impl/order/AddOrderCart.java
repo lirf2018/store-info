@@ -71,6 +71,12 @@ public class AddOrderCart implements IResultOut {
             }
 
             TbGoods goods = iGoodsJpaDao.findOne(goodsId);
+            if (goods == null) {
+                return packagMsg(ResultCode.GOODS_NOT_SALE.getResp_code(), dataJson);
+            }
+            if (goods.getIsSingle() == 0 && StringUtils.isEmpty(goodsSpec)) {
+                return packagMsg(ResultCode.GOODS_SKU_NEED.getResp_code(), dataJson);
+            }
             BigDecimal goodsPrice = BigDecimal.ZERO;//销售价格
             BigDecimal timePrice = null;//抢购价格
             BigDecimal trueMoney = new BigDecimal(0);//商品原价
@@ -87,7 +93,7 @@ public class AddOrderCart implements IResultOut {
                         return packagMsg(ResultCode.TIMEGOODS_STORE_EMPTY.getResp_code(), dataJson);
                     }
                     timePrice = new BigDecimal(timeGoods.get("time_price").toString());
-                }else{
+                } else {
                     // 失效购物车 对应抢购商品
                     iOrderDao.updateOrderCartStatus(userId, goodsId.toString(), 2, 1);
                 }

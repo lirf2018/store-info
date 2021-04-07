@@ -58,7 +58,7 @@ public class QueryGoodsList implements IResultOut {
                 int timeGoodsId = Integer.parseInt(listData.get(i).get("time_goods_id").toString());
                 String timePrice = listData.get(i).get("time_price").toString();
                 BigDecimal salePrice = new BigDecimal(listData.get(i).get("now_money").toString());
-                if(timeGoodsId>0){
+                if (timeGoodsId > 0) {
                     salePrice = new BigDecimal(timePrice);
                 }
                 Map<String, Object> map = new HashMap<>();
@@ -107,8 +107,10 @@ public class QueryGoodsList implements IResultOut {
                 TbCategory category = iCategoryDao.loadTbCategoryById(catogeryId);
                 categoryName = category.getCategoryName();
             }
-            dataJson.put("categoryName", categoryName);
-
+            dataJson.put("categoryName", StringUtils.isEmpty(categoryName) ? goodsCondition.getGoodsName() : categoryName);
+            if (dataJson.containsKey("categoryName") && dataJson.getString("categoryName").length() > 16) {
+                dataJson.put("categoryName", dataJson.getString("categoryName").substring(0, 15) + "...");
+            }
             dataJson.put("hasNext", page.isHasNext());
             dataJson.put("currePage", page.getCurrePage());
             dataJson.put("pageSize", page.getPageSize());
