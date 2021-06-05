@@ -2,7 +2,9 @@ package com.yufan.task.dao.account.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbMemberId;
 import com.yufan.pojo.TbUserInfo;
+import com.yufan.pojo.TbUserSns;
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
 import com.yufan.task.service.bean.UserSnsBean;
@@ -89,6 +91,12 @@ public class AccountDaoImpl implements IAccountDao {
     }
 
     @Override
+    public void deltVerificationStatus(String validParam, String validCode, Integer validType) {
+        String sql = " update tb_verification set status=2 where valid_param=? and valid_code=? and valid_type=? ";
+        iGeneralDao.executeUpdateForSQL(sql, validParam, validCode, validType);
+    }
+
+    @Override
     public TbVerification loadVerification(int validType, String validParam, String validCode) {
         String hql = " from TbVerification where validType=?1 and validParam=?2 and validCode=?3 and status=1 and sendStatus=2 ";
         return iGeneralDao.queryUniqueByHql(hql, validType, validParam, validCode);
@@ -96,6 +104,11 @@ public class AccountDaoImpl implements IAccountDao {
 
     @Override
     public TbVerification loadVerification(int validType, String validParam) {
+        // 更新失效的
+        String sql = " update tb_verification set status=0,lastaltertime=NOW()  where `status`=1 and pass_time<NOW() and valid_param='" + validParam + "' ";
+        iGeneralDao.executeUpdateForSQL(sql);
+
+
         String hql = " from TbVerification where validType=?1 and validParam=?2 and status=1 and sendStatus=2 ";
         return iGeneralDao.queryUniqueByHql(hql, validType, validParam);
     }
@@ -104,6 +117,12 @@ public class AccountDaoImpl implements IAccountDao {
     public TbUserInfo loadUserInfo(String phone) {
         String hql = " from TbUserInfo where userMobile=?1 and userState !=3 ";
         return iGeneralDao.queryUniqueByHql(hql, phone);
+    }
+
+    @Override
+    public TbUserInfo loadUserInfo(int userId) {
+        String hql = " from TbUserInfo where userId=?1 and userState !=3 ";
+        return iGeneralDao.queryUniqueByHql(hql, userId);
     }
 
     @Override
@@ -140,5 +159,40 @@ public class AccountDaoImpl implements IAccountDao {
     public void deleteSnsBang(int userId, int snsType) {
         String sql = " update tb_user_sns set status=?,update_time=now() where user_id=? and  sns_type = ? ";
         iGeneralDao.executeUpdateForSQL(sql, Constants.USER_SNS_STATUS_2, userId, snsType);
+    }
+
+    @Override
+    public boolean checkInviterNum(String inviterNum) {
+        String sql = " select user_id,member_id from tb_user_info where member_id='" + inviterNum + "' ";
+        List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql);
+        if (list.size() >= 1) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<TbUserSns> findUserSnsList(int userId) {
+        String hql = " from TbUserSns where userId=?1 and status =1 ";
+        return (List<TbUserSns>) iGeneralDao.queryListByHql(hql, userId);
+    }
+
+    @Override
+    public void updateUserMemberNum(int userId, String memberNum) {
+        String sql = " update tb_user_info set member_id=?,lastaltertime=now() where user_id=?  ";
+        iGeneralDao.executeUpdateForSQL(sql, memberNum, userId);
+    }
+
+    @Override
+    public List<TbUserInfo> findUserInfoByMemberNumList(String memberNum) {
+        String hql = " from TbUserInfo where inviterNum=?1 and userState =1 order by createtime desc ";
+        return (List<TbUserInfo>) iGeneralDao.queryListByHql(hql, memberNum);
+    }
+
+    @Override
+    public TbMemberId loadMemberId(String memberId) {
+        String hql = " from TbMemberId where memberId=?1 ";
+
+        return (TbMemberId) iGeneralDao.queryUniqueByHql(hql, memberId);
     }
 }

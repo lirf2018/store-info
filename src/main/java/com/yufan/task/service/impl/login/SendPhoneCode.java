@@ -42,18 +42,21 @@ public class SendPhoneCode implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
 
-            Integer validType = data.getInteger("valid_type");//验证码类型:1手机绑定2修改密码3重置密码4手机解绑5手机注册
+            Integer validType = data.getInteger("valid_type");//验证码类型:1手机绑定2修改密码3重置密码4手机解绑5手机注册6手机注册/登录
             String validParam = data.getString("valid_param");//验证标识参数 如：手机号,邮箱
             String validDesc = data.getString("valid_desc");//验证类型说明
 
             String checkResult = checkAccount(validParam, validType);//特殊检验
 
             if (checkResult == null) {
+                LOG.info("-----特殊检验异常------");
                 return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
             }
             if (!"".equals(checkResult)) {
                 return checkResult;
             }
+            // 更新过期验证码
+
 
             //查询是否存在有效验证码
             TbVerification isExist = iAccountDao.loadVerification(validType, validParam);
@@ -63,6 +66,7 @@ public class SendPhoneCode implements IResultOut {
                 String passTime = DatetimeUtil.timeStamp2Date(isExist.getPassTime().getTime(), format);
                 String now = DatetimeUtil.getNow();
                 if (DatetimeUtil.compareDate(passTime, now) > -1) {
+                    LOG.info("=========================validCode1=" + isExist.getValidCode());
                     return packagMsg(ResultCode.OK.getResp_code(), dataJson);
                 }
             }
@@ -70,7 +74,7 @@ public class SendPhoneCode implements IResultOut {
             Random random = new Random();
             int r = random.nextInt(8999) + 1000;//随机4位数
             String validCode = String.valueOf(r);//生成验证码
-            LOG.info("--------"+validParam+"----生成验证码:" + validCode);
+            LOG.info("--------" + validParam + "----生成验证码:" + validCode);
             //生成记录
             TbVerification verification = new TbVerification();
             verification.setValidType(validType);
@@ -84,13 +88,14 @@ public class SendPhoneCode implements IResultOut {
             iAccountDao.saveObj(verification);
             //---------------------------------------
             //调用第三方接口发送短信
-            JSONObject result = AliyunSmsUtil.getInstence().test();
+            JSONObject result = AliyunSmsUtil.getInstence().test(validCode);
             //---------------------------------------
             int code = result.getInteger("code");
             String desc = result.getString("desc");
             String passTime = DatetimeUtil.addMinuteTime(DatetimeUtil.getNow(), 5, "yyyy-MM-dd HH:mm:ss");//5分钟有效
             if (code == 1) {
                 //发送成功
+                LOG.info("=========================validCode2=" + validCode);
                 iAccountDao.updateVerificationInfo(verification.getId(), 1, passTime, 2, "");
                 return packagMsg(ResultCode.OK.getResp_code(), dataJson);
             }
@@ -158,6 +163,12 @@ public class SendPhoneCode implements IResultOut {
             if (null == validType || StringUtils.isEmpty(validParam)) {
                 return false;
             }
+            // 判断验证类型是否存在
+            if (Constants.MAP_NAME.get("phoneValidType" + validType) == null) {
+                LOG.info("------验证类型不存在------");
+                return false;
+            }
+            ;
             return true;
         } catch (Exception e) {
             LOG.error("----check-error---", e);

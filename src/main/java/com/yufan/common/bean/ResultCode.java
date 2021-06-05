@@ -84,7 +84,10 @@ public enum ResultCode {
     TIMEGOODS_OUTTIME_ERROR(10065, "商品抢购活动已结束"),
     TIMEGOODS_STORE_EMPTY(10066, "抢购商品库存不足"),
     LIMIT_GOODS_RULE(10067, "不满足限购商品规则"),
-    GOODS_SKU_NEED(10068, "请选择商品规格");
+    GOODS_SKU_NEED(10068, "请选择商品规格"),
+    USER_UNLOGIN(401, "用户未登录"),
+    MEMBERNUM_IS_BANG(10069, "会员号已被绑定"),
+    MEMBERNUM_NOT_EXIST(10070, "会员号不存在");
 
 
     private int resp_code;

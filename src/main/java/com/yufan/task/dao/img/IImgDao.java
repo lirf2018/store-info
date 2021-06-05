@@ -19,4 +19,6 @@ public interface IImgDao {
      */
     public List<Map<String, Object>> queryTableRelImg(Integer imgType, int relateId, Integer classifyType);
 
+    public int saveImg(Object img);
+
 }

@@ -165,10 +165,10 @@ public class AliyunSmsUtil {
         return querySendDetailsResponse;
     }
 
-    public JSONObject test(){
+    public JSONObject test(String validCode){
         JSONObject result = new JSONObject();
         result.put("code", 1);
-        result.put("desc", "");
+        result.put("desc", validCode);
         return result;
     }
 

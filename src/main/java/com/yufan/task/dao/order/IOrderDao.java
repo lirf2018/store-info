@@ -100,6 +100,8 @@ public interface IOrderDao {
      */
     public void updateOrderStatus(int orderId, int userId, int orderStatus);
 
+    public void updateOrderStatus(int orderId, int userId, int orderStatus, String remark);
+
     /**
      * 更新阅读标记
      *
@@ -195,10 +197,11 @@ public interface IOrderDao {
      *
      * @param goodsIds
      */
-    void updateOrderCartStatus(Integer userId,String goodsIds, int status,Integer withTimeGoods);
+    void updateOrderCartStatus(Integer userId, String goodsIds, int status, Integer withTimeGoods);
 
     /**
      * 清理失效的购物车
+     *
      * @param userId
      */
     void clearOrderCart(int userId);

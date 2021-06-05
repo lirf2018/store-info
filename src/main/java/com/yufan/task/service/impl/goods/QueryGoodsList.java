@@ -108,7 +108,7 @@ public class QueryGoodsList implements IResultOut {
                 categoryName = category.getCategoryName();
             }
             dataJson.put("categoryName", StringUtils.isEmpty(categoryName) ? goodsCondition.getGoodsName() : categoryName);
-            if (dataJson.containsKey("categoryName") && dataJson.getString("categoryName").length() > 16) {
+            if (null != dataJson.getString("categoryName") && dataJson.getString("categoryName").length() > 16) {
                 dataJson.put("categoryName", dataJson.getString("categoryName").substring(0, 15) + "...");
             }
             dataJson.put("hasNext", page.isHasNext());

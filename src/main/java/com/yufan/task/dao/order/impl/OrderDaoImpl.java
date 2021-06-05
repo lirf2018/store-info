@@ -115,8 +115,8 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     public List<Map<String, Object>> queryOrderDetailListmap(String orderIds) {
-        if(orderIds.endsWith(",")){
-            orderIds = orderIds.substring(0,orderIds.length()-1);
+        if (orderIds.endsWith(",")) {
+            orderIds = orderIds.substring(0, orderIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT d.order_id,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
@@ -169,9 +169,15 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
+    public void updateOrderStatus(int orderId, int userId, int orderStatus, String remark) {
+        String sql = " update tb_order set order_status=?,user_read_mark=1,lastaltertime=now(),remark=? where order_id=? and user_id=?  ";
+        iGeneralDao.executeUpdateForSQL(sql, orderStatus, remark, orderId, userId);
+    }
+
+    @Override
     public void updateUserOrderReadMark(int userId, String orderIds) {
-        if(orderIds.endsWith(",")){
-            orderIds = orderIds.substring(0,orderIds.length()-1);
+        if (orderIds.endsWith(",")) {
+            orderIds = orderIds.substring(0, orderIds.length() - 1);
         }
         String sql = " update tb_order set user_read_mark=0,lastaltertime=now() where user_id=? and order_id in (" + orderIds + ") ";
         iGeneralDao.executeUpdateForSQL(sql, userId);
@@ -224,8 +230,8 @@ public class OrderDaoImpl implements IOrderDao {
 
     @Override
     public void deleteShopCartByCartIds(int userId, String cartIds, int status) {
-        if(cartIds.endsWith(",")){
-            cartIds = cartIds.substring(0,cartIds.length()-1);
+        if (cartIds.endsWith(",")) {
+            cartIds = cartIds.substring(0, cartIds.length() - 1);
         }
         String sql = " update tb_order_cart set `status`=" + status + " where cart_id in (" + cartIds + ") and user_id = " + userId + " ";
         iGeneralDao.executeUpdateForSQL(sql);
@@ -290,8 +296,8 @@ public class OrderDaoImpl implements IOrderDao {
 
     @Override
     public List<Map<String, Object>> findCartsByCartIds(Integer userId, String cartIds) {
-        if(cartIds.endsWith(",")){
-            cartIds = cartIds.substring(0,cartIds.length()-1);
+        if (cartIds.endsWith(",")) {
+            cartIds = cartIds.substring(0, cartIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT cart.cart_id,cart.goods_id,cart.sku_id,cart.shop_id,cart.goods_count,ifnull(time_goods_id,0) as time_goods_id from tb_order_cart cart JOIN tb_goods g on g.goods_id=cart.goods_id where 1=1 and cart.createtime>=g.lastaltertime and cart.`status` = 1 ");
@@ -322,8 +328,8 @@ public class OrderDaoImpl implements IOrderDao {
 
     @Override
     public void updateOrderCartStatus(Integer userId, String goodsIds, int status, Integer withTimeGoods) {
-        if(goodsIds.endsWith(",")){
-            goodsIds = goodsIds.substring(0,goodsIds.length()-1);
+        if (goodsIds.endsWith(",")) {
+            goodsIds = goodsIds.substring(0, goodsIds.length() - 1);
         }
         String sql = " update tb_order_cart set status =  " + status + " where status = 1 and user_id=" + userId + " and goods_id in (" + goodsIds + ") ";
         if (null != withTimeGoods) {

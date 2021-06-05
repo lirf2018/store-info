@@ -37,6 +37,62 @@ public class ImageUtil {
     }
 
     /**
+     * 根据 InputStream 数组，生成本地文件
+     *
+     * @param in
+     * @param savePath
+     * @param fileName
+     */
+    public boolean saveFile(InputStream in, String savePath, String fileName) {
+        try {
+            BufferedOutputStream bos = null;
+            FileOutputStream fos = null;
+            File file = null;
+            try {
+                File dir = new File(savePath);
+                if (!dir.exists() && !dir.isDirectory()) {// 判断文件目录是否存在
+                    dir.mkdirs();
+                }
+                System.out.printf(dir.exists()+"");
+                System.out.printf(dir.isDirectory()+"");
+                file = new File(savePath + "/" + fileName);
+                fos = new FileOutputStream(file);
+                bos = new BufferedOutputStream(fos);
+                byte[] buffer = new byte[1024];
+                int len = 0;
+                // 从数据库中读取到指定的字节数组中
+                while ((len = in.read(buffer)) != -1) {
+                    // 从指定的数组中读取，然后输出来，
+                    // 所以这里buffer好象是连接inputStream和outputStream的一个东西
+                    bos.write(buffer, 0, len);
+                }
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (bos != null) {
+                    try {
+                        bos.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * 根据byte数组，生成文件
      *
      * @param bfile

@@ -2,6 +2,7 @@ package com.yufan.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IBasicService;
@@ -9,6 +10,10 @@ import com.yufan.common.service.IResultOut;
 import com.yufan.common.service.ServiceFactory;
 import com.yufan.common.utils.VerifySign;
 import com.yufan.pojo.TbInfAccount;
+import com.yufan.testRedis.LoginCache;
+import com.yufan.utils.Constants;
+import com.yufan.utils.DatetimeUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
@@ -33,6 +40,8 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 @Controller
 @RequestMapping(value = "/info")
 public class InfoController {
+
+    private Logger LOG = Logger.getLogger(InfoController.class);
 
     /**
      * 接口请求说明
@@ -60,8 +69,6 @@ public class InfoController {
      * }
      */
 
-    private static Logger log = Logger.getLogger(InfoController.class);
-
     @Autowired
     private IBasicService iBasicService;
 
@@ -77,8 +84,8 @@ public class InfoController {
             if (null == message || "".equals(message)) {
                 message = readStreamParameter(request.getInputStream());
             }
-//            log.info("接收参数密文:" + message);
-            log.info("接收参数明文:" + message);
+//            LOG.info("接收参数密文:" + message);
+            LOG.info("接收参数明文:" + message);
             JSONObject obj = JSONObject.parseObject(message);
             if (obj != null && obj.size() > 0) {
                 ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
@@ -87,7 +94,7 @@ public class InfoController {
                 //请求业务验证包括时间戳间隔(请求时间相隔不能大于30秒)sign
                 Integer index = jsonHeaderBean.getCheckEmptyValue();
                 if (0 != index) {
-                    log.info("系统参数为空校验结果=" + index + "---->注 1:req_type为空 2:sid为空 3:data为空 4:timestamp为空 5:sign为空0:正常 ");
+                    LOG.info("系统参数为空校验结果=" + index + "---->注 1:req_type为空 2:sid为空 3:data为空 4:timestamp为空 5:sign为空0:正常 ");
                 }
                 if (null == index || index != 0) {
                     result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
@@ -98,7 +105,7 @@ public class InfoController {
                         //验证sign(根据账号sid查询密钥)
                         TbInfAccount account = iBasicService.loadTbInfAccount(jsonHeaderBean.getSid());
                         String appsecret = account.getSecretKey();
-//                        log.info("appsecret="+appsecret);
+//                        LOG.info("appsecret="+appsecret);
                         //检验签名
                         if (VerifySign.checkSign(jsonHeaderBean, appsecret)) {
                             IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
@@ -112,14 +119,14 @@ public class InfoController {
                             result = packagMsg(ResultCode.ERROR_SIGN.getResp_code(), new JSONObject());
                         }
                     } else {
-                        log.info("---->请求的时间差有误,时间差:now=" + now + "-" + jsonHeaderBean.getTimestamp() + "=" + betweenTime + "  s");
+                        LOG.info("---->请求的时间差有误,时间差:now=" + now + "-" + jsonHeaderBean.getTimestamp() + "=" + betweenTime + "  s");
                         result = packagMsg(ResultCode.OUT_OF_TIME.getResp_code(), new JSONObject());
                     }
                 }
             } else {
                 result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
-            log.info("调用结果：" + result);
+            LOG.info("调用结果：" + result);
             pw.write(result);
             pw.flush();
             pw.close();
@@ -145,7 +152,7 @@ public class InfoController {
             if (null == message || "".equals(message)) {
                 message = readStreamParameter(request.getInputStream());
             }
-            log.info("接收参数:" + message);
+            LOG.info("接收参数:" + message);
             JSONObject obj = JSONObject.parseObject(message);
             if (obj != null) {
                 ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
@@ -162,7 +169,7 @@ public class InfoController {
             } else {
                 result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
-            log.info("调用结果：" + result);
+            LOG.info("调用结果：" + result);
             pw.write(result);
             pw.flush();
             pw.close();
@@ -188,24 +195,39 @@ public class InfoController {
             if (null == message || "".equals(message)) {
                 message = readStreamParameter(request.getInputStream());
             }
-            log.info("接收参数:" + message);
+            LOG.info("接收参数:" + message);
             JSONObject obj = JSONObject.parseObject(message);
             if (obj != null && obj.size() > 0) {
                 ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
                 jsonHeaderBean.setRequest(request);
                 jsonHeaderBean.setResponse(response);
-                IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
-                //校验参数
-                boolean flag = resultOut.checkParam(jsonHeaderBean);
-                if (!flag) {
-                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
+                // 校验登录
+                String token = request.getHeader("User-Token");// 登录秘钥
+                String loginStr = "";
+                // 免登录业务
+                Map<String, String> outValidLogin = new HashMap<>();
+                outValidLogin.put("send_phone_code", "send_phone_code");
+                outValidLogin.put("phone_code_login", "phone_code_login");
+                String businessType = obj.getString("req_type");
+                if (outValidLogin.get(businessType) == null) {
+                    loginStr = returnUserIdStr(token, jsonHeaderBean);
+                }
+                if (StringUtils.isNotEmpty(loginStr)) {
+                    result = loginStr;
                 } else {
-                    result = resultOut.getResult(jsonHeaderBean);
+                    IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
+                    //校验参数
+                    boolean flag = resultOut.checkParam(jsonHeaderBean);
+                    if (!flag) {
+                        result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
+                    } else {
+                        result = resultOut.getResult(jsonHeaderBean);
+                    }
                 }
             } else {
                 result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
-            log.info("调用结果：" + result);
+            LOG.info("调用结果：" + result);
             pw.write(result);
             pw.flush();
             pw.close();
@@ -217,6 +239,59 @@ public class InfoController {
             pw.flush();
             pw.close();
         }
+    }
+
+
+    /**
+     * 校验用户是否登录并设置用户信息
+     *
+     * @param token
+     * @return
+     */
+    private String returnUserIdStr(String token, ReceiveJsonBean jsonHeaderBean) {
+        try {
+            JSONObject dataCache = LoginCache.loginMapsToken.get(token);
+            if (StringUtils.isEmpty(token) || null == dataCache) {
+                // 用户未登录
+                LOG.info("-----用户未登录---dataCache---");
+                return packagMsg(ResultCode.USER_UNLOGIN.getResp_code(), new JSONObject());
+            }
+            Integer userId = dataCache.getInteger("userId");
+            // 判断是否即将过期，如果即将过期，主动延续
+            Long tokenPassTime = dataCache.getLong("tokenPassTime");// 过期时间戳
+            if (null == userId || tokenPassTime == null) {
+                // 用户未登录
+                LOG.info("-----用户未登录------");
+                return packagMsg(ResultCode.USER_UNLOGIN.getResp_code(), new JSONObject());
+            }
+            long now = System.currentTimeMillis();// 当前时间
+            if (now > tokenPassTime) {
+                LOG.info("-----用户未登录---时间已过期---");
+                return packagMsg(ResultCode.USER_UNLOGIN.getResp_code(), new JSONObject());
+            }
+            // 如果还剩下5分钟,则延长
+            if (Math.abs((now / 1000 / 60 - tokenPassTime / 1000 / 60)) < 5) {
+                LOG.info("-----主动延长token时间-----");
+                long tokenPassTimeUpdate = DatetimeUtil.addMinutes(new Date(), Constants.LOGIN_TOKEN_PASS_TIME / 2).getTime();// 过期时间戳
+                // 设置token
+                JSONObject tokenObj = LoginCache.loginMapsToken.get(token);
+                tokenObj.put("tokenPassTime", tokenPassTimeUpdate);
+                LoginCache.loginMapsToken.put(token, tokenObj);
+                JSONObject userIdObj = LoginCache.loginMapsUserId.get(String.valueOf(userId));
+                userIdObj.put("tokenPassTime", tokenPassTimeUpdate);
+                LoginCache.loginMapsUserId.put(String.valueOf(userId), userIdObj);
+            }
+            // 给请求参数设置userId
+            jsonHeaderBean.setUserId(userId);
+            jsonHeaderBean.getData().put("user_id", userId);
+            jsonHeaderBean.getData().put("userId", userId);
+            // 校验通过
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        LOG.info("-----校验用户是否登录并设置用户信息异常------");
+        return packagMsg(ResultCode.FAIL.getResp_code(), new JSONObject());
     }
 
 
@@ -238,7 +313,7 @@ public class InfoController {
             if (null == message || "".equals(message)) {
                 message = readStreamParameter(request.getInputStream());
             }
-            log.info("接收参数:" + message);
+            LOG.info("接收参数:" + message);
             JSONObject obj = JSONObject.parseObject(message);
             if (obj != null) {
                 ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
@@ -255,7 +330,7 @@ public class InfoController {
             } else {
                 result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
             }
-            log.info("调用结果：" + result);
+            LOG.info("调用结果：" + result);
             pw.write(result);
             pw.flush();
             pw.close();

@@ -205,7 +205,7 @@ public class QueryGoodsDetail20210305 implements IResultOut {
             JSONArray bannerImgList = new JSONArray();
             JSONArray goodsInfoImgList = new JSONArray();
             //查询商品图片
-            List<Map<String, Object>> imgListMap = iImgDao.queryTableRelImg(null, goodsId, Constants.CLASSIFY_GOODS);
+            List<Map<String, Object>> imgListMap = iImgDao.queryTableRelImg(null, goodsId, Constants.IMG_CLASSIFY_GOODS);
             for (int i = 0; i < imgListMap.size(); i++) {
                 //1:商品banner 2:商品图片介绍 3:店铺banner 4:店铺介绍图片 5:卡券banner 6:卡券介绍图片
                 int imgType = Integer.parseInt(imgListMap.get(i).get("img_type").toString());

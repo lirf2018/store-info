@@ -7,6 +7,7 @@ import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbUserInfo;
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
+import com.yufan.testRedis.LoginCache;
 import com.yufan.utils.CommonMethod;
 import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
@@ -15,13 +16,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.plugin.util.UIUtil;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
@@ -45,13 +44,15 @@ public class PhoneCodeLogin implements IResultOut {
         try {
             String phone = data.getString("phone");
             String phoneCode = data.getString("phone_code");//手机验证码
+            String memberCode = data.getString("member_code");//推荐人
 
             //检验手机验证码
-            if (!CommonMethod.checkPhoneCode(Constants.VALID_TYPE_6, phone, phoneCode, iAccountDao)) {
-                return packagMsg(ResultCode.CODE_NONEFFECTIVE.getResp_code(), dataJson);
-            }
+//            if (!CommonMethod.checkPhoneCode(Constants.VALID_TYPE_6, phone, phoneCode, iAccountDao)) {
+//                return packagMsg(ResultCode.CODE_NONEFFECTIVE.getResp_code(), dataJson);
+//            }
+
             //删除手机验证码
-            iAccountDao.deltVerificationStatus(phone, phoneCode);
+            iAccountDao.deltVerificationStatus(phone, phoneCode, Constants.VALID_TYPE_6);
 
             //查询用户信息
             List<Map<String, Object>> userInfoList = iAccountDao.queryUserInfoByLogin(phone);
@@ -62,8 +63,9 @@ public class PhoneCodeLogin implements IResultOut {
             Map<String, Object> map = userInfoList.size() == 0 ? null : userInfoList.get(0);
             if (map == null) {
                 map = new HashMap<>();
+                map.put("user_mobile", phone);
             } else {
-                //判断用户状态
+                //判断用户状态(用户已存在)
                 int userStatus = Integer.parseInt(map.get("user_state").toString());
                 if (Constants.USER_STATUS_0 == userStatus) {
                     LOG.info("--------用户待验证---------");
@@ -74,19 +76,12 @@ public class PhoneCodeLogin implements IResultOut {
                     return packagMsg(ResultCode.FAIL_USER_LOCK.getResp_code(), dataJson);
                 }
             }
-            Object userId = map.get("user_id");
-            Object nickName = map.get("nick_name");
-            Object memberId = map.get("member_id");
-            Object money = map.get("money");
-            Object startTime = map.get("start_time");
-            Object endTime = map.get("end_time");
-            Object userImg = map.get("user_img") == null || "".equals(map.get("user_img").toString()) ? "" : Constants.IMG_WEB_URL + map.get("user_img");
-            Object snsImg = map.get("sns_img");
-            Object isUseImg = map.get("is_use_img");
+            Integer userId = map.get("user_id") == null ? 0 : Integer.parseInt(map.get("user_id").toString());
 
             if (userInfoList.size() == 0) {
                 //注册新用户
                 TbUserInfo userInfo = new TbUserInfo();
+                userInfo.setNickName("淘果匠" + getNickName());
                 userInfo.setLoginName(phone);
                 userInfo.setUserMobile(phone);
                 userInfo.setMobileValite(1);
@@ -95,19 +90,27 @@ public class PhoneCodeLogin implements IResultOut {
                 userInfo.setMemberId("");
                 userInfo.setCreatetime(new Timestamp(new Date().getTime()));
                 userInfo.setMoney(new BigDecimal("0"));
+                userInfo.setInviterJf(0);
+                userInfo.setInviterMoney(BigDecimal.ZERO);
+                userInfo.setInviterNum("");
+                userInfo.setUserImg("touxiang.jpg");
+                // 判断推荐人是否已存在
+                if (StringUtils.isNotEmpty(memberCode) && iAccountDao.checkInviterNum(memberCode)) {
+                    userInfo.setInviterNum(memberCode);
+                }
                 userId = iAccountDao.saveObj(userInfo);
+                map.put("user_id", userId);
             }
-            dataJson.put("user_id", userId);
-            dataJson.put("nick_name", nickName == null ? "" : nickName);
-            dataJson.put("user_mobile", phone);
-            dataJson.put("member_id", memberId == null ? "" : memberId);
-            dataJson.put("money", money == null ? "0" : money);
-            dataJson.put("start_time", startTime == null ? "" : startTime);
-            dataJson.put("end_time", endTime == null ? "" : endTime);
-            dataJson.put("user_img", userImg == null ? "" : userImg);
-            dataJson.put("sns_img", snsImg == null ? "" : snsImg);
-            dataJson.put("is_use_img", isUseImg == null ? "" : isUseImg);
-
+            if (userId == 0) {
+                LOG.info("-------保存用户异常--------");
+                return packagMsg(ResultCode.FAIL_USER_INVALIDATE.getResp_code(), dataJson);
+            }
+            // 注册或者登录成功（保存缓存并生成token）
+            String token = getToken();
+            long tokenPassTime = DatetimeUtil.addMinutes(new Date(), Constants.LOGIN_TOKEN_PASS_TIME).getTime();// 过期时间戳
+            saveRedisSession(token, map, tokenPassTime);
+            dataJson.put("token", token);
+            dataJson.put("passTime", tokenPassTime);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
@@ -115,6 +118,35 @@ public class PhoneCodeLogin implements IResultOut {
         return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
     }
 
+    private String getToken() {
+        synchronized (PhoneCodeLogin.class) {
+            String token = UUID.randomUUID().toString().replace("-", "");
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return token;
+        }
+    }
+
+    /**
+     * 保存登录信息（登录成功）
+     */
+    private void saveRedisSession(String token, Map<String, Object> map, long tokenPassTime) {
+        Object userId = map.get("user_id");
+        Object userMobile = map.get("user_mobile");
+        JSONObject tokenObj = new JSONObject();
+        tokenObj.put("userId", userId);
+        tokenObj.put("userMobile", userMobile);
+        tokenObj.put("tokenPassTime", tokenPassTime);
+        LoginCache.loginMapsToken.put(token, tokenObj);
+        //
+        JSONObject userIdObj = new JSONObject();
+        userIdObj.put("token", token);
+        userIdObj.put("tokenPassTime", tokenPassTime);
+        LoginCache.loginMapsUserId.put(String.valueOf(userId), userIdObj);
+    }
 
     @Override
     public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
@@ -132,4 +164,21 @@ public class PhoneCodeLogin implements IResultOut {
         return false;
     }
 
+    public String getNickName() {
+        String[] number = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };// 9
+        String[] a_z = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };// 26
+        String[] a_z_ = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };// 26
+
+        StringBuffer str = new StringBuffer();
+        Random random = new Random();
+        int n1 = random.nextInt(25);
+        str.append(a_z[n1]);
+        n1 = random.nextInt(25);
+        str.append(a_z[n1]);
+        n1 = random.nextInt(25);
+        str.append(a_z_[n1]);
+        n1 = random.nextInt(25);
+        str.append(a_z_[n1]);
+        return str.toString();
+    }
 }

@@ -36,7 +36,10 @@ public class Test implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
 
-
+            Integer userId = data.getInteger("userId");
+            if (null == userId) {
+                return false;
+            }
             return true;
         } catch (Exception e) {
             LOG.error("----check-error---", e);

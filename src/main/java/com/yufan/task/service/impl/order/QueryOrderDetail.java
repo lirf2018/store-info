@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
@@ -166,6 +163,24 @@ public class QueryOrderDetail implements IResultOut {
             dataJson.put("goods_price_all", goodsPriceAll);
             dataJson.put("goods_true_price_all", goodsTruePriceAll);
             dataJson.put("detail_list", detailList);
+            long closeTime = Constants.DEFAULT_CLOSE_TIME;
+
+            String orderTime = dataJson.getString("order_time");
+            if (dataJson.getInteger("order_status") == Constants.ORDER_STATUS_0) {
+                Date time = DatetimeUtil.convertStrToDate(orderTime, "yyyy-MM-dd HH:mm:ss");
+                long times = time.getTime() / 1000;
+                long now = System.currentTimeMillis() / 1000;
+                long tmpTime = closeTime - (now - times) / 60;
+                if (tmpTime <= 0) {
+                    closeTime = 1;
+                    // 已取消
+                    iOrderDao.updateOrderStatus(dataJson.getInteger("order_id"), userId, Constants.ORDER_STATUS_7, "系统自动取消");
+                } else {
+                    closeTime = tmpTime;
+                }
+            }
+            dataJson.put("close_time", closeTime);
+
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
@@ -188,5 +203,4 @@ public class QueryOrderDetail implements IResultOut {
         }
         return false;
     }
-
 }

@@ -46,7 +46,7 @@ public class QuerySecondGoodsDetail implements IResultOut {
             //更新访问数
             iSecondGoodsDao.UpdateSecondGoodsReadCount(goodsId);
 
-            dataJson.put("goods_id", secondGoods.getId());
+            dataJson.put("goods_id", secondGoods.getGoodsId());
             dataJson.put("goods_name", secondGoods.getGoodsName());
             dataJson.put("goods_img", Constants.IMG_WEB_URL + secondGoods.getGoodsImg());
             dataJson.put("true_price", secondGoods.getTruePrice());

@@ -1,7 +1,9 @@
 package com.yufan.task.dao.account;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yufan.pojo.TbMemberId;
 import com.yufan.pojo.TbUserInfo;
+import com.yufan.pojo.TbUserSns;
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.service.bean.UserSnsBean;
 
@@ -47,7 +49,10 @@ public interface IAccountDao {
      * @param id
      */
     public void deltVerificationStatus(int id);
+
     public void deltVerificationStatus(String validParam, String validCode);
+
+    public void deltVerificationStatus(String validParam, String validCode, Integer validType);
 
 
     /**
@@ -75,6 +80,8 @@ public interface IAccountDao {
      */
     public TbUserInfo loadUserInfo(String phone);
 
+    public TbUserInfo loadUserInfo(int userId);
+
     /**
      * 绑定手机号码
      *
@@ -97,14 +104,16 @@ public interface IAccountDao {
 
     /**
      * 重置密码
+     *
      * @param phone
      * @param passwd
      */
-    public void updateUserLoginPasswd(String phone,String passwd);
+    public void updateUserLoginPasswd(String phone, String passwd);
 
 
     /**
      * 注册账号
+     *
      * @param phone
      */
     public void deleteAccount(String phone);
@@ -117,9 +126,44 @@ public interface IAccountDao {
 
     /**
      * 解绑第三方账号
+     *
      * @param userId
      * @param snsType
      */
-    public void deleteSnsBang(int userId,int snsType);
+    public void deleteSnsBang(int userId, int snsType);
+
+
+    /**
+     * 校验推荐人是否存在
+     */
+    public boolean checkInviterNum(String inviterNum);
+
+
+    /**
+     * 查询绑定列表
+     *
+     * @param userId
+     * @return
+     */
+    public List<TbUserSns> findUserSnsList(int userId);
+
+    /**
+     * 更新用户会员号
+     *
+     * @param userId
+     * @param memberNum
+     */
+    public void updateUserMemberNum(int userId, String memberNum);
+
+    /**
+     * 查询绑定用户列表
+     *
+     * @param memberNum
+     * @return
+     */
+    public List<TbUserInfo> findUserInfoByMemberNumList(String memberNum);
+
+
+    public TbMemberId loadMemberId(String memberId);
 
 }

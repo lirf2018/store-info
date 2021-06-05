@@ -23,7 +23,7 @@ public class OrderReport {
     private TimeTaskDao timeTaskDao;
 
 //    @Scheduled(cron = "0 49 0 * * ?")
-    @Scheduled(cron = "0 33 22 * * ?")
+//    @Scheduled(cron = "0 33 22 * * ?")
     public void orderSaleReport() {
         long st = System.currentTimeMillis();
         String year = DatetimeUtil.getNow("yyyy");

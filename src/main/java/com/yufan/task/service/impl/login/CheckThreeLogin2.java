@@ -118,7 +118,7 @@ public class CheckThreeLogin2 implements IResultOut {
             iAccountDao.saveObj(verification);
             //---------------------------------------
             //调用第三方接口发送短信
-            JSONObject result = AliyunSmsUtil.getInstence().test();
+            JSONObject result = AliyunSmsUtil.getInstence().test(validCode);
             //---------------------------------------
             int code = result.getInteger("code");
             String desc = result.getString("desc");

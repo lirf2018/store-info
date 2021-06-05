@@ -39,6 +39,8 @@ public class ReceiveJsonBean {
      */
     private JSONObject data;
 
+    private Integer userId;
+
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -96,6 +98,14 @@ public class ReceiveJsonBean {
 
     public void setResponse(HttpServletResponse response) {
         this.response = response;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     /**
