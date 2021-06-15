@@ -77,7 +77,7 @@ public class PhoneCodeLogin implements IResultOut {
                 }
             }
             Integer userId = map.get("user_id") == null ? 0 : Integer.parseInt(map.get("user_id").toString());
-
+            // 推荐人userId
             if (userInfoList.size() == 0) {
                 //注册新用户
                 TbUserInfo userInfo = new TbUserInfo();
@@ -86,17 +86,24 @@ public class PhoneCodeLogin implements IResultOut {
                 userInfo.setUserMobile(phone);
                 userInfo.setMobileValite(1);
                 userInfo.setUserState(1);
-                userInfo.setLogCount(1);
+                userInfo.setLogCount(0);
                 userInfo.setMemberId("");
                 userInfo.setCreatetime(new Timestamp(new Date().getTime()));
                 userInfo.setMoney(new BigDecimal("0"));
                 userInfo.setInviterJf(0);
                 userInfo.setInviterMoney(BigDecimal.ZERO);
                 userInfo.setInviterNum("");
+                userInfo.setJifen(0);
                 userInfo.setUserImg("touxiang.jpg");
+                userInfo.setLastlogintime(new Timestamp(System.currentTimeMillis()));
                 // 判断推荐人是否已存在
-                if (StringUtils.isNotEmpty(memberCode) && iAccountDao.checkInviterNum(memberCode)) {
+                Integer tuiJianUserId = iAccountDao.checkInviterNum(memberCode);
+                if (StringUtils.isNotEmpty(memberCode) && tuiJianUserId != null) {
                     userInfo.setInviterNum(memberCode);
+                    // 更新推荐人（更新推荐人数量）
+                    Map<String, String> mapValue = new HashMap<>();
+                    mapValue.put("tuiJianCount", "1");
+                    iAccountDao.updateUserInfoTime(tuiJianUserId, mapValue);
                 }
                 userId = iAccountDao.saveObj(userInfo);
                 map.put("user_id", userId);
@@ -105,6 +112,11 @@ public class PhoneCodeLogin implements IResultOut {
                 LOG.info("-------保存用户异常--------");
                 return packagMsg(ResultCode.FAIL_USER_INVALIDATE.getResp_code(), dataJson);
             }
+            // 更新登录时间
+            Map<String, String> mapValue = new HashMap<>();
+            mapValue.put("updateLoginTime", "1");
+            iAccountDao.updateUserInfoTime(userId, mapValue);
+
             // 注册或者登录成功（保存缓存并生成token）
             String token = getToken();
             long tokenPassTime = DatetimeUtil.addMinutes(new Date(), Constants.LOGIN_TOKEN_PASS_TIME).getTime();// 过期时间戳
@@ -165,9 +177,9 @@ public class PhoneCodeLogin implements IResultOut {
     }
 
     public String getNickName() {
-        String[] number = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };// 9
-        String[] a_z = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };// 26
-        String[] a_z_ = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };// 26
+        String[] number = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};// 9
+        String[] a_z = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};// 26
+        String[] a_z_ = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};// 26
 
         StringBuffer str = new StringBuffer();
         Random random = new Random();

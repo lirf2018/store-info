@@ -136,7 +136,7 @@ public interface IAccountDao {
     /**
      * 校验推荐人是否存在
      */
-    public boolean checkInviterNum(String inviterNum);
+    public Integer checkInviterNum(String inviterNum);
 
 
     /**
@@ -165,5 +165,7 @@ public interface IAccountDao {
 
 
     public TbMemberId loadMemberId(String memberId);
+
+    public void updateUserInfoTime(int userId, Map<String, String> value);
 
 }

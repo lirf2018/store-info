@@ -126,7 +126,7 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
-    public List<Map<String, Object>> queryUserOrderDetail(int userId, int orderId) {
+    public List<Map<String, Object>> queryUserOrderDetail(int userId, Integer orderId, String orderNo) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status,o.order_no,DATE_FORMAT(o.order_time,'%Y-%m-%d %T') as order_time,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T') as pay_time ");
         sql.append(" ,o.pay_way,o.user_name,o.user_phone,o.user_addr,o.real_price,o.post_price,o.discounts_price,o.post_way,o.advance_pay_way,o.advance_price,o.user_remark ");
@@ -136,23 +136,14 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo,DATE_FORMAT(o.finish_time,'%Y-%m-%d %T') as finish_time  ");
         sql.append(" from tb_order o JOIN tb_shop s on o.shop_id=s.shop_id ");
         sql.append(" JOIN tb_order_detail d on d.order_id=o.order_id ");
-        sql.append(" where o.order_id=? and o.user_id=? ");
+        sql.append(" where o.user_id=").append(userId).append(" ");
+        if (StringUtils.isNotEmpty(orderNo)) {
+            sql.append(" o.order_no='").append(orderNo).append("'  ");
+        } else {
+            sql.append(" o.order_id=").append(orderId).append("  ");
+        }
         sql.append(" ORDER BY o.order_id desc ");
-        return iGeneralDao.getBySQLListMap(sql.toString(), orderId, userId);
-    }
-
-    @Override
-    public List<Map<String, Object>> queryUserOrderDetail(int userId, String orderNo) {
-        StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status,o.order_no,DATE_FORMAT(o.order_time,'%Y-%m-%d %T') as order_time,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T') as pay_time ");
-        sql.append(" ,o.pay_way,o.user_name,o.user_phone,o.user_addr,o.real_price,o.post_price,o.discounts_price,o.post_way,o.advance_pay_way,o.advance_price ");
-        sql.append(" ,CONCAT('").append(Constants.IMG_WEB_URL).append("',d.goods_img) as goods_img,d.goods_id,d.goods_name,d.sale_money,d.goods_count,d.goods_spec_name_str ");
-        sql.append(" ,s.shop_name,CONCAT('").append(Constants.IMG_WEB_URL).append("',s.shop_logo) as shop_logo,DATE_FORMAT(o.finish_time,'%Y-%m-%d %T') as finish_time  ");
-        sql.append(" from tb_order o JOIN tb_shop s on o.shop_id=s.shop_id ");
-        sql.append(" JOIN tb_order_detail d on d.order_id=o.order_id ");
-        sql.append(" where o.order_no=? and o.user_id=? ");
-        sql.append(" ORDER BY o.order_id desc ");
-        return iGeneralDao.getBySQLListMap(sql.toString(), orderNo, userId);
+        return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
     @Override

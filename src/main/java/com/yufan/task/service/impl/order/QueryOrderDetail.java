@@ -56,16 +56,17 @@ public class QueryOrderDetail implements IResultOut {
             }
             Integer userId = data.getInteger("user_id");
             Integer orderId = data.getInteger("order_id");
+            String orderNo = data.getString("order_no");
 
             //商品总价
             BigDecimal goodsPriceAll = BigDecimal.ZERO;
             BigDecimal goodsTruePriceAll = BigDecimal.ZERO;
             BigDecimal depositPriceAll = BigDecimal.ZERO;
 
-            List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderId);
+            List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderId, orderNo);
             List<Map<String, Object>> detailList = new ArrayList<>();
             for (int i = 0; i < listOrder.size(); i++) {
-                Object orderNo = listOrder.get(i).get("order_no");
+                Object orderNo_ = listOrder.get(i).get("order_no");
                 Object orderPrice = listOrder.get(i).get("order_price");
                 Object realPrice = listOrder.get(i).get("real_price");
                 Object orderCount = listOrder.get(i).get("order_count");
@@ -86,7 +87,7 @@ public class QueryOrderDetail implements IResultOut {
                 Object shopName = listOrder.get(i).get("shop_name");
                 Object userRemark = listOrder.get(i).get("user_remark");
                 dataJson.put("order_id", orderId);
-                dataJson.put("order_no", orderNo);
+                dataJson.put("order_no", orderNo_);
                 dataJson.put("order_price", new BigDecimal(orderPrice.toString()));
                 dataJson.put("real_price", new BigDecimal(realPrice.toString()));
                 dataJson.put("order_count", Integer.parseInt(orderCount.toString()));
@@ -194,7 +195,8 @@ public class QueryOrderDetail implements IResultOut {
         try {
             Integer userId = data.getInteger("user_id");
             Integer orderId = data.getInteger("order_id");
-            if (null == userId || orderId == null) {
+            String orderNo = data.getString("order_no");
+            if (null == userId || (orderId == null && StringUtils.isEmpty(orderNo))) {
                 return false;
             }
             return true;

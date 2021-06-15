@@ -9,6 +9,7 @@ import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
 import com.yufan.task.service.bean.UserSnsBean;
 import com.yufan.utils.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,13 +163,13 @@ public class AccountDaoImpl implements IAccountDao {
     }
 
     @Override
-    public boolean checkInviterNum(String inviterNum) {
+    public Integer checkInviterNum(String inviterNum) {
         String sql = " select user_id,member_id from tb_user_info where member_id='" + inviterNum + "' ";
         List<Map<String, Object>> list = iGeneralDao.getBySQLListMap(sql);
         if (list.size() >= 1) {
-            return true;
+            return Integer.parseInt(list.get(0).get("user_id").toString());
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -192,7 +193,29 @@ public class AccountDaoImpl implements IAccountDao {
     @Override
     public TbMemberId loadMemberId(String memberId) {
         String hql = " from TbMemberId where memberId=?1 ";
-
         return (TbMemberId) iGeneralDao.queryUniqueByHql(hql, memberId);
+    }
+
+    @Override
+    public void updateUserInfoTime(int userId, Map<String, String> value) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" update tb_user_info set lastlogintime=NOW() ");
+        // 更新登录时间和次数
+        String updateLoginTime = value.get("updateLoginTime");
+        if (StringUtils.isNotEmpty(updateLoginTime)) {
+            sql.append(" ,log_count=log_count+1,lastlogintime=NOW() ");
+        }
+        //更新积分
+        String jifen = value.get("jifen");
+        if (StringUtils.isNotEmpty(jifen)) {
+            sql.append(" ,jifen=jifen+").append(jifen).append(" ");
+        }
+        // 推广人数量
+        String tuiJianCount = value.get("tuiJianCount");
+        if (StringUtils.isNotEmpty(tuiJianCount)) {
+            sql.append(" ,tuijian_count=tuijian_count+1 ");
+        }
+        sql.append(" where user_id = ").append(userId).append(" ");
+        iGeneralDao.executeUpdateForSQL(sql.toString());
     }
 }

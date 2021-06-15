@@ -50,18 +50,6 @@ public class QueryUserCenter implements IResultOut {
             if (null == userInfo) {
                 return packagMsg(ResultCode.FAIL_USER_INVALIDATE.getResp_code(), dataJson);
             }
-
-            //查询积分
-            int jifen = iUserDao.userJifen(userId);
-            //购物车
-            int cartGoodsCount = 0;
-            List<Map<String, Object>> list = iOrderDao.findCartCount(userId, null);
-            for (int i = 0; i < list.size(); i++) {
-                int c = Integer.parseInt(list.get(i).get("goodsCount").toString());
-                cartGoodsCount = cartGoodsCount + c;
-            }
-            //
-
             //查询用户订单
             List<Map<String, Object>> userOrderListMap = iOrderDao.queryOrderPayAllListMap(userId);
             int c0 = 0;//0	待付款
@@ -166,12 +154,11 @@ public class QueryUserCenter implements IResultOut {
 
             dataJson.put("order_price_all", orderPriceAll);
 
-            dataJson.put("user_jifen", jifen);
+            dataJson.put("user_jifen", userInfo.getJifen());
             dataJson.put("user_money", 0.00);//需要增加一张扣除详细表
             dataJson.put("user_img", StringUtils.isEmpty(userInfo.getUserImg()) ? "" : Constants.IMG_WEB_URL + userInfo.getUserImg());
             dataJson.put("member_id", userInfo.getMemberId());//会员卡号
             dataJson.put("nick_name", userInfo.getNickName());
-            dataJson.put("cart_goods_count", cartGoodsCount);//购物车数量
 
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

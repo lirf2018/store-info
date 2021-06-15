@@ -36,7 +36,7 @@ public class UpdateMemberNum implements IResultOut {
             if ("add".equals(type)) {
                 //绑定   检验是否已近被绑定
                 String memberNum = data.getString("memberNum");
-                if (iAccountDao.checkInviterNum(memberNum)) {
+                if (iAccountDao.checkInviterNum(memberNum) != null) {
                     return packagMsg(ResultCode.MEMBERNUM_IS_BANG.getResp_code(), dataJson);
                 }
                 // 查询绑定号是否存在

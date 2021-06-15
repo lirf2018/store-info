@@ -78,9 +78,8 @@ public interface IOrderDao {
      * @param userId
      * @return
      */
-    public List<Map<String, Object>> queryUserOrderDetail(int userId, int orderId);
+    public List<Map<String, Object>> queryUserOrderDetail(int userId, Integer orderId,String orderNo);
 
-    public List<Map<String, Object>> queryUserOrderDetail(int userId, String orderNo);
 
     /**
      * 查询订单详情属性

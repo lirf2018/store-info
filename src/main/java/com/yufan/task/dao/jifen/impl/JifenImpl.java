@@ -32,7 +32,7 @@ public class JifenImpl implements IJifen {
 
     private StringBuffer jifenListSql(int userId, String taskIds, Integer inOut) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" select j.task_id,j.is_inout,j.jifen,j.items,DATE_FORMAT(j.createtime,'%Y-%m-%d') as createtime  ");
+        sql.append(" select j.task_id,j.is_inout,j.jifen,j.items,DATE_FORMAT(j.createtime,'%Y-%m-%d %T') as createtime  ");
         sql.append(" ,p.param_value as task_name ");
         sql.append(" from tb_jifen j  LEFT JOIN tb_param p on p.param_code='jifen_task_id' and p.param_key=j.task_id ");
         sql.append(" where j.status=1 and j.user_id=").append(userId).append(" and j.pass_time>=NOW()  ");
