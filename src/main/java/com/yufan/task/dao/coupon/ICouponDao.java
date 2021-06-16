@@ -1,6 +1,8 @@
 package com.yufan.task.dao.coupon;
 
 import com.yufan.bean.CouponCondition;
+import com.yufan.pojo.TbCoupon;
+import com.yufan.pojo.TbCouponDownQr;
 import com.yufan.utils.PageInfo;
 
 import java.util.List;
@@ -19,10 +21,13 @@ public interface ICouponDao {
      * @param userId
      * @return
      */
-    List<Map<String, Object>> findUserCouponList(int userId,CouponCondition couponCondition);
+    List<Map<String, Object>> findUserCouponList(int userId, CouponCondition couponCondition);
 
 
     PageInfo loadCouponListPage(CouponCondition couponCondition);
 
+    TbCoupon loadCoupon(int couponId);
+
+    TbCouponDownQr loadCouponDownQr(int qrId);
 
 }

@@ -2,6 +2,8 @@ package com.yufan.task.dao.coupon.impl;
 
 import com.yufan.bean.CouponCondition;
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbCoupon;
+import com.yufan.pojo.TbCouponDownQr;
 import com.yufan.task.dao.coupon.ICouponDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
@@ -38,7 +40,7 @@ public class CouponDaoImpl implements ICouponDao {
     @Override
     public PageInfo loadCouponListPage(CouponCondition couponCondition) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" select c.coupon_id,c.coupon_name,c.title,c.coupon_num, DATE_FORMAT(c.start_time,'%Y-%m-%d') as start_time,DATE_FORMAT(c.end_time,'%Y-%m-%d') as end_time,c.appoint_type, ");
+        sql.append(" select c.coupon_id,c.coupon_name,c.title,c.coupon_num, DATE_FORMAT(c.start_time,'%Y.%m.%d') as start_time,DATE_FORMAT(c.end_time,'%Y.%m.%d') as end_time,c.appoint_type, ");
         sql.append(" CONCAT('" + Constants.IMG_WEB_URL + "',c.coupon_img) as coupon_img,c.count_get ");
         sql.append("  ,if(DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(c.appoint_date,'%Y-%m-%d'),1,0) as now_use_date ");
         sql.append(" from tb_coupon c ");
@@ -56,5 +58,17 @@ public class CouponDaoImpl implements ICouponDao {
         pageInfo.setSqlQuery(sql.toString());
         pageInfo = iGeneralDao.loadPageInfoSQLListMap(pageInfo);
         return pageInfo;
+    }
+
+    @Override
+    public TbCoupon loadCoupon(int couponId) {
+        String hql = " from TbCoupon where couponId=?1 ";
+        return iGeneralDao.queryUniqueByHql(hql, couponId);
+    }
+
+    @Override
+    public TbCouponDownQr loadCouponDownQr(int qrId) {
+        String hql = " from TbCouponDownQr where id=?1 ";
+        return iGeneralDao.queryUniqueByHql(hql, qrId);
     }
 }

@@ -88,7 +88,8 @@ public enum ResultCode {
     USER_UNLOGIN(401, "用户未登录"),
     MEMBERNUM_IS_BANG(10069, "会员号已被绑定"),
     MEMBERNUM_NOT_EXIST(10070, "会员号不存在"),
-    DATE_NOT_EXIST(10071, "当前日期不存在");
+    DATE_NOT_EXIST(10071, "当前日期不存在"),
+    COUPON_NOT_EXIST(10072, "卡券不存在");
 
 
     private int resp_code;
