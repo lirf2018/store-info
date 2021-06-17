@@ -4,12 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
-import com.yufan.pojo.TbCoupon;
-import com.yufan.pojo.TbCouponDownQr;
-import com.yufan.pojo.TbShop;
 import com.yufan.task.dao.coupon.ICouponDao;
-import com.yufan.task.dao.shop.IShopJapDao;
-import com.yufan.utils.Constants;
+import com.yufan.utils.DatetimeUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,18 +15,15 @@ import static com.yufan.common.bean.ResponeUtil.packagMsg;
 /**
  * @description:
  * @author: lirf
- * @time: 2021/6/15
+ * @time: 2021/6/17
  */
-@Service("query_qr_detail")
-public class QueryQRDetail implements IResultOut {
+@Service("refresh_qr_time")
+public class RefreshQrTime implements IResultOut {
 
-    private Logger LOG = Logger.getLogger(QueryQRDetail.class);
+    private Logger LOG = Logger.getLogger(RefreshQrTime.class);
 
     @Autowired
     private ICouponDao iCouponDao;
-
-    @Autowired
-    private IShopJapDao shopJapDao;
 
 
     @Override
@@ -38,13 +31,11 @@ public class QueryQRDetail implements IResultOut {
         JSONObject dataJson = new JSONObject();
         JSONObject data = receiveJsonBean.getData();
         try {
+            Integer userId = data.getInteger("userId");
             Integer qrId = data.getInteger("qrId");
-            TbCouponDownQr couponDownQr = iCouponDao.loadCouponDownQrByQrId(qrId);
-            if (couponDownQr == null) {
-                return packagMsg(ResultCode.COUPON_NOT_EXIST.getResp_code(), dataJson);
-            }
-            dataJson.put("couponDownQr", couponDownQr);
-            dataJson.put("imgPath", Constants.IMG_WEB_URL);
+            String time = DatetimeUtil.addMinuteTime(DatetimeUtil.getNow(), 10, DatetimeUtil.DEFAULT_DATE_FORMAT_STRING);
+            dataJson.put("time", time);
+            iCouponDao.updateQrTime(userId, qrId, time);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
@@ -68,4 +59,5 @@ public class QueryQRDetail implements IResultOut {
         }
         return false;
     }
+
 }

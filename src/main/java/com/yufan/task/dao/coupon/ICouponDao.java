@@ -28,6 +28,10 @@ public interface ICouponDao {
 
     TbCoupon loadCoupon(int couponId);
 
-    TbCouponDownQr loadCouponDownQr(int qrId);
+    TbCouponDownQr loadCouponDownQrByQrId(int qrId);
+
+    TbCouponDownQr loadCouponDownQrByCouponId(int couponId);
+
+    void updateQrTime(int userId, int qrId, String time);
 
 }

@@ -7,6 +7,7 @@ import com.yufan.pojo.TbCouponDownQr;
 import com.yufan.task.dao.coupon.ICouponDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.PageInfo;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,8 +68,24 @@ public class CouponDaoImpl implements ICouponDao {
     }
 
     @Override
-    public TbCouponDownQr loadCouponDownQr(int qrId) {
+    public TbCouponDownQr loadCouponDownQrByQrId(int qrId) {
         String hql = " from TbCouponDownQr where id=?1 ";
         return iGeneralDao.queryUniqueByHql(hql, qrId);
+    }
+
+    @Override
+    public TbCouponDownQr loadCouponDownQrByCouponId(int couponId) {
+        String hql = " from TbCouponDownQr where id=?1 order by lastaltertime desc ";
+        List<TbCouponDownQr> list = (List<TbCouponDownQr>) iGeneralDao.queryListByHql(hql, couponId);
+        if (CollectionUtils.isNotEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public void updateQrTime(int userId, int qrId, String time) {
+        String sql = " update tb_coupon_down_qr set qr_code_outtime=? ,lastaltertime=now() where user_id=? and id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, time, userId, qrId);
     }
 }

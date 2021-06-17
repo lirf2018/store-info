@@ -38,19 +38,34 @@ public class QueryCouponDetail implements IResultOut {
         JSONObject dataJson = new JSONObject();
         JSONObject data = receiveJsonBean.getData();
         try {
-
+            Integer userId = data.getInteger("userId");
             Integer couponId = data.getInteger("couponId");
             TbCoupon coupon = iCouponDao.loadCoupon(couponId);
             if (coupon == null) {
                 return packagMsg(ResultCode.COUPON_NOT_EXIST.getResp_code(), dataJson);
             }
             TbShop shop = shopJapDao.findOne(coupon.getShopId());
-            // 判断是否能领取并生成优惠券
-            JSONObject checkResult = null;
 
+            int qrId = 0;
+            // 查询当前卡券用户是否已领取,并且有效
+            TbCouponDownQr couponDownQr = iCouponDao.loadCouponDownQrByCouponId(couponId);
+            if (null != couponDownQr) {
+                if (couponDownQr.getRecodeState() == 1) {
+                    long qrOutTime = couponDownQr.getChangeOutDate().getTime();
+                    String outDate = DatetimeUtil.timeStamp2Date(qrOutTime, DatetimeUtil.DEFAULT_DATE_FORMAT);
+                    String now = DatetimeUtil.getNow(DatetimeUtil.DEFAULT_DATE_FORMAT);
+                    if (DatetimeUtil.compareDate(now, outDate, DatetimeUtil.DEFAULT_DATE_FORMAT) < 1) {
+                        qrId = 1;
+                    }
+                }
+            }
             dataJson.put("coupon", coupon);
+            dataJson.put("qrId", qrId);
             dataJson.put("beginDate", DatetimeUtil.timeStamp2Date(coupon.getStartTime().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT));
             dataJson.put("endDate", DatetimeUtil.timeStamp2Date(coupon.getEndTime().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT));
+            if (null != coupon.getAppointDate()) {
+                dataJson.put("appointDate", DatetimeUtil.timeStamp2Date(coupon.getAppointDate().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT));
+            }
             dataJson.put("coupon", coupon);
 
             dataJson.put("shop", shop);
