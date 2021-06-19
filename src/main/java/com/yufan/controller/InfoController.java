@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IBasicService;
 import com.yufan.common.service.IResultOut;
 import com.yufan.common.service.ServiceFactory;
@@ -84,13 +84,13 @@ public class InfoController {
             if (null == message || "".equals(message)) {
                 message = readStreamParameter(request.getInputStream());
             }
-//            LOG.info("接收参数密文:" + message);
             LOG.info("接收参数明文:" + message);
             JSONObject obj = JSONObject.parseObject(message);
             if (obj != null && obj.size() > 0) {
                 ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
                 jsonHeaderBean.setRequest(request);
                 jsonHeaderBean.setResponse(response);
+                jsonHeaderBean.setKeyCome("sign");
                 //请求业务验证包括时间戳间隔(请求时间相隔不能大于30秒)sign
                 Integer index = jsonHeaderBean.getCheckEmptyValue();
                 if (0 != index) {
@@ -104,8 +104,8 @@ public class InfoController {
                     if (betweenTime < 120) {//秒
                         //验证sign(根据账号sid查询密钥)
                         TbInfAccount account = iBasicService.loadTbInfAccount(jsonHeaderBean.getSid());
-                        String appsecret = account.getSecretKey();
-//                        LOG.info("appsecret="+appsecret);
+                        String appsecret = account.getSecretKey();//sid
+                        LOG.info("appsecret=" + appsecret);
                         //检验签名
                         if (VerifySign.checkSign(jsonHeaderBean, appsecret)) {
                             IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());

@@ -2,7 +2,7 @@ package com.yufan.task.service.impl.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.dao.user.IUserDao;
@@ -155,7 +155,7 @@ public class QueryUserCenter implements IResultOut {
             dataJson.put("order_price_all", orderPriceAll);
 
             dataJson.put("user_jifen", userInfo.getJifen());
-            dataJson.put("user_money", 0.00);//需要增加一张扣除详细表
+            dataJson.put("user_money", userInfo.getMoney());//需要增加一张扣除详细表
             dataJson.put("user_img", StringUtils.isEmpty(userInfo.getUserImg()) ? "" : Constants.IMG_WEB_URL + userInfo.getUserImg());
             dataJson.put("member_id", userInfo.getMemberId());//会员卡号
             dataJson.put("nick_name", userInfo.getNickName());

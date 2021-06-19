@@ -134,6 +134,28 @@ public class CommonMethod {
     }
 
     /**
+     * 生成w随机数
+     *
+     * @param w 位数
+     * @return
+     */
+    public static synchronized String randomNum(int w) {
+        Random random = new Random();
+        int s = 8;
+        int multiple10 = 1;
+        for (int i = 1; i < w; i++) {
+            s = s * 10 + 9;
+            multiple10 = multiple10 * 10;
+        }
+        int r = random.nextInt(s) + multiple10;//随机w位数
+        String str = String.valueOf(r);
+        if (str.length() > w) {
+            str = str.substring(0, w);
+        }
+        return str;
+    }
+
+    /**
      * 检验手机验证码
      *
      * @return
@@ -185,6 +207,7 @@ public class CommonMethod {
 
     /**
      * 正则匹配和替换1
+     *
      * @param sql
      * @param paramMap
      * @return
@@ -211,11 +234,13 @@ public class CommonMethod {
 
     /**
      * 正则匹配和替换1
+     *
      * @param sql
      * @param paramMap
      * @return
      */
     public static Pattern pattern = Pattern.compile("##(.*?\\$\\{(.*?)\\}.*?)##");
+
     public static String getSqlReplace2(String sql, Map<String, Object> paramMap) {
         // String sql = " select * from tb_a whre 1=1 ##and a.id=${id}## ##and a.name=${name}## limit 80"
 
@@ -234,10 +259,14 @@ public class CommonMethod {
         return sql;
     }
 
-    public static void main(String[] args) {
-        String sql = " select * from tb_a whre 1=1 ##and a.id=${id}## ##and a.name=${name}## limit 80";
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("id", "10");
-        System.out.println(getSqlReplace2(sql, paramMap));
+    /**
+     * qr码兑换刷新有效时间
+     *
+     * @return
+     */
+    public static String qrChangeOutTime() {
+        String time = DatetimeUtil.addMinuteTime(DatetimeUtil.getNow(), 10, DatetimeUtil.DEFAULT_DATE_FORMAT_STRING);
+        return time;
     }
+
 }

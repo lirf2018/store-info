@@ -2,7 +2,7 @@ package com.yufan.task.service.impl.coupon;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbCoupon;
 import com.yufan.pojo.TbCouponDownQr;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
- * @description:
+ * @description:卡券详情
  * @author: lirf
  * @time: 2021/6/15
  */
@@ -48,18 +48,29 @@ public class QueryCouponDetail implements IResultOut {
 
             int qrId = 0;
             // 查询当前卡券用户是否已领取,并且有效
-            TbCouponDownQr couponDownQr = iCouponDao.loadCouponDownQrByCouponId(couponId);
+            TbCouponDownQr couponDownQr = iCouponDao.loadCouponDownQrByCouponId(couponId, userId);
             if (null != couponDownQr) {
                 if (couponDownQr.getRecodeState() == 1) {
                     long qrOutTime = couponDownQr.getChangeOutDate().getTime();
                     String outDate = DatetimeUtil.timeStamp2Date(qrOutTime, DatetimeUtil.DEFAULT_DATE_FORMAT);
                     String now = DatetimeUtil.getNow(DatetimeUtil.DEFAULT_DATE_FORMAT);
                     if (DatetimeUtil.compareDate(now, outDate, DatetimeUtil.DEFAULT_DATE_FORMAT) < 1) {
-                        qrId = 1;
+                        qrId = couponDownQr.getId();
                     }
                 }
             }
+            // 对固定使用时间的优惠券处理 过期方式：0按兑换过期天计算过期时间1指定过期时间2指定使用时间
+            int nowUseDate = 0;
+            if (coupon.getAppointType() == 2) {
+                // 指定使用时间
+                String appointDate = DatetimeUtil.timeStamp2Date(coupon.getAppointDate().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT);
+                String now = DatetimeUtil.getNow(DatetimeUtil.DEFAULT_DATE_FORMAT);
+                if (now.equals(appointDate)) {
+                    nowUseDate = 1;
+                }
+            }
             dataJson.put("coupon", coupon);
+            dataJson.put("nowUseDate", nowUseDate);
             dataJson.put("qrId", qrId);
             dataJson.put("beginDate", DatetimeUtil.timeStamp2Date(coupon.getStartTime().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT));
             dataJson.put("endDate", DatetimeUtil.timeStamp2Date(coupon.getEndTime().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT));

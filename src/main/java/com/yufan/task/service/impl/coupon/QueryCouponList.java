@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.bean.CouponCondition;
 import com.yufan.bean.GoodsCondition;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbCategory;
 import com.yufan.pojo.TbSearchHistory;

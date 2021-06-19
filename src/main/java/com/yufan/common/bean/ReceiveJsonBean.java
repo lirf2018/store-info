@@ -2,6 +2,7 @@ package com.yufan.common.bean;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Data;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author yink
  */
+@Data
 public class ReceiveJsonBean {
-
 
     /**
      * 请求对象
@@ -39,74 +40,13 @@ public class ReceiveJsonBean {
      */
     private JSONObject data;
 
+    // 其它参数
+    private String keyCome;
     private Integer userId;
 
     private HttpServletRequest request;
     private HttpServletResponse response;
 
-    public String getReq_type() {
-        return req_type;
-    }
-
-    public void setReq_type(String req_type) {
-        this.req_type = req_type;
-    }
-
-    public JSONObject getData() {
-        return data;
-    }
-
-    public void setData(JSONObject data) {
-        this.data = data;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    public Long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getSid() {
-        return sid;
-    }
-
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
-
-    public HttpServletRequest getRequest() {
-        return request;
-    }
-
-    public void setRequest(HttpServletRequest request) {
-        this.request = request;
-    }
-
-    public HttpServletResponse getResponse() {
-        return response;
-    }
-
-    public void setResponse(HttpServletResponse response) {
-        this.response = response;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
 
     /**
      * 验证系统参数非空

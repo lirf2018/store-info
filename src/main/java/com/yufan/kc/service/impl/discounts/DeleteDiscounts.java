@@ -2,8 +2,8 @@ package com.yufan.kc.service.impl.discounts;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
 import com.yufan.common.service.IResultOut;
+import com.yufan.utils.ResultCode;
 import org.apache.log4j.Logger;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;

@@ -2,7 +2,7 @@ package com.yufan.task.service.impl.info;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbInfo;
 import com.yufan.task.dao.info.IInfoDao;

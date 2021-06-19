@@ -30,8 +30,18 @@ public interface ICouponDao {
 
     TbCouponDownQr loadCouponDownQrByQrId(int qrId);
 
-    TbCouponDownQr loadCouponDownQrByCouponId(int couponId);
+    TbCouponDownQr loadCouponDownQrByQrCode(String code);
 
-    void updateQrTime(int userId, int qrId, String time);
+    TbCouponDownQr loadCouponDownQrByCouponId(int couponId, int userId);
+
+    void updateQrCodeChangeTime(int userId, int qrId, String time);
+
+    int saveCouponDownQr(TbCouponDownQr qr);
+
+    void updateQrRecordStatusWith1(int userId, int qrId);
+
+    int changeQrRecordStatus(int qrId);
+
+    void updateCouponGetCount(int couponId);
 
 }

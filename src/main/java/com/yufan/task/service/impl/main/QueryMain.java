@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResponeUtil;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.activity.IActivityDao;
 import com.yufan.task.dao.banner.IBannerDao;

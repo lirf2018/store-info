@@ -3,7 +3,7 @@ package com.yufan.task.service.impl.coupon;
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.bean.CouponCondition;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.coupon.ICouponDao;
 import com.yufan.utils.PageInfo;

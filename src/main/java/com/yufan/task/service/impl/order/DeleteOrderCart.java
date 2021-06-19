@@ -2,7 +2,7 @@ package com.yufan.task.service.impl.order;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.order.IOrderDao;
 import org.apache.commons.lang3.StringUtils;

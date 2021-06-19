@@ -43,7 +43,7 @@ public class UserDaoImpl implements IUserDao {
         sql.append(" from tb_private_custom ");
         sql.append(" where  user_id=").append(userId).append(" ");
         if (findType == 0) {
-            sql.append(" and `status` = 0 or status =1 ORDER BY is_yuyue desc,get_time,create_time ");
+            sql.append(" and status in (0,1) ORDER BY is_yuyue desc,get_time,create_time ");
         } else {
             sql.append(" and `status`=2 ORDER BY update_time desc ");
         }

@@ -2,9 +2,10 @@ package com.yufan.task.service.impl.coupon;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.coupon.ICouponDao;
+import com.yufan.utils.CommonMethod;
 import com.yufan.utils.DatetimeUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class RefreshQrTime implements IResultOut {
         try {
             Integer userId = data.getInteger("userId");
             Integer qrId = data.getInteger("qrId");
-            String time = DatetimeUtil.addMinuteTime(DatetimeUtil.getNow(), 10, DatetimeUtil.DEFAULT_DATE_FORMAT_STRING);
+            String time = CommonMethod.qrChangeOutTime();
             dataJson.put("time", time);
-            iCouponDao.updateQrTime(userId, qrId, time);
+            iCouponDao.updateQrCodeChangeTime(userId, qrId, time);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);

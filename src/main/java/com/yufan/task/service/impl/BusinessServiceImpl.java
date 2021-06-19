@@ -1,7 +1,7 @@
 package com.yufan.task.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.task.dao.goods.IGoodsDao;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.utils.Constants;

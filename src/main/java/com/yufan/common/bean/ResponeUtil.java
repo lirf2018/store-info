@@ -1,6 +1,7 @@
 package com.yufan.common.bean;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yufan.utils.ResultCode;
 
 public class ResponeUtil {
 

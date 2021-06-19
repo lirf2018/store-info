@@ -138,9 +138,9 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" JOIN tb_order_detail d on d.order_id=o.order_id ");
         sql.append(" where o.user_id=").append(userId).append(" ");
         if (StringUtils.isNotEmpty(orderNo)) {
-            sql.append(" o.order_no='").append(orderNo).append("'  ");
+            sql.append(" and o.order_no='").append(orderNo).append("'  ");
         } else {
-            sql.append(" o.order_id=").append(orderId).append("  ");
+            sql.append(" and o.order_id=").append(orderId).append("  ");
         }
         sql.append(" ORDER BY o.order_id desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());

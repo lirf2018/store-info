@@ -2,7 +2,7 @@ package com.yufan.task.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.common.bean.ResultCode;
+import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
