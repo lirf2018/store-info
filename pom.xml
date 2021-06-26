@@ -8,10 +8,10 @@
         <version>2.1.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>store-info</groupId>
+    <groupId>com.yufan</groupId>
     <artifactId>store-info</artifactId>
     <version>1.0.0</version>
-    <name>yufan</name>
+    <name>store-info</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
