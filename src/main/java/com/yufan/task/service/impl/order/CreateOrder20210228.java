@@ -556,7 +556,7 @@ public class CreateOrder20210228 implements IResultOut {
             order.setLastaltertime(orderTime);
             order.setLastalterman(lastalterman);
             order.setUserReadMark(userReadMark);
-            int index = iOrderDao.createOrder(order, detailList, detailPropMap);
+            int index = iOrderDao.createOrder(order, null, detailPropMap);
             if (index > 0) {
                 //删除购物车
                 if (StringUtils.isNotEmpty(cartIds)) {

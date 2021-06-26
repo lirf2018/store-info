@@ -2,11 +2,9 @@ package com.yufan.task.dao.order.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.yufan.common.dao.base.IGeneralDao;
-import com.yufan.pojo.TbOrder;
-import com.yufan.pojo.TbOrderDetail;
-import com.yufan.pojo.TbOrderDetailProperty;
-import com.yufan.pojo.TbOrderRefund;
+import com.yufan.pojo.*;
 import com.yufan.task.dao.order.IOrderDao;
+import com.yufan.task.service.bean.DetailData;
 import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
 import com.yufan.utils.PageInfo;
@@ -126,6 +124,12 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
+    public List<TbOrderDetail> queryOrderDetailList(int orderId) {
+        String hql = " from TbOrderDetail where orderId=?1 ";
+        return (List<TbOrderDetail>) iGeneralDao.queryListByHql(hql, orderId);
+    }
+
+    @Override
     public List<Map<String, Object>> queryUserOrderDetail(int userId, Integer orderId, String orderNo) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT  o.order_id,o.order_price,o.order_count,o.order_status,o.order_no,DATE_FORMAT(o.order_time,'%Y-%m-%d %T') as order_time,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T') as pay_time ");
@@ -166,6 +170,12 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
+    public void updateOrderStatusPaySuccess(int orderId, int userId) {
+        String sql = " update tb_order set order_status=1,pay_time=now(),lastaltertime=now() where order_id=? and user_id=?  ";
+        iGeneralDao.executeUpdateForSQL(sql, orderId, userId);
+    }
+
+    @Override
     public void updateUserOrderReadMark(int userId, String orderIds) {
         if (orderIds.endsWith(",")) {
             orderIds = orderIds.substring(0, orderIds.length() - 1);
@@ -176,7 +186,7 @@ public class OrderDaoImpl implements IOrderDao {
 
     @Override
     @Transactional
-    public int createOrder(TbOrder order, List<TbOrderDetail> detailList, Map<String, JSONArray> detailPropMap) {
+    public int createOrder(TbOrder order, List<DetailData> detailList, Map<String, JSONArray> detailPropMap) {
         try {
             //保存订单
             iGeneralDao.save(order);
@@ -184,30 +194,18 @@ public class OrderDaoImpl implements IOrderDao {
             LOG.info("-----orderId--------" + orderId);
             //保存详情
             for (int i = 0; i < detailList.size(); i++) {
-                TbOrderDetail detail = detailList.get(i);
-//                String detailSql = " insert into tb_order_detail(order_id,goods_id,goods_name,goods_spec,goods_spec_name,goods_count,sale_money,goods_true_money,goods_purchase_price,time_price,deposit_price," +
-//                        "shop_id,shop_name,out_code,get_addr_id,get_addr_name,get_time,back_addr_id,back_addr_name,back_time,detail_status," +
-//                        "is_coupon,createtime,lastaltertime,lastalterman,remark,goods_img,cart_id,time_goods_id,goods_spec_name_str) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-//                int detailId = iGeneralDao.executeUpdateForSQL(detailSql, orderId, detail.getGoodsId(), detail.getGoodsName(), detail.getGoodsSpec(), detail.getGoodsSpecName(), detail.getGoodsCount(), detail.getSaleMoney()
-//                        , detail.getGoodsTrueMoney(), detail.getGoodsPurchasePrice(), detail.getTimePrice(), detail.getDepositPrice(), detail.getShopId(), detail.getShopName(), detail.getOutCode(), detail.getGetAddrId(), detail.getGetAddrName()
-//                        , detail.getGetTime(), detail.getBackAddrId(), detail.getBackAddrName(), detail.getBackTime(), detail.getDetailStatus(), detail.getIsCoupon(), detail.getCreatetime(), detail.getLastaltertime(), detail.getLastalterman()
-//                        , detail.getRemark(), detail.getGoodsImg(), detail.getCartId(), detail.getTimeGoodsId(), detail.getGoodsSpecNameStr());
+                DetailData data = detailList.get(i);
+                TbOrderDetail detail = data.getDetail();
                 detail.setOrderId(orderId);
                 int detailId = iGeneralDao.save(detail);
                 LOG.info("-----detailId--------" + detailId);
-                String key = detail.getGoodsId() + "-" + detail.getGoodsSpec();
-                JSONArray detailPropList = detailPropMap.get(key);
-                if (null != detailPropList) {
+                List<TbOrderDetailProperty> detailPropList = data.getProperties();
+                // 保存详情属性
+                if (!CollectionUtils.isEmpty(detailPropList)) {
                     for (int j = 0; j < detailPropList.size(); j++) {
-                        String propertyKey = detailPropList.getJSONObject(j).getString("property_key");
-                        String propertyValue = detailPropList.getJSONObject(j).getString("property_value");
-                        String remark = detailPropList.getJSONObject(j).getString("remark");
-                        TbOrderDetailProperty property = new TbOrderDetailProperty();
+                        TbOrderDetailProperty property = detailPropList.get(j);
                         property.setOrderId(orderId);
                         property.setDetailId(detailId);
-                        property.setPropertyKey(propertyKey);
-                        property.setPropertyValue(propertyValue);
-                        property.setRemark(remark);
                         iGeneralDao.save(property);
                     }
                 }
@@ -244,6 +242,12 @@ public class OrderDaoImpl implements IOrderDao {
     public TbOrder loadOrder(int orderId, int userId) {
         String hql = " from TbOrder where orderId=?1 and userId=?2 ";
         return iGeneralDao.queryUniqueByHql(hql, orderId, userId);
+    }
+
+    @Override
+    public TbOrder loadOrder(String orderNo, int userId) {
+        String hql = " from TbOrder where orderNo = ?1 and userId=?2 ";
+        return iGeneralDao.queryUniqueByHql(hql, orderNo, userId);
     }
 
     @Override
@@ -298,11 +302,11 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
-    public List<Map<String, Object>> findUserOrderByCount(Integer userId, String limitBeginTime, Integer goodsId, Integer timeGoodsId) {
+    public List<Map<String, Object>> findUserOrderGoodsByLimitTime(Integer userId, String limitBeginTime, Integer goodsId, Integer skuId, Integer timeGoodsId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" select sum(d.goods_count) as sum_count,DATE_FORMAT(o.pay_time,'%Y-%m-%d') as pay_time from tb_order o  ");
-        sql.append(" JOIN tb_order_detail d on o.order_id = d.order_id where 1=1 ");
-        sql.append(" and o.order_status in (1,2,4,5,6,9,11,12,13) ");
+        sql.append(" select d.goods_id,d.time_goods_id,d.sku_id,d.goods_count,DATE_FORMAT(o.order_time,'%Y-%m-%d') as order_time,o.order_status ");
+        sql.append(" from tb_order o JOIN tb_order_detail d on o.order_id = d.order_id where 1=1 ");
+        sql.append(" and (o.order_status !=3 or o.order_status !=7 ) ");// 不包括 7取消的 和 3失败的
         sql.append(" and o.user_id=").append(userId).append(" ");
         if (null != goodsId && goodsId > 0) {
             sql.append(" and d.goods_id=").append(goodsId).append(" ");
@@ -310,10 +314,10 @@ public class OrderDaoImpl implements IOrderDao {
         if (timeGoodsId != null && timeGoodsId > 0) {
             sql.append(" and d.time_goods_id=").append(timeGoodsId).append(" ");
         }
-        if (StringUtils.isNotEmpty(limitBeginTime)) {
-            sql.append(" and o.pay_time>='").append(limitBeginTime).append("' ");
+        if (skuId != null && skuId > 0) {
+            sql.append(" and d.sku_id=").append(skuId).append(" ");
         }
-        sql.append(" GROUP BY DATE_FORMAT(o.pay_time,'%Y-%m-%d') ");
+        sql.append(" and o.order_time>='").append(limitBeginTime).append("' ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
@@ -373,5 +377,36 @@ public class OrderDaoImpl implements IOrderDao {
         String now = DatetimeUtil.convertDateToStr(DatetimeUtil.addDays(new Date(), -14));
         String sql = " update tb_order_cart set status=4 where user_id=" + userId + " and status=2 and lastaltertime<'" + now + "' ";
         iGeneralDao.executeUpdateForSQL(sql);
+    }
+
+    @Override
+    public List<Map<String, Object>> findOrderDetailProp(TbOrderDetailProperty property) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select p.order_id,p.detail_id,p.property_key,p.property_value,p.remark,p.property_type from tb_order_detail_property p where 1=1 ");
+        sql.append(" and p.order_id=").append(property.getOrderId()).append(" ");
+        if (StringUtils.isNotEmpty(property.getPropertyKey())) {
+            sql.append(" and p.property_key = '").append(property.getPropertyKey()).append("' ");
+        }
+        if (StringUtils.isNotEmpty(property.getPropertyValue())) {
+            sql.append(" and p.property_value = '").append(property.getPropertyValue()).append("' ");
+        }
+        if (property.getDetailId() != null) {
+            sql.append(" and p.detail_id=").append(property.getDetailId()).append(" ");
+        }
+        if (property.getPropertyType() != null) {
+            sql.append(" and p.property_type=").append(property.getPropertyType()).append(" ");
+        }
+        return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public List<Map<String, Object>> findOrderDetailPrivateGoodsList(int orderId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select o.order_id,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T')  as pay_time,o.order_no,o.post_way, ");
+        sql.append(" d.detail_id,d.goods_count,d.goods_name,d.goods_spec_name,d.goods_intro,d.sku_id,d.goods_id ");
+        sql.append(" from tb_order o  JOIN tb_order_detail d on d.order_id=o.order_id ");
+        sql.append(" where o.order_status in (1,2) ");
+        sql.append(" and o.order_id=").append(orderId).append(" ");
+        return iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

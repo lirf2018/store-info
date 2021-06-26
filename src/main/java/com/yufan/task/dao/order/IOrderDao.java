@@ -1,10 +1,8 @@
 package com.yufan.task.dao.order;
 
 import com.alibaba.fastjson.JSONArray;
-import com.yufan.pojo.TbOrder;
-import com.yufan.pojo.TbOrderDetail;
-import com.yufan.pojo.TbOrderDetailProperty;
-import com.yufan.pojo.TbOrderRefund;
+import com.yufan.pojo.*;
+import com.yufan.task.service.bean.DetailData;
 import com.yufan.utils.PageInfo;
 
 import java.util.List;
@@ -72,13 +70,15 @@ public interface IOrderDao {
 
     public List<Map<String, Object>> queryOrderDetailListmap(String orderIds);
 
+    public List<TbOrderDetail> queryOrderDetailList(int orderId);
+
     /**
      * 查询用户订单详情
      *
      * @param userId
      * @return
      */
-    public List<Map<String, Object>> queryUserOrderDetail(int userId, Integer orderId,String orderNo);
+    public List<Map<String, Object>> queryUserOrderDetail(int userId, Integer orderId, String orderNo);
 
 
     /**
@@ -101,6 +101,8 @@ public interface IOrderDao {
 
     public void updateOrderStatus(int orderId, int userId, int orderStatus, String remark);
 
+    public void updateOrderStatusPaySuccess(int orderId, int userId);
+
     /**
      * 更新阅读标记
      *
@@ -117,7 +119,7 @@ public interface IOrderDao {
      * @param detailPropMap
      * @return
      */
-    public int createOrder(TbOrder order, List<TbOrderDetail> detailList, Map<String, JSONArray> detailPropMap);
+    public int createOrder(TbOrder order, List<DetailData> detailList, Map<String, JSONArray> detailPropMap);
 
 
     /**
@@ -138,6 +140,8 @@ public interface IOrderDao {
     public TbOrder loadOrder(String orderNo);
 
     public TbOrder loadOrder(int orderId, int userId);
+
+    public TbOrder loadOrder(String orderNo, int userId);
 
 
     public int saveObj(Object obj);
@@ -189,7 +193,8 @@ public interface IOrderDao {
      * @param timeGoodsId
      * @return
      */
-    List<Map<String, Object>> findUserOrderByCount(Integer userId, String limitBeginTime, Integer goodsId, Integer timeGoodsId);
+    List<Map<String, Object>> findUserOrderGoodsByLimitTime(Integer userId, String limitBeginTime, Integer goodsId, Integer skuId, Integer timeGoodsId);
+
 
     /**
      * 更新购物车，当商品不中抢购商品的时候
@@ -205,5 +210,9 @@ public interface IOrderDao {
      */
     void clearOrderCart(int userId);
 
+    List<Map<String, Object>> findOrderDetailProp(TbOrderDetailProperty property);
+
+
+    List<Map<String, Object>> findOrderDetailPrivateGoodsList(int orderId);
 
 }

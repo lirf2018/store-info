@@ -44,4 +44,14 @@ public interface ICouponDao {
 
     void updateCouponGetCount(int couponId);
 
+    List<Map<String, Object>> loadUserQRCouponListLimit(int couponId, int userId, String limitTime);
+
+    /**
+     * 清除用户过期卡券
+     *
+     * @param userId
+     * @param coupon
+     */
+    void deleteUserQrCoupon(int userId, int coupon);
+
 }

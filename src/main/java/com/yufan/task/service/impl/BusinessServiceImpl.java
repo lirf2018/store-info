@@ -12,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
  * @description:
@@ -99,17 +102,23 @@ public class BusinessServiceImpl implements IBusinessService {
                         //商品抢购库存不足
                         return ResultCode.TIMEGOODS_STORE_EMPTY.getResp_code();
                     }
-                    // 限购方式: 1.每天一次2每月一次3.每年一次4不限购5只允许购买一次
+                    // 抢购商品限购
+                    // 限购方式: 1.按天 2按月 3.按年 4不限购 5按次
                     int limitWay = Integer.parseInt(mapTimeGoods.get("time_way").toString());
                     int limitNum = Integer.parseInt(mapTimeGoods.get("limit_num").toString());
                     String limitBeginTime = mapTimeGoods.get("limit_begin_time").toString();
-                    int checkFlag = checkLimitWay(userId, limitWay, limitNum, limitBeginTime, goodsId, timeGoodsId, buyCount);
+                    int checkFlag = checkLimitWay(userId, limitWay, limitNum, limitBeginTime, goodsId, skuId, timeGoodsId, buyCount);
                     if (checkFlag > 0) {
                         return checkFlag;
                     }
                 }
                 // 校验商品信息部分
                 Map<String, Object> goods = goodsMap.get(goodsId);//商品信息
+                String intro = String.valueOf(goods.get("intro"));
+                goodsList.getJSONObject(i).put("intro", intro);
+                for (Map.Entry<String, Object> m : goods.entrySet()) {
+                    goodsList.getJSONObject(i).put(m.getKey(), m.getValue());
+                }
                 if (goods == null) {
                     LOG.info("-----查询商品不存在----goodsId: " + goodsId);
                     return ResultCode.GOODS_NOT_SALE.getResp_code();
@@ -138,11 +147,11 @@ public class BusinessServiceImpl implements IBusinessService {
                     return ResultCode.GOODS_STORE_NOENOUGH.getResp_code();
                 }
                 // 商品限购
-                // 限购方式: 1.每天一次2每月一次3.每年一次4不限购5只允许购买一次
+                // 限购方式: 1.按天 2按月 3.按年 4不限购 5按次
                 int limitWay = Integer.parseInt(goods.get("limit_way").toString());
                 int limitNum = Integer.parseInt(goods.get("limit_num").toString());
                 String limitBeginTime = goods.get("limit_begin_time").toString();
-                int checkFlag = checkLimitWay(userId, limitWay, limitNum, limitBeginTime, goodsId, 0, buyCount);
+                int checkFlag = checkLimitWay(userId, limitWay, limitNum, limitBeginTime, goodsId, skuId, 0, buyCount);
                 if (checkFlag > 0) {
                     return checkFlag;
                 }
@@ -156,84 +165,82 @@ public class BusinessServiceImpl implements IBusinessService {
 
 
     /**
-     * 限购方式: 1.每天一次2每月一次3.每年一次4不限购5只允许购买一次
+     * // 限购方式: 1.按天 2按月 3.按年 4不限购 5按数量
      *
      * @return
      */
-    private int checkLimitWay(int userId, int limitWay, int limitNum, String limitBeginTime, int goodsId, int timeGoodsId, int buyCount) {
+    private int checkLimitWay(int userId, int limitWay, int limitNum, String limitBeginTime, int goodsId, Integer skuId, int timeGoodsId, int buyCount) {
         try {
-            //
-            String nowDate = DatetimeUtil.getNow("yyyy-MM-dd");
-            String nowMouth = DatetimeUtil.getNow("yyyy-MM");
-            String nowYear = DatetimeUtil.getNow("yyyy");
-            if (limitWay == Constants.LIMIT_WAY_4) {
-                return ResultCode.PASS.getResp_code();
+            if (limitWay == 4) {
+                return ResultCode.OK.getResp_code();
             }
-            if (buyCount > limitNum) {
-                return ResultCode.LIMIT_GOODS_RULE.getResp_code();
+            // 查询商品订单
+            List<Map<String, Object>> limitGoodsList = iOrderDao.findUserOrderGoodsByLimitTime(userId, limitBeginTime, skuId, goodsId, timeGoodsId);
+            if (null == limitGoodsList) {
+                LOG.info("======查询订单商品异常======");
+                return ResultCode.FAIL.getResp_code();
             }
-            // sum_count pay_time(yyyy-MM-dd)
-            List<Map<String, Object>> limitGoodsCountMap = iOrderDao.findUserOrderByCount(userId, limitBeginTime, goodsId, timeGoodsId);
-            int hasBuyCount = 0;
-            switch (limitWay) {
-                case 1:
-                    // 1.每天一次
-                    for (int i = 0; i < limitGoodsCountMap.size(); i++) {
-                        int sumCount = Integer.parseInt(limitGoodsCountMap.get(i).get("sum_count").toString());
-                        String payTime = limitGoodsCountMap.get(i).get("pay_time").toString();
-                        if (payTime.equals(nowDate)) {
-                            hasBuyCount = hasBuyCount + sumCount;
-                        }
-                    }
-                    if ((hasBuyCount + buyCount) > limitNum) {
-                        return ResultCode.LIMIT_GOODS_RULE.getResp_code();
-                    }
-                    break;
-                case 2:
-                    //2每月一次
-                    for (int i = 0; i < limitGoodsCountMap.size(); i++) {
-                        int sumCount = Integer.parseInt(limitGoodsCountMap.get(i).get("sum_count").toString());
-                        String payTime = limitGoodsCountMap.get(i).get("pay_time").toString();
-                        String mouth_ = payTime.substring(0, 7);
-                        if (mouth_.equals(nowMouth)) {
-                            hasBuyCount = hasBuyCount + sumCount;
-                        }
-                    }
-                    if ((hasBuyCount + buyCount) > limitNum) {
-                        return ResultCode.LIMIT_GOODS_RULE.getResp_code();
-                    }
-                    break;
-                case 3:
-                    //3.每年一次
-                    for (int i = 0; i < limitGoodsCountMap.size(); i++) {
-                        int sumCount = Integer.parseInt(limitGoodsCountMap.get(i).get("sum_count").toString());
-                        String payTime = limitGoodsCountMap.get(i).get("pay_time").toString();
-                        String year_ = payTime.substring(0, 4);
-                        if (year_.equals(nowYear)) {
-                            hasBuyCount = hasBuyCount + sumCount;
-                        }
-                    }
-                    if ((hasBuyCount + buyCount) > limitNum) {
-                        return ResultCode.LIMIT_GOODS_RULE.getResp_code();
-                    }
-                    break;
-                case 4:
-                    //4不限购
-                    break;
-                case 5:
-                    //5只允许购买一次
-                    for (int i = 0; i < limitGoodsCountMap.size(); i++) {
-                        int sumCount = Integer.parseInt(limitGoodsCountMap.get(i).get("sum_count").toString());
-                        if (sumCount > 0) {
-                            return ResultCode.LIMIT_GOODS_RULE.getResp_code();
-                        }
-                    }
-                    break;
-                default:
-                    LOG.info("-----checkLimitWay----default--------");
-                    return ResultCode.NET_ERROR.getResp_code();
+            if (limitGoodsList.size() == 0) {
+                return ResultCode.OK.getResp_code();
             }
-            return ResultCode.PASS.getResp_code();
+            String now = DatetimeUtil.getNow(DatetimeUtil.DEFAULT_DATE_FORMAT);
+            Map<String, Integer> dayMap = new HashMap<>();
+            Map<String, Integer> yearAndMonthsMap = new HashMap<>();
+            Map<String, Integer> yearMap = new HashMap<>();
+            int getCount = 0;
+            for (int i = 0; i < limitGoodsList.size(); i++) {
+                int goodsCount = Integer.parseInt(limitGoodsList.get(i).get("goods_count").toString());
+                String orderTime = limitGoodsList.get(i).get("order_time").toString();
+                String[] arrayDay_ = orderTime.split("-");
+                String year_ = arrayDay_[0];// 2021
+                String yearAndMonths_ = arrayDay_[0] + "-" + arrayDay_[1];// 2021-01
+                if (orderTime.equals(now)) {
+                    if (dayMap.get(now) == null) {
+                        dayMap.put(now, goodsCount);
+                    } else {
+                        dayMap.put(now, dayMap.get(now) + goodsCount);
+                    }
+                }
+                if (yearAndMonthsMap.get(yearAndMonths_) == null) {
+                    yearAndMonthsMap.put(yearAndMonths_, goodsCount);
+                } else {
+                    yearAndMonthsMap.put(yearAndMonths_, yearAndMonthsMap.get(yearAndMonths_) + goodsCount);
+                }
+                if (yearMap.get(year_) == null) {
+                    yearMap.put(year_, goodsCount);
+                } else {
+                    yearMap.put(year_, yearMap.get(year_) + goodsCount);
+                }
+                // 已购买总数
+                getCount = getCount + goodsCount;
+            }
+            String[] arrayDay = now.split("-");
+            String year = arrayDay[0];// 2021
+            String yearAndMonths = arrayDay[0] + "-" + arrayDay[1];// 2021-01
+            // 限购方式: 1.按天 2按月 3.按年 4不限购 5按数量
+            if (limitWay == 1) {
+
+                if (dayMap.get(now) > (limitNum - buyCount)) {
+                    LOG.info("========按天===限领=======" + now);
+                    return ResultCode.LIMIT_GOODS_RULE.getResp_code();
+                }
+            } else if (limitWay == 2) {
+                if (yearAndMonthsMap.get(yearAndMonths) > (limitNum - buyCount)) {
+                    LOG.info("========按月===限领=======" + now);
+                    return ResultCode.LIMIT_GOODS_RULE.getResp_code();
+                }
+            } else if (limitWay == 3) {
+                if (yearMap.get(year) > (limitNum - buyCount)) {
+                    LOG.info("========按年===限领=======" + now);
+                    return ResultCode.LIMIT_GOODS_RULE.getResp_code();
+                }
+            } else if (limitWay == 5) {
+                if (getCount > (limitNum - buyCount)) {
+                    LOG.info("========按数量===限领=======" + now);
+                    return ResultCode.LIMIT_GOODS_RULE.getResp_code();
+                }
+            }
+            return ResultCode.OK.getResp_code();
         } catch (Exception e) {
             e.printStackTrace();
         }

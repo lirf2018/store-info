@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.bean.OrderAddr;
 import com.yufan.common.bean.ReceiveJsonBean;
+import com.yufan.task.service.bean.DetailData;
+import com.yufan.task.service.impl.goods.CreatePrivateGoods;
 import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.*;
@@ -18,12 +20,16 @@ import com.yufan.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
@@ -56,6 +62,10 @@ public class CreateOrder implements IResultOut {
     private IBusinessService iBusinessService;
 
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
+
     @Override
     public boolean checkParam(ReceiveJsonBean receiveJsonBean) {
         JSONObject data = receiveJsonBean.getData();
@@ -83,10 +93,7 @@ public class CreateOrder implements IResultOut {
             }
             for (int i = 0; i < goodsList.size(); i++) {
                 Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");
-                Integer skuId = goodsList.getJSONObject(i).getInteger("sku_id");
                 Integer buyCount = goodsList.getJSONObject(i).getInteger("buy_count");
-                Integer timeGoodsId = goodsList.getJSONObject(i).getInteger("time_goods_id");
-                String cartId = goodsList.getJSONObject(i).getString("cart_id");
                 if (goodsId == null || goodsId == 0 || buyCount == null || buyCount == 0 || userAddrId == 0) {
                     return false;
                 }
@@ -128,7 +135,7 @@ public class CreateOrder implements IResultOut {
                     return packagMsg(ResultCode.NET_ERROR.getResp_code(), dataJson);
                 }
                 //当取货方式为配送时使用
-                userAddrDetail = platformAddr.getDetailAddr() + addrDetail;//收货完整地址
+                userAddrDetail = addrDetail;//收货完整地址
                 freight = platformAddr.getFreight();
             } else {
                 //邮寄地址
@@ -239,7 +246,7 @@ public class CreateOrder implements IResultOut {
                 return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
             }
             //
-            List<TbOrderDetail> detailList = new ArrayList<>();
+            List<DetailData> detailList = new ArrayList<>();
             // 校验订单价格  "goods_list":{"goods_id":100, "time_goods_id":0,"buy_count":10,"sku_id":0,"cart_id":22}
             BigDecimal dbGoodsAllPrice = BigDecimal.ZERO;// 商品总价格
             BigDecimal dbGoodsAllTruePrice = BigDecimal.ZERO;// 商品原总价格
@@ -267,6 +274,9 @@ public class CreateOrder implements IResultOut {
                 Integer timeGoodsId = goodsList.getJSONObject(i).getInteger("time_goods_id");
                 BigDecimal buyCount = new BigDecimal(goodsList.getJSONObject(i).getString("buy_count"));
                 Integer cartId = goodsList.getJSONObject(i).getInteger("cart_id");
+                Integer couponId_ = goodsList.getJSONObject(i).getInteger("coupon_id");
+                String goodsIntro = goodsList.getJSONObject(i).getString("intro");
+                String goodsType = goodsList.getJSONObject(i).getString("goods_type");
                 if (null != cartId && cartId > 0) {
                     cartIds = cartIds + cartId + ",";
                 }
@@ -309,7 +319,7 @@ public class CreateOrder implements IResultOut {
                 TbOrderDetail orderDetail = new TbOrderDetail();
                 orderDetail.setGoodsId(goodsId);
                 orderDetail.setShopId(shopId);
-                orderDetail.setIsCoupon(null);
+                orderDetail.setIsCoupon(couponId_);
                 orderDetail.setGoodsName(goodsName);
                 orderDetail.setShopName(shop.getShopName());
                 orderDetail.setGoodsCount(buyCount.intValue());
@@ -320,9 +330,9 @@ public class CreateOrder implements IResultOut {
                 orderDetail.setLastalterman("");
                 orderDetail.setRemark("");
                 orderDetail.setCartId(cartId);
-                orderDetail.setTimePrice(dbPrice);
                 orderDetail.setOutCode("");
-                orderDetail.setTimeGoodsId(timeGoodsId);
+                orderDetail.setTimePrice(dbPrice);
+                orderDetail.setTimeGoodsId(timeGoodsId == null ? 0 : timeGoodsId);
                 orderDetail.setSaleMoney(dbPrice);
                 orderDetail.setGoodsImg(dbGoodsImg);
                 orderDetail.setGoodsTrueMoney(dbGoodsTrueMoney);
@@ -330,7 +340,21 @@ public class CreateOrder implements IResultOut {
                 orderDetail.setGoodsSpec(goodsSpec);
                 orderDetail.setGoodsSpecName(goodsSpecName);
                 orderDetail.setGoodsSpecNameStr(goodsSpecNameStr);
-                detailList.add(orderDetail);
+                orderDetail.setSkuId(skuId == null ? 0 : skuId);
+                orderDetail.setGoodsIntro(goodsIntro);
+                DetailData detailData = new DetailData();
+                detailData.setDetail(orderDetail);
+                // 添加详情属性
+                List<TbOrderDetailProperty> propertyList = new ArrayList<>();
+                TbOrderDetailProperty property1 = new TbOrderDetailProperty();
+                property1.setPropertyKey("goods_type");
+                property1.setPropertyValue(goodsType);
+                property1.setPropertyType(0);
+                property1.setRemark("");
+                propertyList.add(property1);
+                //
+                detailData.setProperties(propertyList);
+                detailList.add(detailData);
             }
             // 商品优惠总额
             goodsDiscountsPrice = dbGoodsAllTruePrice.subtract(dbGoodsAllPrice);
@@ -350,7 +374,7 @@ public class CreateOrder implements IResultOut {
             // price1 = 邮费+商品总价 实际支付
             BigDecimal price1 = postPrice.add(dbGoodsAllPrice);// 入账的总金额 = 邮费 + 商品现价总额
             // 优惠券优惠金额不能大于 price1
-            if(dbDiscountsPrice.compareTo(price1)>0){
+            if (dbDiscountsPrice.compareTo(price1) > 0) {
                 LOG.info("------ 优惠券优惠金额不能大于 price1 --------");
                 flag = true;
             }
@@ -426,7 +450,7 @@ public class CreateOrder implements IResultOut {
             order.setTradeChannel("");
             order.setPostPrice(postPrice);
             order.setPostWay(postWay);
-//            order.setCompanyCode();
+//            order.setCompanyCode("");
             order.setPostNo("");
             order.setUserRemark(userRemark);
             order.setServiceRemark(serviceRemark);
@@ -452,6 +476,42 @@ public class CreateOrder implements IResultOut {
             order.setUserSex(userSex);
             int orderId = iOrderDao.createOrder(order, detailList, new HashMap<>());
             LOG.info("---------------orderId=" + orderId);
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            long t = System.currentTimeMillis();
+//            if (t % 2 == 0) {
+            LOG.info("===============begin========模拟支付成功===============================");
+            OrderPaySuccess addPrivateGoods = (OrderPaySuccess) applicationContext.getBean("order_pay_success");
+            ReceiveJsonBean receiveJsonBean = new ReceiveJsonBean();
+            receiveJsonBean.setUserId(userId);
+            JSONObject data1 = new JSONObject();
+            data1.put("userId", userId);
+            data1.put("orderNo", orderNo);
+            receiveJsonBean.setData(data1);
+            addPrivateGoods.getResult(receiveJsonBean);
+            LOG.info("============end===========模拟支付成功===============================");
+//            }
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
+            //测试
             if (orderId > 0) {
                 //删除购物车
                 if (StringUtils.isNotEmpty(cartIds)) {
@@ -485,6 +545,4 @@ public class CreateOrder implements IResultOut {
         }
         return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
     }
-
-
 }

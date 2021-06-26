@@ -49,7 +49,7 @@ public class CouponDaoImpl implements ICouponDao {
         sql.append(" CONCAT('" + Constants.IMG_WEB_URL + "',c.coupon_img) as coupon_img,c.count_get ");
         sql.append("  ,if(DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(c.appoint_date,'%Y-%m-%d'),1,0) as now_use_date ");
         sql.append(" from tb_coupon c ");
-        sql.append(" where c.`status`=1 and c.is_putaway=2 and NOW()>=c.start_time and NOW()<=c.end_time ");
+        sql.append(" where c.`status`=1 and c.is_putaway=2 and NOW()>=c.start_time and NOW()<=c.end_time and c.coupon_num>0 ");
         if (couponCondition.getShow() != null) {
             sql.append(" and c.is_show=").append(couponCondition.getShow()).append(" ");
         }
@@ -101,13 +101,19 @@ public class CouponDaoImpl implements ICouponDao {
         updatePassDate(userId, qrId);
     }
 
+    /**
+     * 逻辑删除过期QR
+     *
+     * @param userId
+     * @param qrId
+     */
     private void updatePassDate(int userId, Integer qrId) {
         // 更新过期优惠券
         if (null != qrId) {
-            String sql = " update tb_coupon_down_qr set recode_state=4 where id=? and user_id=? and DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(change_out_date,'%Y-%m-%d') ";
+            String sql = " update tb_coupon_down_qr set recode_state=4 where id=? and user_id=? and DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(change_out_date,'%Y-%m-%d') and recode_state in (1,0) ";
             iGeneralDao.executeUpdateForSQL(sql, qrId, userId);
         } else {
-            String sql = " update tb_coupon_down_qr set recode_state=4 where user_id=? and DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(change_out_date,'%Y-%m-%d') ";
+            String sql = " update tb_coupon_down_qr set recode_state=4 where user_id=? and DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(change_out_date,'%Y-%m-%d') and recode_state in (1,0)  ";
             iGeneralDao.executeUpdateForSQL(sql, userId);
         }
     }
@@ -134,5 +140,19 @@ public class CouponDaoImpl implements ICouponDao {
     public void updateCouponGetCount(int couponId) {
         String sql = " update tb_coupon set count_get=count_get+1 ,lastaltertime=now() where coupon_id=?  ";
         iGeneralDao.executeUpdateForSQL(sql, couponId);
+    }
+
+    @Override
+    public List<Map<String, Object>> loadUserQRCouponListLimit(int couponId, int userId, String limitTime) {
+        StringBuffer sql = new StringBuffer();
+        sql.append(" select DATE_FORMAT(q.createtime,'%Y-%m-%d') as createtime,q.coupon_id,q.recode_state ");
+        sql.append(" from tb_coupon_down_qr q where q.user_id=? and q.coupon_id=? and q.createtime>=? and (q.recode_state = 1 or q.recode_state = 2) order by q.createtime desc ");
+        return iGeneralDao.getBySQLListMap(sql.toString(), userId, couponId, limitTime);
+    }
+
+    @Override
+    public void deleteUserQrCoupon(int userId, int coupon) {
+        String sql = " update tb_coupon_down_qr set recode_state=4 where coupon_id=? and user_id=? and DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(change_out_date,'%Y-%m-%d') and recode_state in (1,0)  ";
+        iGeneralDao.executeUpdateForSQL(sql, coupon, userId);
     }
 }

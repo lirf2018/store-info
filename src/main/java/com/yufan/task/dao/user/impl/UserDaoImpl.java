@@ -1,6 +1,7 @@
 package com.yufan.task.dao.user.impl;
 
 import com.yufan.common.dao.base.IGeneralDao;
+import com.yufan.pojo.TbPrivateCustom;
 import com.yufan.task.dao.user.IUserDao;
 import com.yufan.utils.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,22 @@ public class UserDaoImpl implements IUserDao {
     @Override
     public PageInfo loadUserPrivateList(int userId, int findType, Integer pageSize, Integer currePage) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" select id,DATE_FORMAT(pay_time,'%Y-%m-%d %T') as pay_time,private_code,DATE_FORMAT(reservation_time,'%Y-%m-%d %T') as reservation_time, ");
-        sql.append(" status,contents,DATE_FORMAT(get_time,'%Y-%m-%d') as get_time,post_way,is_yuyue,DATE_FORMAT(update_time,'%Y-%m-%d %T') as update_time ");
-        sql.append(" from tb_private_custom ");
-        sql.append(" where  user_id=").append(userId).append(" ");
+        sql.append(" select pc.id,pc.user_id,DATE_FORMAT(pc.pay_time,'%Y-%m-%d %T') as pay_time,pc.private_code,DATE_FORMAT(pc.reservation_time,'%Y-%m-%d %T') as reservation_time, ");
+        sql.append(" pc.status,pc.contents,DATE_FORMAT(pc.get_time,'%Y-%m-%d') as get_time,pc.post_way,pc.is_yuyue,u.user_mobile,p1.param_value as post_way_name ");
+        sql.append("  ,pc.flow_status,if(DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(pc.get_time,'%Y-%m-%d'),if(pc.`status`=1,0,1),1) as out_time_flag ");
+        sql.append(" ,if(DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(pc.get_time,'%Y-%m-%d'),if(pc.`status`=1,1,0),0) as get_time_flag ");
+        sql.append(" ,p2.param_value as flow_status_name,DATE_FORMAT(pc.update_time,'%Y-%m-%d %T') as update_time ");
+        sql.append(" ,pc.goods_id,pc.goods_name ");
+        sql.append(" from tb_private_custom pc JOIN tb_user_info u on u.user_id=pc.user_id ");
+        sql.append(" LEFT JOIN tb_param p1 on p1.param_code='post_way' and p1.param_key=pc.post_way ");
+        sql.append(" LEFT JOIN tb_param p2 on p2.param_code='prepare_flow_status' and p2.param_key=pc.flow_status ");
+        sql.append(" where  pc.user_id=").append(userId).append(" ");
         if (findType == 0) {
-            sql.append(" and status in (0,1) ORDER BY is_yuyue desc,get_time,create_time ");
+            sql.append(" and pc.status in (0,1)  ");
+            sql.append(" ORDER BY DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(pc.get_time,'%Y-%m-%d') desc,pc.get_time ,pc.is_yuyue desc ");
         } else {
-            sql.append(" and `status`=2 ORDER BY update_time desc ");
+            sql.append(" and pc.`status`=2 ");
+            sql.append(" ORDER BY pc.update_time desc  ");
         }
 
         PageInfo pageInfo = new PageInfo();
@@ -66,5 +75,11 @@ public class UserDaoImpl implements IUserDao {
     public void updateUserPrivate(int userId, int id, String getDate) {
         String sql = " update tb_private_custom set reservation_time=now(),status=1,get_time=?,is_yuyue=1 where id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, getDate, id, userId);
+    }
+
+    @Override
+    public List<TbPrivateCustom> loadPrivateCustom(String privateCode) {
+        String hql = " from TbPrivateCustom where privateCode = ?1 ";
+        return (List<TbPrivateCustom>) iGeneralDao.queryListByHql(hql, privateCode);
     }
 }

@@ -3,6 +3,8 @@ package com.yufan.task.service.impl.goods;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
+import com.yufan.pojo.TbParam;
+import com.yufan.utils.CacheData;
 import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.category.ICategoryDao;
@@ -171,7 +173,7 @@ public class QueryGoodsDetail implements IResultOut {
                 if (timeGoodsListMap.size() > 0) {
                     Map<String, Object> map = timeGoodsListMap.get(0);
                     Integer timeGoodsIdDb = Integer.parseInt(map.get("time_goods_id").toString());
-                    if(timeGoodsIdDb == timeGoodsId){
+                    if (timeGoodsIdDb == timeGoodsId) {
                         timeStime = map.get("begin_time").toString();
                         timeEtime = map.get("end_time").toString();
                         nowMoney = new BigDecimal(map.get("time_price").toString());//抢购价格
@@ -314,11 +316,13 @@ public class QueryGoodsDetail implements IResultOut {
             //抢购商品
             dataJson.put("isTimeGoods", isTimeGoods);
             dataJson.put("timeGoodsId", timeGoodsId);
+            dataJson.put("timeStime", timeStime);
             dataJson.put("timeEtime", timeEtime);
 
             dataJson.put("bannerImgList", bannerImgList);
             dataJson.put("goodsImgList", goodsInfoImgList);
             dataJson.put("goodsSkuList", skuList);
+            addGoodsDesc(dataJson);
 
             // 处理购物车对应商品(主要处理抢购商品)
             //判断商品是不是抢购商品
@@ -331,6 +335,24 @@ public class QueryGoodsDetail implements IResultOut {
             LOG.error("-------error----", e);
         }
         return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+    }
+
+    /**
+     * 添加商品说明
+     *
+     * @return
+     */
+    private void addGoodsDesc(JSONObject dataJson) {
+        StringBuffer str = new StringBuffer();
+        List<TbParam> list = CacheData.PARAMLIST;
+        for (int i = 0; i < list.size(); i++) {
+            TbParam param = list.get(i);
+            String goodsType = String.valueOf(dataJson.getString("goodsType"));
+            if ("goods_type".equals(param.getParamCode()) && goodsType.equals(param.getParamKey())) {
+                str.append(param.getParamValue2());
+            }
+        }
+        dataJson.put("addGoodsDesc", str);
     }
 
 

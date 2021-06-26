@@ -1,5 +1,6 @@
 package com.yufan.task.dao.user;
 
+import com.yufan.pojo.TbPrivateCustom;
 import com.yufan.utils.PageInfo;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public interface IUserDao {
     public void cancelUserPrivate(int userId, int id);
 
     public void updateUserPrivate(int userId, int id, String getDate);
+
+    List<TbPrivateCustom> loadPrivateCustom(String privateCode);
 
 
 }
