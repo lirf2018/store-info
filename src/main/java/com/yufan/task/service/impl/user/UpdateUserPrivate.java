@@ -16,7 +16,7 @@ import java.util.List;
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
 /**
- * @description:
+ * @description: 用户预定
  * @author: lirf
  * @time: 2021/6/6
  */

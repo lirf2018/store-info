@@ -5,7 +5,7 @@ import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbOrder;
 import com.yufan.task.dao.order.IOrderDao;
-import com.yufan.task.service.impl.goods.CreatePrivateGoods;
+import com.yufan.task.service.impl.user.CreatePrivateGoods;
 import com.yufan.utils.Constants;
 import com.yufan.utils.ResultCode;
 import org.apache.log4j.Logger;
@@ -52,6 +52,7 @@ public class OrderPaySuccess implements IResultOut {
             // 生成预约商品私人数据
             AddPrivateGoods addPrivateGoods = new AddPrivateGoods(userId, order.getOrderId());
             executors.execute(addPrivateGoods);
+            return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {
             LOG.error("-------error----", e);
         }
@@ -63,7 +64,7 @@ public class OrderPaySuccess implements IResultOut {
         JSONObject data = receiveJsonBean.getData();
         try {
             Integer userId = data.getInteger("userId");
-            String orderNo = data.getString("order_no");
+            String orderNo = data.getString("orderNo");
             if (null == userId || StringUtils.isEmpty(orderNo)) {
                 return false;
             }
@@ -89,7 +90,7 @@ public class OrderPaySuccess implements IResultOut {
             ReceiveJsonBean receiveJsonBean = new ReceiveJsonBean();
             receiveJsonBean.setUserId(userId);
             JSONObject data = new JSONObject();
-            data.put("order_id", orderId);
+            data.put("orderId", orderId);
             receiveJsonBean.setData(data);
             createPrivateGoods.getResult(receiveJsonBean);
         }

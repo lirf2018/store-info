@@ -1,16 +1,13 @@
-package com.yufan.task.service.impl.goods;
+package com.yufan.task.service.impl.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.dao.common.ICommonDao;
 import com.yufan.common.service.IResultOut;
-import com.yufan.pojo.TbOrder;
-import com.yufan.pojo.TbOrderDetail;
 import com.yufan.pojo.TbOrderDetailProperty;
 import com.yufan.pojo.TbPrivateCustom;
 import com.yufan.task.dao.order.IOrderDao;
 import com.yufan.task.dao.user.IUserDao;
-import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
 import com.yufan.utils.ResultCode;
 import org.apache.log4j.Logger;
@@ -74,8 +71,8 @@ public class CreatePrivateGoods implements IResultOut {
             TbOrderDetailProperty property = new TbOrderDetailProperty();
             property.setOrderId(orderId);
             property.setPropertyType(0);
-            property.setPropertyValue("6");//goods_type=6 预约商品
-            property.setPropertyKey("goods_type");
+            property.setPropertyValue("1");//is_yuding=1 预约商品
+            property.setPropertyKey("is_yuding");
             List<Map<String, Object>> propertyList = iOrderDao.findOrderDetailProp(property);
             if (CollectionUtils.isEmpty(propertyList)) {
                 LOG.info("---------订单详情属性-propertyList不存在----------------");
@@ -128,6 +125,7 @@ public class CreatePrivateGoods implements IResultOut {
                     custom.setRelType(0);// 关联类型 0 订单
                     custom.setCreateTime(now);
                     custom.setStatus(0);
+                    custom.setYuyueCount(0);
                     custom.setContents(goodsIntro);
                     custom.setPostWay(postWay.byteValue());
                     custom.setIsYuyue((byte) 0);
@@ -155,7 +153,7 @@ public class CreatePrivateGoods implements IResultOut {
         try {
 
             Integer userId = data.getInteger("userId");
-            Integer orderId = data.getInteger("order_id");
+            Integer orderId = data.getInteger("orderId");
             if (null == orderId) {
                 return false;
             }

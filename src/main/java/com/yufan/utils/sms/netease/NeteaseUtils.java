@@ -3,7 +3,7 @@ package com.yufan.utils.sms.netease;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.utils.Constants;
-import com.yufan.utils.RequestMethod;
+import com.yufan.utils.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
@@ -66,7 +66,7 @@ public class NeteaseUtils {
             nvps.add(new BasicNameValuePair("needUp", String.valueOf(needUp)));
 
             //发送验证码
-            String result = RequestMethod.httpPostNetease(nvps, SENDCODE_URL, APP_SECRET, APP_KEY);
+            String result = HttpRequest.httpPostNetease(nvps, SENDCODE_URL, APP_SECRET, APP_KEY);
             LOG.info("sendcode------>接收参数" + inObj + " 发送接口返回结果=" + result);
             if (StringUtils.isEmpty(result)) {
                 LOG.info("sendcode-----null------->result=null");
@@ -130,7 +130,7 @@ public class NeteaseUtils {
             }
             nvps.add(new BasicNameValuePair("needUp", String.valueOf(needUp)));
             //发送验证码
-            String result = RequestMethod.httpPostNetease(nvps, SENDTEMPLATE_URL, APP_SECRET, APP_KEY);
+            String result = HttpRequest.httpPostNetease(nvps, SENDTEMPLATE_URL, APP_SECRET, APP_KEY);
             out.put("sendMsg", result);
             LOG.info("sendtemplate------>接收参数" + inObj + " 发送接口返回结果=" + result);
             if (StringUtils.isEmpty(result)) {

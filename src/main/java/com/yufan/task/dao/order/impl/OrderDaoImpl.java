@@ -402,7 +402,7 @@ public class OrderDaoImpl implements IOrderDao {
     @Override
     public List<Map<String, Object>> findOrderDetailPrivateGoodsList(int orderId) {
         StringBuffer sql = new StringBuffer();
-        sql.append(" select o.order_id,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T')  as pay_time,o.order_no,o.post_way, ");
+        sql.append(" select o.order_id,DATE_FORMAT(o.pay_time,'%Y-%m-%d %T')  as pay_time,o.order_no,o.post_way,o.user_id, ");
         sql.append(" d.detail_id,d.goods_count,d.goods_name,d.goods_spec_name,d.goods_intro,d.sku_id,d.goods_id ");
         sql.append(" from tb_order o  JOIN tb_order_detail d on d.order_id=o.order_id ");
         sql.append(" where o.order_status in (1,2) ");

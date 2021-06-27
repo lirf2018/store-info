@@ -73,7 +73,7 @@ public class UserDaoImpl implements IUserDao {
 
     @Override
     public void updateUserPrivate(int userId, int id, String getDate) {
-        String sql = " update tb_private_custom set reservation_time=now(),status=1,get_time=?,is_yuyue=1 where id=? and user_id=? ";
+        String sql = " update tb_private_custom set reservation_time=now(),status=1,get_time=?,is_yuyue=1,yuyue_count=yuyue_count+1 where id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, getDate, id, userId);
     }
 

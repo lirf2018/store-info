@@ -294,57 +294,6 @@ public class InfoController {
         return packagMsg(ResultCode.FAIL.getResp_code(), new JSONObject());
     }
 
-
-    /**
-     * 库存系统
-     *
-     * @param request
-     * @param response
-     */
-    @RequestMapping(value = "kc")
-    public void sysKC(HttpServletRequest request, HttpServletResponse response) {
-        String result = "";
-        PrintWriter pw = null;
-        String message = null;
-        try {
-            pw = response.getWriter();
-            message = request.getParameter("message");
-
-            if (null == message || "".equals(message)) {
-                message = readStreamParameter(request.getInputStream());
-            }
-            LOG.info("接收参数:" + message);
-            JSONObject obj = JSONObject.parseObject(message);
-            if (obj != null) {
-                ReceiveJsonBean jsonHeaderBean = JSON.toJavaObject(obj, ReceiveJsonBean.class);
-                jsonHeaderBean.setRequest(request);
-                jsonHeaderBean.setResponse(response);
-                IResultOut resultOut = ServiceFactory.getService(jsonHeaderBean.getReq_type());
-                //校验参数
-                boolean flag = resultOut.checkParam(jsonHeaderBean);
-                if (!flag) {
-                    result = packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), new JSONObject());
-                } else {
-                    result = resultOut.getResult(jsonHeaderBean);
-                }
-            } else {
-                result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
-            }
-            LOG.info("调用结果：" + result);
-            pw.write(result);
-            pw.flush();
-            pw.close();
-            return;
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = packagMsg(ResultCode.PARAM_ERROR.getResp_code(), new JSONObject());
-            pw.write(result);
-            pw.flush();
-            pw.close();
-        }
-    }
-
-
     /**
      * 从流中读取数据
      *

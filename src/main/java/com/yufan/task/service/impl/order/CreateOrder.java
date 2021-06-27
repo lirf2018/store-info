@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.yufan.bean.OrderAddr;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.task.service.bean.DetailData;
-import com.yufan.task.service.impl.goods.CreatePrivateGoods;
 import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.*;
@@ -27,9 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.yufan.common.bean.ResponeUtil.packagMsg;
 
@@ -194,7 +190,6 @@ public class CreateOrder implements IResultOut {
             Integer userId = data.getInteger("user_id");
             Integer shopId = data.getInteger("shop_id");
             String userRemark = StringUtils.isEmpty(data.getString("user_remark")) ? "" : data.getString("user_remark");
-            Integer businessType = data.getInteger("business_type");//1正常下单2抢购3预定4租赁
             // 订单信息数据
             BigDecimal orderPrice = data.getBigDecimal("order_price");//订单支付价格
             BigDecimal realPrice = data.getBigDecimal("real_price");//订单实际价格
@@ -266,6 +261,9 @@ public class CreateOrder implements IResultOut {
                 Map<String, Object> goods = goodsMap.get(goodsId);
                 BigDecimal dbGoodsTrueMoney = new BigDecimal(goods.get("true_money").toString());
                 BigDecimal dbGoodsPurchasePrice = new BigDecimal(goods.get("purchase_price").toString());
+                Integer couponId_ = Integer.parseInt(goods.get("coupon_id").toString());
+                String goodsIntro = goods.get("intro") == null ? "" : goods.get("intro").toString();
+                String isYuding = goods.get("is_yuding").toString();
                 String dbGoodsImg = goods.get("goods_img").toString();
                 String goodsSpec = "";
                 String goodsSpecName = "";
@@ -274,9 +272,6 @@ public class CreateOrder implements IResultOut {
                 Integer timeGoodsId = goodsList.getJSONObject(i).getInteger("time_goods_id");
                 BigDecimal buyCount = new BigDecimal(goodsList.getJSONObject(i).getString("buy_count"));
                 Integer cartId = goodsList.getJSONObject(i).getInteger("cart_id");
-                Integer couponId_ = goodsList.getJSONObject(i).getInteger("coupon_id");
-                String goodsIntro = goodsList.getJSONObject(i).getString("intro");
-                String goodsType = goodsList.getJSONObject(i).getString("goods_type");
                 if (null != cartId && cartId > 0) {
                     cartIds = cartIds + cartId + ",";
                 }
@@ -347,8 +342,8 @@ public class CreateOrder implements IResultOut {
                 // 添加详情属性
                 List<TbOrderDetailProperty> propertyList = new ArrayList<>();
                 TbOrderDetailProperty property1 = new TbOrderDetailProperty();
-                property1.setPropertyKey("goods_type");
-                property1.setPropertyValue(goodsType);
+                property1.setPropertyKey("is_yuding");
+                property1.setPropertyValue(isYuding);
                 property1.setPropertyType(0);
                 property1.setRemark("");
                 propertyList.add(property1);
@@ -457,7 +452,7 @@ public class CreateOrder implements IResultOut {
             order.setOrderStatus(orderStatus);
             order.setOrderTime(orderTime);
             //order.setPostTime(postTime);
-            order.setBusinessType(businessType);
+            order.setBusinessType(getBusinessType(orderCount, goodsList, goodsMap));
             order.setDiscountsId(couponId);
             order.setDiscountsPrice(discountsPriceAll);
             order.setDiscountsRemark(discountsRemark);
@@ -544,5 +539,23 @@ public class CreateOrder implements IResultOut {
             e.printStackTrace();
         }
         return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+    }
+
+    private int getBusinessType(int orderCount, JSONArray goodsList, Map<Integer, Map<String, Object>> goodsMap) {
+        Integer businessType = 1;//1正常下单2抢购3预定4租赁
+        int yudingCount = 0;
+        for (int i = 0; i < goodsList.size(); i++) {
+            Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");
+            Map<String, Object> goods = goodsMap.get(goodsId);
+            Integer isYuding = Integer.parseInt(goods.get("is_yuding").toString());
+            Integer buyCount = Integer.parseInt(goodsList.getJSONObject(i).getString("buy_count"));
+            if (isYuding == 1) {
+                yudingCount = yudingCount + buyCount;
+            }
+        }
+        if (orderCount == yudingCount) {
+            businessType = 3;
+        }
+        return businessType;
     }
 }
