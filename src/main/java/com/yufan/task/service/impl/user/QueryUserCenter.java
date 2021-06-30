@@ -51,7 +51,9 @@ public class QueryUserCenter implements IResultOut {
                 return packagMsg(ResultCode.FAIL_USER_INVALIDATE.getResp_code(), dataJson);
             }
             //查询用户订单
-            List<Map<String, Object>> userOrderListMap = iOrderDao.queryOrderPayAllListMap(userId);
+            //0待付款1已付款2确认中3已失败4待发货5待收货6已完成7已取消8已删除9退款中10已退款11处理中12还货中13已还货
+            String statusStr = "0,1,5";
+            List<Map<String, Object>> userOrderListMap = iOrderDao.queryOrderPayAllListMap(userId, statusStr);
             int c0 = 0;//0	待付款
             int c1 = 0;//1	已付款
             int c2 = 0;//	确认中

@@ -479,18 +479,18 @@ public class CreateOrder implements IResultOut {
             //测试
             //测试
             long t = System.currentTimeMillis();
-//            if (t % 2 == 0) {
-            LOG.info("===============begin========模拟支付成功===============================");
-            OrderPaySuccess addPrivateGoods = (OrderPaySuccess) applicationContext.getBean("order_pay_success");
-            ReceiveJsonBean receiveJsonBean = new ReceiveJsonBean();
-            receiveJsonBean.setUserId(userId);
-            JSONObject data1 = new JSONObject();
-            data1.put("userId", userId);
-            data1.put("orderNo", orderNo);
-            receiveJsonBean.setData(data1);
-            addPrivateGoods.getResult(receiveJsonBean);
-            LOG.info("============end===========模拟支付成功===============================");
-//            }
+            if (t % 2 == 0) {
+                LOG.info("===============begin========模拟支付成功===============================");
+                OrderPaySuccess addPrivateGoods = (OrderPaySuccess) applicationContext.getBean("order_pay_success");
+                ReceiveJsonBean receiveJsonBean = new ReceiveJsonBean();
+                receiveJsonBean.setUserId(userId);
+                JSONObject data1 = new JSONObject();
+                data1.put("userId", userId);
+                data1.put("orderNo", orderNo);
+                receiveJsonBean.setData(data1);
+                addPrivateGoods.getResult(receiveJsonBean);
+                LOG.info("============end===========模拟支付成功===============================");
+            }
             //测试
             //测试
             //测试

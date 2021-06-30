@@ -41,6 +41,8 @@ public interface IOrderDao {
      */
     public void deleteShopcart(int userId, String cartIds);
 
+    public void deleteShopcart(int userId, int goodsId);
+
 
     /**
      * 查询用户订单支付信息
@@ -48,7 +50,7 @@ public interface IOrderDao {
      * @param userId
      * @return
      */
-    public List<Map<String, Object>> queryOrderPayAllListMap(int userId);
+    public List<Map<String, Object>> queryOrderPayAllListMap(int userId, String status);
 
 
     /**
@@ -214,5 +216,7 @@ public interface IOrderDao {
 
 
     List<Map<String, Object>> findOrderDetailPrivateGoodsList(int orderId);
+
+    void autoCancelOrder(int orderId, String orderNo, int userId);
 
 }

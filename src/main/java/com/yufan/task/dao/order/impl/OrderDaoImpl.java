@@ -61,16 +61,22 @@ public class OrderDaoImpl implements IOrderDao {
     }
 
     @Override
+    public void deleteShopcart(int userId, int goodsId) {
+        String sql = " update tb_order_cart set status=4,lastaltertime=now() where goods_id=? and user_id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, goodsId, userId);
+    }
+
+    @Override
     public void updateShopCart(int userId, int cartId, int count) {
         String sql = " update tb_order_cart set goods_count=?,lastaltertime=now() where cart_id=? and user_id=? ";
         iGeneralDao.executeUpdateForSQL(sql, count, cartId, userId);
     }
 
     @Override
-    public List<Map<String, Object>> queryOrderPayAllListMap(int userId) {
+    public List<Map<String, Object>> queryOrderPayAllListMap(int userId, String status) {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT order_price,order_status,user_read_mark from tb_order where user_id=").append(userId).append(" ");
-        sql.append(" and order_status in (0,2,5) ");
+        sql.append(" and order_status in (").append(status).append(") ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
 
@@ -408,5 +414,13 @@ public class OrderDaoImpl implements IOrderDao {
         sql.append(" where o.order_status in (1,2) ");
         sql.append(" and o.order_id=").append(orderId).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());
+    }
+
+    @Override
+    public void autoCancelOrder(int orderId, String orderNo, int userId) {
+        StringBuffer sql = new StringBuffer();
+        sql.append("  ");
+
+        iGeneralDao.getBySQLListMap(sql.toString());
     }
 }

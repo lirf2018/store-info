@@ -93,7 +93,7 @@ public class DownLoadQrCoupon implements IResultOut {
                 return packagMsg(ResultCode.GOODS_STORE_NOENOUGH.getResp_code(), dataJson);
             }
             // 未开发功能(校验是否指定用户领取)
-            if(coupon.getIsShow() == 0){
+            if (coupon.getIsShow() == 0) {
                 LOG.info("=======待开发功能========" + couponId + " ,  userId=" + userId);
                 return packagMsg(ResultCode.LIMIT_COUPON_RULE.getResp_code(), dataJson);
             }
@@ -227,6 +227,10 @@ public class DownLoadQrCoupon implements IResultOut {
             LOG.info("--------过期时间计算异常--------");
             return 0;
         }
+        //
+        String outDayStr = DatetimeUtil.timeStamp2Date(qr.getChangeOutDate().getTime(), DatetimeUtil.DEFAULT_DATE_FORMAT) + " 23:59:59";
+        qr.setChangeOutDate(new Timestamp(DatetimeUtil.convertStrToDate(outDayStr, DatetimeUtil.DEFAULT_DATE_FORMAT_STRING).getTime()));
+
         qr.setRecodeState(null == recodeState ? 0 : recodeState);//记录状态 0生成二维码1已下载2已兑换3生成检验
         qr.setChangeCode(changeCode);// 卡券兑换码
         qr.setContent(changeCode);

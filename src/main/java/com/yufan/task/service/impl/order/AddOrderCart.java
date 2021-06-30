@@ -58,9 +58,15 @@ public class AddOrderCart implements IResultOut {
             Integer userId = data.getInteger("user_id");
             Integer timeGoodsId = data.getInteger("time_goods_id");
             String nowMoney = data.getString("now_price");
-            Integer addModel = data.containsKey("add_model") ? data.getInteger("add_model") : 0;
+            Integer addModel = data.containsKey("add_model") ? data.getInteger("add_model") : 0;// 区分是购物车添加 还是直接商品详情添加到购物车
             Integer goodsCount = data.getInteger("goods_count") == 0 ? 1 : data.getInteger("goods_count");
             String goodsSpec = data.getString("goods_spec") == null ? "" : data.getString("goods_spec");
+            // 删除购物车
+            Integer delMark = data.getInteger("del_mark");
+            if (null != delMark && delMark == 1) {
+                iOrderDao.deleteShopcart(userId, goodsId);
+                return packagMsg(ResultCode.OK.getResp_code(), dataJson);
+            }
 
             //
             Integer cartId_ = data.getInteger("cart_id");//购物车标识
@@ -137,7 +143,7 @@ public class AddOrderCart implements IResultOut {
             // 购物车 商品总数
             int cartGoodsCount = iOrderDao.userCartCount(userId, goodsId);
             //购物车数量限制
-            if ((cartGoodsCount + goodsCount) > 100) {
+            if ((cartGoodsCount + goodsCount) >= 50) {
                 return packagMsg(ResultCode.FULL_ORDER_CARD.getResp_code(), dataJson);
             }
 
