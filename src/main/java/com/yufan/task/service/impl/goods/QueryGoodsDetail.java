@@ -326,7 +326,7 @@ public class QueryGoodsDetail implements IResultOut {
 
             // 处理购物车对应商品(主要处理抢购商品)
             //判断商品是不是抢购商品
-            if (timeGoodsId == 0 && isSingle == 1) {
+            if ((null==timeGoodsId ||timeGoodsId == 0) && isSingle == 1) {
                 // 失效购物车 对应抢购商品
                 iOrderDao.updateOrderCartStatus(userId, goodsId.toString(), 2, 1);
             }

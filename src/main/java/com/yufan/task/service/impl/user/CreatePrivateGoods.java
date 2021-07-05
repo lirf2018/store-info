@@ -108,6 +108,7 @@ public class CreatePrivateGoods implements IResultOut {
                 if (detailConditionMap.get(detailId) == null) {
                     continue;
                 }
+                String getAddr = String.valueOf(orderDetailList.get(i).get("user_addr"));
                 String payTime = String.valueOf(orderDetailList.get(i).get("pay_time"));
                 Integer goodsId = Integer.parseInt(orderDetailList.get(i).get("goods_id").toString());
                 Integer userId = Integer.parseInt(orderDetailList.get(i).get("user_id").toString());
@@ -131,6 +132,8 @@ public class CreatePrivateGoods implements IResultOut {
                     custom.setIsYuyue((byte) 0);
                     custom.setFlowStatus(0);
                     custom.setGoodsId(goodsId);
+                    custom.setIndexSort(0);
+                    custom.setGetAddr(getAddr);
                     String name = goodsName;
                     if (!StringUtils.isEmpty(goodsSpecName)) {
                         name = name + "【" + goodsSpecName + "】";

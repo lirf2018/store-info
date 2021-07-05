@@ -269,4 +269,21 @@ public class CommonMethod {
         return time;
     }
 
+    /**
+     * 随机获取一组用于校验的图片
+     *
+     * @return
+     */
+    public static Map<String, Object> getVerifyImgGroupCodeMap() {
+        try {
+            int size = CacheData.VERIFYIMGGROUPLIST.size() - 1;
+            Random r = new Random();
+            int num = r.nextInt(size);
+            return CacheData.VERIFYIMGGROUPLIST.get(num);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

@@ -208,6 +208,8 @@ public class InfoController {
                 Map<String, String> outValidLogin = new HashMap<>();
                 outValidLogin.put("send_phone_code", "send_phone_code");
                 outValidLogin.put("phone_code_login", "phone_code_login");
+                outValidLogin.put("get_verify_img_list", "get_verify_img_list");
+                outValidLogin.put("check_verify_img", "check_verify_img");
                 String businessType = obj.getString("req_type");
                 if (outValidLogin.get(businessType) == null) {
                     loginStr = returnUserIdStr(token, jsonHeaderBean);

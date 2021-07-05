@@ -11,6 +11,7 @@ import com.yufan.task.dao.param.IParamDao;
 import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
 import com.yufan.utils.PageInfo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,25 @@ public class QueryOrderDetail implements IResultOut {
             BigDecimal depositPriceAll = BigDecimal.ZERO;
 
             List<Map<String, Object>> listOrder = iOrderDao.queryUserOrderDetail(userId, orderId, orderNo);
+            if (CollectionUtils.isEmpty(listOrder)) {
+                LOG.info("=============查询不存在=============");
+                return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+            }
+
+            // 查询详情属性
+            int orderId_ = Integer.parseInt(listOrder.get(0).get("order_id").toString());
+            List<Map<String, Object>> listProp = iOrderDao.queryUserOrderDetailProp(orderId_);
+            boolean isYudingFlag = false;
+            for (int i = 0; i < listProp.size(); i++) {
+                Object propertyKey = listProp.get(i).get("property_key");
+                Object propertyValue = listProp.get(i).get("property_value");
+                if ("is_yuding".equals(String.valueOf(propertyKey)) && "1".equals(String.valueOf(propertyValue))) {
+                    isYudingFlag = true;
+                }
+            }
+            //
             List<Map<String, Object>> detailList = new ArrayList<>();
+
             for (int i = 0; i < listOrder.size(); i++) {
                 Object orderNo_ = listOrder.get(i).get("order_no");
                 Object orderPrice = listOrder.get(i).get("order_price");
@@ -163,6 +182,7 @@ public class QueryOrderDetail implements IResultOut {
             dataJson.put("refund_finish_time", refundFinishTime);
             dataJson.put("goods_price_all", goodsPriceAll);
             dataJson.put("goods_true_price_all", goodsTruePriceAll);
+            dataJson.put("is_yuding_flag", isYudingFlag);
             dataJson.put("detail_list", detailList);
             long closeTime = Constants.DEFAULT_CLOSE_TIME;
 

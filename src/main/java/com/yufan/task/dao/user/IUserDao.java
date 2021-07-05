@@ -39,7 +39,7 @@ public interface IUserDao {
      */
     public void cancelUserPrivate(int userId, int id);
 
-    public void updateUserPrivate(int userId, int id, String getDate);
+    public void updateUserPrivate(int userId, int id, String getDate,String getDateStr, int index);
 
     List<TbPrivateCustom> loadPrivateCustom(String privateCode);
 
