@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import com.yufan.common.bean.ReceiveJsonBean;
 import com.yufan.common.bean.ResponeUtil;
+import com.yufan.pojo.TbParam;
+import com.yufan.utils.CacheData;
 import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.activity.IActivityDao;
@@ -55,7 +57,6 @@ public class QueryMain implements IResultOut {
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
         try {
-
             /**
              * 活动   6个
              */
@@ -114,7 +115,7 @@ public class QueryMain implements IResultOut {
                 int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
                 String timePrice = map.get("time_price").toString();
                 BigDecimal salePrice = new BigDecimal(nowMoney);
-                if(timeGoodsId>0){
+                if (timeGoodsId > 0) {
                     salePrice = new BigDecimal(timePrice);
                 }
                 //
@@ -155,7 +156,7 @@ public class QueryMain implements IResultOut {
                 int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
                 String timePrice = map.get("time_price").toString();
                 BigDecimal salePrice = new BigDecimal(nowMoney);
-                if(timeGoodsId>0){
+                if (timeGoodsId > 0) {
                     salePrice = new BigDecimal(timePrice);
                 }
                 //
@@ -195,7 +196,7 @@ public class QueryMain implements IResultOut {
                 int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
                 String timePrice = map.get("time_price").toString();
                 BigDecimal salePrice = new BigDecimal(nowMoney);
-                if(timeGoodsId>0){
+                if (timeGoodsId > 0) {
                     salePrice = new BigDecimal(timePrice);
                 }
                 //
@@ -204,7 +205,7 @@ public class QueryMain implements IResultOut {
                 goods.put("title", title);
                 goods.put("goods_name", goodsName);
                 goods.put("true_money", new BigDecimal(trueMoney));
-                goods.put("now_money",salePrice );
+                goods.put("now_money", salePrice);
                 goods.put("goods_img", goodsImg);
                 goods.put("sell_count", sellCount);
                 goods.put("is_single", isSingle);
@@ -268,6 +269,17 @@ public class QueryMain implements IResultOut {
                 InfoImg = list.get(0).get("info_img").toString();
             }
 
+            // 获取通知
+            List<TbParam> paramList = CacheData.PARAMLIST;
+            String newsInfo = "";
+            for (int i = 0; i < paramList.size(); i++) {
+                TbParam param = paramList.get(i);
+                if ("main_notice".equals(param.getParamCode())) {
+                    newsInfo = param.getParamValue();
+                }
+            }
+
+            dataJson.put("news_info", newsInfo);
             dataJson.put("info_title", InfoTitle);
             dataJson.put("info_img", InfoImg);
             dataJson.put("activity_list", activityArray);

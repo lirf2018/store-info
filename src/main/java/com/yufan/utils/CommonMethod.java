@@ -277,6 +277,9 @@ public class CommonMethod {
     public static Map<String, Object> getVerifyImgGroupCodeMap() {
         try {
             int size = CacheData.VERIFYIMGGROUPLIST.size() - 1;
+            if (size <= 0) {
+                return null;
+            }
             Random r = new Random();
             int num = r.nextInt(size);
             return CacheData.VERIFYIMGGROUPLIST.get(num);
