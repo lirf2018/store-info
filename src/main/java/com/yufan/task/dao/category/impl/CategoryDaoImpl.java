@@ -117,7 +117,7 @@ public class CategoryDaoImpl implements ICategoryDao {
         if (null != categoryId) {
             sql.append(" and ca.category_id=").append(categoryId).append(" ");
         }
-        sql.append(" ORDER BY ca.data_index desc,it.data_index desc,pv.data_index desc ");
+        sql.append(" ORDER BY ca.data_index desc,ca.category_id desc,it.data_index desc,pv.data_index desc ");
 
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
