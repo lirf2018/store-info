@@ -6,6 +6,7 @@ import com.yufan.utils.*;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +38,7 @@ public class ImgUploadController {
      *                 闲菜：xiancaiGoodsImg(闲菜商品主图)  xiancaiGoodsInfoImg(闲菜商品介绍)
      * @param file     上传的文件名称
      */
+    @CrossOrigin
     @RequestMapping("uploadFile")
     public void uploadFile(HttpServletRequest request, HttpServletResponse response, String from, String imgType, MultipartFile file) {
         LOG.info("------文件上传------");

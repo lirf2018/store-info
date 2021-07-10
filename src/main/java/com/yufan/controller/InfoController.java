@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletInputStream;
@@ -72,6 +73,7 @@ public class InfoController {
     @Autowired
     private IBasicService iBasicService;
 
+    @CrossOrigin
     @RequestMapping(value = "service")
     public void enterService(HttpServletRequest request, HttpServletResponse response) {
         String result = "";
@@ -140,6 +142,7 @@ public class InfoController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "city")
     public void city(HttpServletRequest request, HttpServletResponse response) {
         String result = "";
@@ -183,6 +186,7 @@ public class InfoController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "test")
     public void test(HttpServletRequest request, HttpServletResponse response) {
         String result = "";
