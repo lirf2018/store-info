@@ -55,7 +55,7 @@ public class FindShopInfo implements IResultOut {
                 img.put("imgUrl", StringUtils.isEmpty(imgUrl) ? "" : Constants.IMG_WEB_URL + imgUrl);
                 outImg.add(img);
             }
-
+            shop.setShopLogo(Constants.IMG_WEB_URL + shop.getShopLogo());
             dataJson.put("shop", shop);
             dataJson.put("imgList", outImg);
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);

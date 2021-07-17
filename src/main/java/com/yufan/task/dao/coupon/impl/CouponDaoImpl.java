@@ -33,11 +33,11 @@ public class CouponDaoImpl implements ICouponDao {
     public List<Map<String, Object>> findUserCouponList(int userId, CouponCondition couponCondition) {
         // 更新过期优惠券
         updatePassDate(userId, null);
-
         StringBuffer sql = new StringBuffer();
         sql.append(" select qr.id, CONCAT('" + Constants.IMG_WEB_URL + "',qr.coupon_img) as coupon_img,qr.coupon_name,qr.title, ");
         sql.append(" DATE_FORMAT(qr.change_out_date,'%Y-%m-%d') as change_out_date,qr.recode_state,qr.appoint_type ");
         sql.append(" from tb_coupon_down_qr  qr ");
+        sql.append(" where 1=1 and qr.user_id = ").append(userId).append(" ");
         sql.append(" ORDER BY createtime desc ");
         return iGeneralDao.getBySQLListMap(sql.toString());
     }
