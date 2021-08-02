@@ -2,21 +2,17 @@ package com.yufan.task.service.impl.login;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
-import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbUserInfo;
-import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
 import com.yufan.testRedis.LoginCache;
-import com.yufan.utils.CommonMethod;
 import com.yufan.utils.Constants;
 import com.yufan.utils.DatetimeUtil;
+import com.yufan.utils.ResultCode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import sun.plugin.util.UIUtil;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

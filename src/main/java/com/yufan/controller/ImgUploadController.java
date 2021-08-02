@@ -22,6 +22,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/file/")
+@CrossOrigin
 public class ImgUploadController {
 
     private Logger LOG = Logger.getLogger(ImgUploadController.class);
