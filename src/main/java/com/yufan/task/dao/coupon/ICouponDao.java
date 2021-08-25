@@ -54,4 +54,10 @@ public interface ICouponDao {
      */
     void deleteUserQrCoupon(int userId, int coupon);
 
+    List<Map<String, Object>> findUserGiveCoupon(int userId, int status);
+
+    List<Map<String, Object>> findUserGiveCoupon(int giveId, int userId, int status);
+
+    void updateUserGiveCoupon(int giveId, int userId, int status);
+
 }

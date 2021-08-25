@@ -2,6 +2,7 @@ package com.yufan.task.service.impl.coupon;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
+import com.yufan.utils.Constants;
 import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.pojo.TbCoupon;
@@ -9,6 +10,7 @@ import com.yufan.pojo.TbCouponDownQr;
 import com.yufan.task.dao.coupon.ICouponDao;
 import com.yufan.utils.CommonMethod;
 import com.yufan.utils.DatetimeUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +42,21 @@ public class DownLoadQrCoupon implements IResultOut {
             Integer couponId = data.getInteger("couponId");
             Integer userId = data.getInteger("userId");
             Integer recodeState = data.getInteger("recodeState");
-
+            Integer giveId = data.getInteger("giveCouponId");
+            //
             TbCoupon coupon = iCouponDao.loadCoupon(couponId);
             if (coupon == null) {
                 return packagMsg(ResultCode.COUPON_NOT_EXIST.getResp_code(), dataJson);
             }
+            if (coupon.getIsShow() == 0) {
+                LOG.info("====指定用户领取=====" + couponId + " ,  userId=" + userId + "   giveId=" + giveId);
+                if (giveId == null) {
+                    LOG.info("====giveId 不能为空======");
+                    return packagMsg(ResultCode.NEED_PARAM_ERROR.getResp_code(), dataJson);
+                }
+            }
             // 校验是否能生成优惠券
-            String check = checkDownQR(couponId, userId, coupon);
+            String check = checkDownQR(couponId, userId, coupon, giveId);
             if (StringUtils.isNotEmpty(check)) {
                 return check;
             }
@@ -56,6 +66,9 @@ public class DownLoadQrCoupon implements IResultOut {
             int qrId = createQr(coupon, userId, changeCode, recodeState, time);
             if (qrId == 0) {
                 return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
+            }
+            if (coupon.getIsShow() == 0) {
+                iCouponDao.updateUserGiveCoupon(giveId, userId, Constants.DATA_STATUS_YX);// 更新为已领取
             }
             dataJson.put("qrId", qrId);
             dataJson.put("changeCode", changeCode);
@@ -67,7 +80,7 @@ public class DownLoadQrCoupon implements IResultOut {
         return packagMsg(ResultCode.FAIL.getResp_code(), dataJson);
     }
 
-    private synchronized String checkDownQR(Integer couponId, Integer userId, TbCoupon coupon) {
+    private synchronized String checkDownQR(Integer couponId, Integer userId, TbCoupon coupon, Integer giveId) {
         JSONObject dataJson = new JSONObject();
         try {
             // 判断优惠券是否有效
@@ -91,11 +104,6 @@ public class DownLoadQrCoupon implements IResultOut {
             if (coupon.getCouponNum() <= 0) {
                 LOG.info("=======数量不足========" + couponId + " ,  userId=" + userId);
                 return packagMsg(ResultCode.GOODS_STORE_NOENOUGH.getResp_code(), dataJson);
-            }
-            // 未开发功能(校验是否指定用户领取)
-            if (coupon.getIsShow() == 0) {
-                LOG.info("=======待开发功能========" + couponId + " ,  userId=" + userId);
-                return packagMsg(ResultCode.LIMIT_COUPON_RULE.getResp_code(), dataJson);
             }
 
             // 限购方式: 1.按天 2按月 3.按年 4不限购 5按数量
@@ -123,7 +131,10 @@ public class DownLoadQrCoupon implements IResultOut {
                 int status = Integer.parseInt(map.get("recode_state").toString());
                 if (status == 1) {
                     LOG.info("已存在有效的相同优惠券qr");
-                    return packagMsg(ResultCode.LIMIT_COUPON_RULE.getResp_code(), dataJson);
+                    dataJson.put("qrId", map.get("id"));
+                    dataJson.put("changeCode", map.get("change_code"));
+                    dataJson.put("changeCodeOutTime", map.get("change_out_date"));
+                    return packagMsg(ResultCode.OK.getResp_code(), dataJson);
                 }
                 //
                 String createTime = map.get("createtime").toString();
@@ -174,6 +185,14 @@ public class DownLoadQrCoupon implements IResultOut {
                 if (getCount > (limitNum - 1)) {
                     LOG.info("========按数量===限领=======" + now);
                     return packagMsg(ResultCode.COUPONQR_QOWM_FAIL.getResp_code(), dataJson);
+                }
+            }
+            if (coupon.getIsShow() == 0) {
+                LOG.info("====指定用户领取=====" + couponId + " ,  userId=" + userId + "   giveId=" + giveId);
+                List<Map<String, Object>> giveCouponlist = iCouponDao.findUserGiveCoupon(giveId, userId, Constants.DATA_STATUS_WX);
+                if (CollectionUtils.isEmpty(giveCouponlist)) {
+                    LOG.info("====giveId 查询不存在======");
+                    return packagMsg(ResultCode.LIMIT_COUPON_RULE.getResp_code(), dataJson);
                 }
             }
             return "";

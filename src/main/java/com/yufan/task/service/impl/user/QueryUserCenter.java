@@ -2,6 +2,7 @@ package com.yufan.task.service.impl.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yufan.common.bean.ReceiveJsonBean;
+import com.yufan.task.dao.coupon.ICouponDao;
 import com.yufan.utils.ResultCode;
 import com.yufan.common.service.IResultOut;
 import com.yufan.task.dao.order.IOrderDao;
@@ -38,6 +39,9 @@ public class QueryUserCenter implements IResultOut {
     @Autowired
     private IOrderDao iOrderDao;
 
+    @Autowired
+    private ICouponDao iCouponDao;
+
     @Override
     public String getResult(ReceiveJsonBean receiveJsonBean) {
         JSONObject dataJson = new JSONObject();
@@ -50,6 +54,9 @@ public class QueryUserCenter implements IResultOut {
             if (null == userInfo) {
                 return packagMsg(ResultCode.FAIL_USER_INVALIDATE.getResp_code(), dataJson);
             }
+            // 查询赠送卡券数
+            List<Map<String, Object>> giveCouponList = iCouponDao.findUserGiveCoupon(userId, Constants.DATA_STATUS_WX);
+
             //查询用户订单
             //0待付款1已付款2确认中3已失败4待发货5待收货6已完成7已取消8已删除9退款中10已退款11处理中12还货中13已还货
             String statusStr = "0,1,5";
@@ -68,7 +75,6 @@ public class QueryUserCenter implements IResultOut {
             int c11 = 0;//11	处理中
             int c12 = 0;//12	还货中
             int c13 = 0;//13	已还货
-
             BigDecimal orderPriceAll = new BigDecimal(0);
 
             for (int i = 0; i < userOrderListMap.size(); i++) {
@@ -161,6 +167,7 @@ public class QueryUserCenter implements IResultOut {
             dataJson.put("user_img", StringUtils.isEmpty(userInfo.getUserImg()) ? "" : Constants.IMG_WEB_URL + userInfo.getUserImg());
             dataJson.put("member_id", userInfo.getMemberId());//会员卡号
             dataJson.put("nick_name", userInfo.getNickName());
+            dataJson.put("give_coupon_count", giveCouponList.size());
 
             return packagMsg(ResultCode.OK.getResp_code(), dataJson);
         } catch (Exception e) {

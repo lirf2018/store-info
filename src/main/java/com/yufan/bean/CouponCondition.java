@@ -19,6 +19,10 @@ public class CouponCondition {
 
     private Integer show;
 
+    private Integer userId;
+
     private Integer couponId;
+
+    private Boolean privateCouponFlag;
 
 }

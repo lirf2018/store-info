@@ -44,17 +44,27 @@ public class CouponDaoImpl implements ICouponDao {
 
     @Override
     public PageInfo loadCouponListPage(CouponCondition couponCondition) {
+        updateUserGiveCouponStatus(couponCondition.getUserId());
         StringBuffer sql = new StringBuffer();
         sql.append(" select c.coupon_id,c.coupon_name,c.title,c.coupon_num, DATE_FORMAT(c.start_time,'%Y.%m.%d') as start_time,DATE_FORMAT(c.end_time,'%Y.%m.%d') as end_time,c.appoint_type, ");
         sql.append(" CONCAT('" + Constants.IMG_WEB_URL + "',c.coupon_img) as coupon_img,c.count_get ");
         sql.append("  ,if(DATE_FORMAT(NOW(),'%Y-%m-%d')=DATE_FORMAT(c.appoint_date,'%Y-%m-%d'),1,0) as now_use_date ");
+        if (couponCondition.getPrivateCouponFlag() != null && couponCondition.getPrivateCouponFlag()) {
+            sql.append(" ,guc.id as give_coupon_id ");
+        }
         sql.append(" from tb_coupon c ");
+        if (couponCondition.getPrivateCouponFlag() != null && couponCondition.getPrivateCouponFlag()) {
+            sql.append(" JOIN tb_give_user_coupon guc on guc.coupon_id=c.coupon_id ");
+        }
         sql.append(" where c.`status`=1 and c.is_putaway=2 and NOW()>=c.start_time and NOW()<=c.end_time and c.coupon_num>0 ");
         if (couponCondition.getShow() != null) {
             sql.append(" and c.is_show=").append(couponCondition.getShow()).append(" ");
         }
         if (couponCondition.getCouponId() != null) {
             sql.append(" and c.coupon_id=").append(couponCondition.getCouponId()).append(" ");
+        }
+        if (couponCondition.getPrivateCouponFlag() != null && couponCondition.getPrivateCouponFlag()) {
+            sql.append(" and guc.`status`=0 and DATE_FORMAT(guc.out_time,'%Y-%m-%d') >= DATE_FORMAT(NOW(),'%Y-%m-%d') ");
         }
         sql.append(" ORDER BY c.createtime desc ");
         PageInfo pageInfo = new PageInfo();
@@ -146,6 +156,7 @@ public class CouponDaoImpl implements ICouponDao {
     public List<Map<String, Object>> loadUserQRCouponListLimit(int couponId, int userId, String limitTime) {
         StringBuffer sql = new StringBuffer();
         sql.append(" select DATE_FORMAT(q.createtime,'%Y-%m-%d') as createtime,q.coupon_id,q.recode_state ");
+        sql.append(" ,q.id,q.change_code,DATE_FORMAT(q.change_out_date,'%Y-%m-%d %T') as change_out_date ");
         sql.append(" from tb_coupon_down_qr q where q.user_id=? and q.coupon_id=? and q.createtime>=? and (q.recode_state = 1 or q.recode_state = 2) order by q.createtime desc ");
         return iGeneralDao.getBySQLListMap(sql.toString(), userId, couponId, limitTime);
     }
@@ -154,5 +165,30 @@ public class CouponDaoImpl implements ICouponDao {
     public void deleteUserQrCoupon(int userId, int coupon) {
         String sql = " update tb_coupon_down_qr set recode_state=4 where coupon_id=? and user_id=? and DATE_FORMAT(NOW(),'%Y-%m-%d')>DATE_FORMAT(change_out_date,'%Y-%m-%d') and recode_state in (1,0)  ";
         iGeneralDao.executeUpdateForSQL(sql, coupon, userId);
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserGiveCoupon(int userId, int status) {
+        updateUserGiveCouponStatus(userId);
+        String sql = " select id,user_id,coupon_id,status from tb_give_user_coupon guc where guc.user_id=? and guc.status=? and DATE_FORMAT(guc.out_time,'%Y-%m-%d') >= DATE_FORMAT(NOW(),'%Y-%m-%d') ";
+        return iGeneralDao.getBySQLListMap(sql, userId, status);
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserGiveCoupon(int giveId, int userId, int status) {
+        updateUserGiveCouponStatus(userId);
+        String sql = " select id,user_id,coupon_id,status from tb_give_user_coupon guc where guc.id=? and guc.user_id=? and guc.status=? and DATE_FORMAT(guc.out_time,'%Y-%m-%d') >= DATE_FORMAT(NOW(),'%Y-%m-%d') ";
+        return iGeneralDao.getBySQLListMap(sql, giveId, userId, status);
+    }
+
+    private void updateUserGiveCouponStatus(int userId) {
+        String sql = " update tb_give_user_coupon set `status`=2,update_time=now() where user_id=? and `status`=0 and DATE_FORMAT(out_time,'%Y-%m-%d') < DATE_FORMAT(NOW(),'%Y-%m-%d') ";
+        iGeneralDao.executeUpdateForSQL(sql, userId);
+    }
+
+    @Override
+    public void updateUserGiveCoupon(int giveId, int userId, int status) {
+        String sql = " update tb_give_user_coupon set `status`=?,update_time=now() where user_id=? and id=? ";
+        iGeneralDao.executeUpdateForSQL(sql, status, userId, giveId);
     }
 }
