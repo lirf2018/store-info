@@ -128,8 +128,8 @@ public class CreatePrivateGoods implements IResultOut {
                     custom.setStatus(0);
                     custom.setYuyueCount(0);
                     custom.setContents(goodsIntro);
-                    custom.setPostWay(postWay.byteValue());
-                    custom.setIsYuyue((byte) 0);
+                    custom.setPostWay(postWay);
+                    custom.setIsYuyue(0);
                     custom.setFlowStatus(0);
                     custom.setGoodsId(goodsId);
                     custom.setIndexSort(0);

@@ -109,6 +109,11 @@ public class QueryMain implements IResultOut {
                 String trueMoney = map.get("true_money").toString();
                 String nowMoney = map.get("now_money").toString();
                 String goodsImg = map.get("goods_img").toString();
+                //租赁方式
+                String rentPayType = String.valueOf(map.get("rent_pay_type"));
+                String rentPayTypeName = String.valueOf(map.get("rent_pay_type_name"));
+                String goodsType = String.valueOf(map.get("goods_type"));
+
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
                 //
@@ -131,6 +136,9 @@ public class QueryMain implements IResultOut {
                 goods.put("sku_now_money", new BigDecimal(skuNowMoney));
                 goods.put("is_zi_yin", isZiYin);
                 goods.put("time_goods_id", timeGoodsId);
+                goods.put("rent_pay_type", rentPayType);
+                goods.put("rent_pay_type_name", rentPayTypeName);
+                goods.put("goods_type", goodsType);
 
                 weightGoodsArray.add(goods);
             }
@@ -152,6 +160,10 @@ public class QueryMain implements IResultOut {
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
+                //租赁方式
+                String rentPayType = String.valueOf(map.get("rent_pay_type"));
+                String rentPayTypeName = String.valueOf(map.get("rent_pay_type_name"));
+                String goodsType = String.valueOf(map.get("goods_type"));
                 //
                 int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
                 String timePrice = map.get("time_price").toString();
@@ -172,6 +184,9 @@ public class QueryMain implements IResultOut {
                 goods.put("sku_now_money", new BigDecimal(skuNowMoney));
                 goods.put("is_zi_yin", isZiYin);
                 goods.put("time_goods_id", timeGoodsId);
+                goods.put("rent_pay_type", rentPayType);
+                goods.put("rent_pay_type_name", rentPayTypeName);
+                goods.put("goods_type", goodsType);
                 newGoodsArray.add(goods);
             }
 
@@ -192,6 +207,10 @@ public class QueryMain implements IResultOut {
                 String goodsImg = map.get("goods_img").toString();
                 int sellCount = Integer.parseInt(map.get("sell_count").toString());
                 int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
+                //租赁方式
+                String rentPayType = String.valueOf(map.get("rent_pay_type"));
+                String rentPayTypeName = String.valueOf(map.get("rent_pay_type_name"));
+                String goodsType = String.valueOf(map.get("goods_type"));
                 //
                 int timeGoodsId = Integer.parseInt(map.get("time_goods_id").toString());
                 String timePrice = map.get("time_price").toString();
@@ -211,6 +230,9 @@ public class QueryMain implements IResultOut {
                 goods.put("is_single", isSingle);
                 goods.put("is_zi_yin", isZiYin);
                 goods.put("time_goods_id", timeGoodsId);
+                goods.put("rent_pay_type", rentPayType);
+                goods.put("rent_pay_type_name", rentPayTypeName);
+                goods.put("goods_type", goodsType);
                 hotGoodsArray.add(goods);
             }
             /**
@@ -239,6 +261,10 @@ public class QueryMain implements IResultOut {
                             String goodsImg = map.get("goods_img").toString();
                             int sellCount = Integer.parseInt(map.get("sell_count").toString());
                             int isZiYin = Integer.parseInt(map.get("is_zi_yin").toString());
+                            //租赁方式
+                            String rentPayType = String.valueOf(map.get("rent_pay_type"));
+                            String rentPayTypeName = String.valueOf(map.get("rent_pay_type_name"));
+                            String goodsType = String.valueOf(map.get("goods_type"));
                             //
                             JSONObject goods = new JSONObject();
                             goods.put("goods_id", goodsId);
@@ -249,6 +275,9 @@ public class QueryMain implements IResultOut {
                             goods.put("goods_img", goodsImg);
                             goods.put("sell_count", sellCount);
                             goods.put("is_zi_yin", isZiYin);
+                            goods.put("rent_pay_type", rentPayType);
+                            goods.put("rent_pay_type_name", rentPayTypeName);
+                            goods.put("goods_type", goodsType);
 
                             timeGoodsArray.add(goods);
                         }

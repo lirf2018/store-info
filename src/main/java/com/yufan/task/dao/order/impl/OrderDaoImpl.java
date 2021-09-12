@@ -38,10 +38,11 @@ public class OrderDaoImpl implements IOrderDao {
         StringBuffer sql = new StringBuffer();
         sql.append(" SELECT cart.cart_id,cart.user_id,cart.goods_id,cart.goods_name,cart.goods_img,cart.goods_spec,cart.goods_spec_name,cart.goods_count,cart.goods_price,cart.true_money,cart.shop_id,cart.status, ");
         sql.append(" cart.remark,cart.goods_spec_name_str,cart.cart_type,ifnull(cart.time_goods_id,0) as time_goods_id  ");
-        sql.append(" ,s.shop_name,s.shop_logo,if(g.lastaltertime>cart.createtime,2,1) as last_status,g.is_single,IFNULL(sku.sku_id,0) as sku_id ");
+        sql.append(" ,s.shop_name,s.shop_logo,if(g.lastaltertime>cart.createtime,2,1) as last_status,g.is_single,IFNULL(sku.sku_id,0) as sku_id,p0.param_value as rent_pay_type_name,goods_type ");
         sql.append(" from tb_order_cart cart JOIN tb_shop s on s.shop_id=cart.shop_id ");
         sql.append(" JOIN tb_goods g on g.goods_id=cart.goods_id ");
         sql.append(" left join tb_goods_sku sku on sku.goods_id=cart.goods_id and sku.prop_code=cart.goods_spec and sku.`status`=1 ");
+        sql.append(" LEFT JOIN tb_param p0 on p0.param_code='rent_pay_type' and p0.status=1 and p0.param_key=g.rent_pay_type ");
         sql.append(" where cart.user_id=").append(userId).append(" and cart.`status`in (1,2)  ");
         if (null != carType) {
             sql.append(" and cart.cart_type=").append(carType).append(" ");
@@ -301,7 +302,10 @@ public class OrderDaoImpl implements IOrderDao {
             cartIds = cartIds.substring(0, cartIds.length() - 1);
         }
         StringBuffer sql = new StringBuffer();
-        sql.append(" SELECT cart.cart_id,cart.goods_id,cart.sku_id,cart.shop_id,cart.goods_count,ifnull(time_goods_id,0) as time_goods_id from tb_order_cart cart JOIN tb_goods g on g.goods_id=cart.goods_id where 1=1 and cart.createtime>=g.lastaltertime and cart.`status` = 1 ");
+        sql.append(" SELECT cart.cart_id,cart.goods_id,cart.sku_id,cart.shop_id,cart.goods_count,ifnull(time_goods_id,0) as time_goods_id,g.rent_pay_type,p0.param_value as rent_pay_type_name,goods_type  ");
+        sql.append(" from tb_order_cart cart JOIN tb_goods g on g.goods_id=cart.goods_id ");
+        sql.append(" LEFT JOIN tb_param p0 on p0.param_code='rent_pay_type' and p0.status=1 and p0.param_key=g.rent_pay_type ");
+        sql.append(" where 1=1 and cart.createtime>=g.lastaltertime and cart.`status` = 1  ");
         sql.append(" and cart.cart_id in (").append(cartIds).append(") ");
         sql.append(" and cart.user_id = ").append(userId).append(" ");
         return iGeneralDao.getBySQLListMap(sql.toString());

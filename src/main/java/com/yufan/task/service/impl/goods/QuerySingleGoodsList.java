@@ -139,7 +139,10 @@ public class QuerySingleGoodsList implements IResultOut {
                 mapNew.put("nowMoney", salePrice);
                 mapNew.put("timeGoodsId", timeGoodsId);
                 mapNew.put("goodsNum", Integer.parseInt(mapOld.get("goods_num").toString()));
+                mapNew.put("goodsType", Integer.parseInt(mapOld.get("goods_type").toString()));
                 mapNew.put("goodsImg", mapOld.get("goods_img"));
+                mapNew.put("rentPayType", mapOld.get("rent_pay_type"));
+                mapNew.put("rentPayTypeName", mapOld.get("rent_pay_type_name"));
                 mapNew.put("trueMoney", new BigDecimal(mapOld.get("true_money").toString()));
                 Integer count = cartGoodsCountMap.get(mapOld.get("goods_id").toString());
                 mapNew.put("userGoodsCount", count == null ? 0 : count);
@@ -214,6 +217,9 @@ public class QuerySingleGoodsList implements IResultOut {
                 }
             }
             mapMenuItem.put("goodsList", goodsListAdd);
+            if (CollectionUtils.isEmpty(goodsListAdd)) {
+                continue;
+            }
             outList.add(mapMenuItem);
         }
         dataJson.put("menusList", outList);
@@ -392,9 +398,12 @@ class FindGoodsList implements Callable<List<Map<String, Object>>> {
             mapNew.put("nowMoney", new BigDecimal(goodsList.get(j).get("nowMoney").toString()));
             mapNew.put("goodsNum", Integer.parseInt(goodsList.get(j).get("goodsNum").toString()));
             mapNew.put("goodsImg", goodsList.get(j).get("goodsImg"));
+            mapNew.put("rentPayType", goodsList.get(j).get("rentPayType"));
+            mapNew.put("rentPayTypeName", goodsList.get(j).get("rentPayTypeName"));
             mapNew.put("trueMoney", new BigDecimal(goodsList.get(j).get("trueMoney").toString()));
             mapNew.put("timeGoodsId", goodsList.get(j).get("timeGoodsId").toString());
             mapNew.put("userGoodsCount", Integer.parseInt(goodsList.get(j).get("userGoodsCount").toString()));
+            mapNew.put("goodsType", goodsList.get(j).get("goodsType").toString());
             goodsListAdd.add(mapNew);
         }
     }

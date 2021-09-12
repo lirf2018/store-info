@@ -79,10 +79,11 @@ public class BusinessServiceImpl implements IBusinessService {
     }
 
     @Override
-    public int checkGoodsInfo(JSONArray goodsList, Map<Integer, Map<String, Object>> goodsMap,
-                              Map<Integer, Map<String, Object>> goodsSkuMap,
+    public int checkGoodsInfo(JSONArray goodsList, Map<Integer, Map<String, Object>> goodsMap, Map<Integer, Map<String, Object>> goodsSkuMap,
                               Map<Integer, Map<String, Object>> timeGoodsMap, int userId) {
         try {
+            // 租赁类型商品与其它类型商品不能同时形成订单
+            Map<Integer, Integer> goodsTypeMap = new HashMap<>();
             for (int i = 0; i < goodsList.size(); i++) {
                 Integer goodsId = goodsList.getJSONObject(i).getInteger("goods_id");//
                 Integer skuId = goodsList.getJSONObject(i).getInteger("sku_id");//
@@ -155,6 +156,18 @@ public class BusinessServiceImpl implements IBusinessService {
                 if (checkFlag > 0) {
                     return checkFlag;
                 }
+                // 租赁类型商品与其它类型商品不能同时形成订单
+                int goodsType = Integer.parseInt(goods.get("goods_type").toString());
+                if (goodsType == 3) {
+                    goodsTypeMap.put(3, goodsType);
+                } else {
+                    goodsTypeMap.put(-1, goodsType);
+                }
+            }
+            // 租赁类型商品与其它类型商品不能同时形成订单
+            if (goodsTypeMap.size() > 1) {
+                LOG.info("租赁类型商品与其它类型商品不能同时形成订单");
+                return ResultCode.GOODS_TYPE_ERROR.getResp_code();
             }
             return ResultCode.OK.getResp_code();
         } catch (Exception e) {

@@ -77,9 +77,9 @@ public class OrderRefund implements IResultOut {
             TbOrderRefund orderRefund = new TbOrderRefund();
             orderRefund.setOrderNo(orderNo);
             orderRefund.setDetailId(0);//默认订单全部
-            orderRefund.setApplyReason((byte) 0);//申请理由 0 无理由申请
+            orderRefund.setApplyReason( 0);//申请理由 0 无理由申请
             orderRefund.setPartnerTradeNo("");//由支付系统生成
-            orderRefund.setStatus((byte) 0);//状态 0 处理中 1退款成功 2 退款失败  3退款异常
+            orderRefund.setStatus( 0);//状态 0 处理中 1退款成功 2 退款失败  3退款异常
             orderRefund.setRefundDesc("");
             orderRefund.setUserId(userId);
             orderRefund.setPrice(order.getOrderPrice());

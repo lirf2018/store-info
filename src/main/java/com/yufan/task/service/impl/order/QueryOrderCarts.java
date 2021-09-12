@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -104,6 +105,8 @@ public class QueryOrderCarts implements IResultOut {
                     if (!(status == 1 || status == 2)) {
                         continue;
                     }
+                    Integer goodsType = Integer.parseInt(map.get("goods_type").toString());
+                    String rentPayTypeName = String.valueOf(map.get("rent_pay_type_name"));
 
                     String goodsSpecNameStr = null == map.get("goods_spec_name_str") ? "" : map.get("goods_spec_name_str").toString();
                     Integer cartType = Integer.parseInt(null == map.get("status") ? null : map.get("status").toString());
@@ -124,6 +127,8 @@ public class QueryOrderCarts implements IResultOut {
                     userCartOrderDetail.setIsSingle(isSingle);
                     userCartOrderDetail.setSkuId(skuId);
                     userCartOrderDetail.setTimeGoodsId(timeGoodsId);
+                    userCartOrderDetail.setGoodsType(goodsType);
+                    userCartOrderDetail.setRentPayTypeName(rentPayTypeName);
                     if (status == 1) {
                         cartDetailList.add(userCartOrderDetail);//
                         orderCount = orderCount + 1;

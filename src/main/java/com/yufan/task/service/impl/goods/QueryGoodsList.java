@@ -65,6 +65,8 @@ public class QueryGoodsList implements IResultOut {
                 map.put("goodsId", Integer.parseInt(listData.get(i).get("goods_id").toString()));
                 map.put("title", listData.get(i).get("title"));
                 map.put("goodsName", listData.get(i).get("goods_name"));
+                map.put("rentPayType", listData.get(i).get("rent_pay_type"));
+                map.put("rentPayTypeName", listData.get(i).get("rent_pay_type_name"));
                 map.put("trueMoney", new BigDecimal(listData.get(i).get("true_money").toString()));
                 map.put("nowMoney", salePrice);
                 map.put("timeGoodsId", timeGoodsId);

@@ -3,6 +3,7 @@ package com.yufan.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.yufan.pojo.TbParam;
 import com.yufan.pojo.TbVerification;
 import com.yufan.task.dao.account.IAccountDao;
 import org.apache.commons.lang3.StringUtils;
@@ -283,6 +284,30 @@ public class CommonMethod {
             Random r = new Random();
             int num = r.nextInt(size);
             return CacheData.VERIFYIMGGROUPLIST.get(num);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 获取日期类型配置信息
+    public static TbParam getParamConfigByParamCodeAndKey(String paramCode, String paramKey) {
+        try {
+            if (StringUtils.isEmpty(paramCode) || StringUtils.isEmpty(paramKey)) {
+                LOG.info("获取日期类型配置信息条件不能为空");
+                return null;
+            }
+            List<TbParam> list = CacheData.PARAMLIST;
+            for (int i = 0; i < list.size(); i++) {
+                TbParam param = list.get(i);
+                if (!paramCode.equals(param.getParamCode())) {
+                    continue;
+                }
+                if (!paramKey.equals(param.getParamKey())) {
+                    continue;
+                }
+                return param;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

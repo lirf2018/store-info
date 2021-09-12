@@ -114,6 +114,7 @@ public class QueryGoodsDetail implements IResultOut {
             Integer sellCount = goods.getSellCount();
             Integer isTimeGoods = goods.getIsTimeGoods();
             Integer isZiYin = goods.getIsZiYin();
+            Integer rentPayType = goods.getRentPayType();
             //商品关联的属性值标识
             Map<Integer, Integer> valueIdMap = new HashMap<>();
             //是否单品
@@ -267,6 +268,14 @@ public class QueryGoodsDetail implements IResultOut {
                     unsalePropList.add(mapProp);
                 }
             }
+            //查询参数
+            List<TbParam> paramList = CacheData.PARAMLIST;
+            Map<String, String> paramMap = new HashMap<>();
+            for (int i = 0; i < paramList.size(); i++) {
+                String key = paramList.get(i).getParamCode() + "-" + paramList.get(i).getParamKey();
+                String value = paramList.get(i).getParamValue();
+                paramMap.put(key, value);
+            }
 
             //返回购物车数量 购物车
             int cartGoodsCount = 0;
@@ -303,7 +312,7 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("couponId", couponId);
             dataJson.put("status", status);
             dataJson.put("remark", remark);
-            dataJson.put("goodsType", goodsType);
+            dataJson.put("goodsType", goodsType);// 3 为租赁商品
             dataJson.put("isPayOnline", isPayOnline);
             dataJson.put("outCode", outCode);
             dataJson.put("depositMoney", depositMoney);
@@ -318,6 +327,9 @@ public class QueryGoodsDetail implements IResultOut {
             dataJson.put("timeGoodsId", timeGoodsId);
             dataJson.put("timeStime", timeStime);
             dataJson.put("timeEtime", timeEtime);
+            //租赁计费方式
+            dataJson.put("rentPayType", rentPayType);
+            dataJson.put("rentPayTypeName", paramMap.get("rent_pay_type-" + rentPayType));
 
             dataJson.put("bannerImgList", bannerImgList);
             dataJson.put("goodsImgList", goodsInfoImgList);
@@ -326,7 +338,7 @@ public class QueryGoodsDetail implements IResultOut {
 
             // 处理购物车对应商品(主要处理抢购商品)
             //判断商品是不是抢购商品
-            if ((null==timeGoodsId ||timeGoodsId == 0) && isSingle == 1) {
+            if ((null == timeGoodsId || timeGoodsId == 0) && isSingle == 1) {
                 // 失效购物车 对应抢购商品
                 iOrderDao.updateOrderCartStatus(userId, goodsId.toString(), 2, 1);
             }
